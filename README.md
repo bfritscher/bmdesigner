@@ -31,16 +31,19 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 ## TODO
 
--> block and notes components and data structure
+-> block and notes components and data structure (vuex?)
 -> drop change block info
 -> contextual show color switcher, text
 -> open zoom vp
 -> change z-order
+-> canvas background-image?
 
 # Nice to have
 -> start with vp shortcut
+-> custom templates
 -> list mode
 -> sentence mode?
+-> mechanics arrow?
 -> presentation mode
    - animation order
    - tap to show on projector?

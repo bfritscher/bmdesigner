@@ -1,18 +1,37 @@
 <template>
   <div id="app">
-    <header>
-      <span>Vue.js PWA</span>
-    </header>
-    <main>
-      <div class="canvas" @click.prevent.stop="addNote($event)">
-        <zone id="vp"></zone>
-        <zone id="cs"></zone>
+    <div>
+      <div style="height: 100px">
 
-        <note v-for="(n, i) in notes" :value="n" :key="i"></note>
       </div>
-      <img src="./assets/logo.png" alt="Vue.js PWA">
+      <div id="vpc_cs" class="canvas" @click.prevent.stop="addNote($event)">
+        <div class="paper">
+          <zone id="features" label="Products & Services" style="left: 0; top: 0; width: 20%; height: 100%"></zone>
+          <zone id="solution" label="Solutions" style="left: 20%; top: 0; width: 20%; height: 100%"></zone>
+          <zone id="pain_gain" label="Pains & Gains" style="left: 60%; top: 0; width: 20%; height: 100%"></zone>
+          <zone id="job" label="Job to be done" style="left: 80%; top: 0; width: 20%; height: 100%"></zone>
+          <note v-for="(n, i) in notes" :value="n" :key="i"></note>
+        </div>
+      </div>
+    </div>
+      <div>
+        <div id="canvas" class="canvas" @click.prevent.stop="addNote($event)">
+          <div class="paper">
+            <zone id="c" label="Cost Structure" style="left: 0; top: 75%; width: 50%; height: 25%"></zone>
+            <zone id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%"></zone>
+            <zone id="ka" label="Key Activities" style="left: 20%; top:0; width: 20%; height: 37.5%"></zone>
+            <zone id="kr" label="Key Resources" style="left: 20%; top:37.5%; width: 20%; height: 37.5%"></zone>
+            <zone id="vp" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%"></zone>
+            <zone id="cr" label="Customer Relationships" style="left: 60%; top:0; width: 20%; height: 37.5%"></zone>
+            <zone id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%"></zone>
+            <zone id="cs" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%"></zone>
+            <zone id="r" label="Revenue Streams" style="left: 50%; top: 75%; width: 50%; height: 25%"></zone>
+            <note v-for="(n, i) in notes" :value="n" :key="i"></note>
+          </div>
+        </div>
+      </div>
+
       <router-view></router-view>
-    </main>
   </div>
 </template>
 
@@ -27,6 +46,8 @@ export default {
       notes: [{
         x: 0,
         y: 0,
+        left: 0,
+        top: 0,
       }],
     };
   },
@@ -37,9 +58,15 @@ export default {
   },
   methods: {
     addNote(e) {
+      console.log(e);
+      const c = document.getElementById('canvas');
+      const x = e.x - 100 - c.offsetLeft;
+      const y = e.y - 20 - c.offsetTop;
       this.notes.push({
-        x: e.layerX - 100,
-        y: e.layerY - 20,
+        x: 0,
+        y: 0,
+        left: x / (c.offsetWidth / 100),
+        top: y / (c.offsetHeight / 100),
       });
     },
   },
@@ -55,43 +82,35 @@ export default {
   box-sizing: border-box;
 }
 
-.canvas {
-  border: 1px solid red;
-  position: relative;
-}
-
 body {
   margin: 0;
 }
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
-
-main {
-  text-align: center;
-  margin-top: 40px;
-}
-
-header {
-  margin: 0;
-  height: 56px;
-  padding: 0 16px 0 24px;
-  background-color: #35495E;
-  color: #ffffff;
-}
-
-header span {
-  display: block;
+.paper {
+  width: 100vw;
+  height: 68.60vw; /* height:width ratio = 9/16 = .5625  */
+  max-height: 100vh;
+  max-width: 145.7vh; /* 16/9 = 1.778 */
+  margin: auto;
   position: relative;
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: .02em;
-  font-weight: 400;
-  box-sizing: border-box;
-  padding-top: 16px;
+  border: 2px solid blue;
 }
+
+.paper {
+  width: 100vw;
+  height: 68.60vw; /* height:width ratio = 9/16 = .5625  */
+  max-height: 100vh;
+  max-width: 145.7vh; /* 16/9 = 1.778 */
+  margin: auto;
+  position: relative;
+  border: 2px solid blue;
+}
+
+.canvas {
+  border: 1px solid red;
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+}
+
 </style>

@@ -1,5 +1,9 @@
 <template>
-  <div @click.prevent.stop class="draggable note" :style="{height: `${height}px`, transform: `translate(${value.x}px, ${value.y}px)`}">
+  <div @click.prevent.stop class="draggable note" :style="{height: `${height}px`, left: `${value.left}%`, top: `${value.top}%`, 'box-shadow': boxShadow}">
+    <div class="colors">
+      <div class="color"></div>
+      <div class="color"></div>
+    </div>
     <!-- needed for textarea sizing bug -->
     <div class="text-box">
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" v-model="text" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
@@ -21,9 +25,11 @@ export default {
       fontSize: 40,
       x: 0,
       y: 0,
+      colors: ['#yellow', 'red', 'blue', 'green'],
     };
   },
   mounted() {
+    window.addEventListener('resize', this.calculateFontSizeAndHeight);
     interact(this.$el)
       .draggable({
         inertia: true,
@@ -33,9 +39,16 @@ export default {
           elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
         },
         autoScroll: true,
+        onstart: () => {
+          this.value.x = this.$el.offsetLeft;
+          this.value.y = this.$el.offsetTop;
+        },
         onmove: (event) => {
           this.value.x += event.dx;
           this.value.y += event.dy;
+          this.value.left = parseFloat(this.value.x) / (document.getElementById('canvas').offsetWidth / 100);
+          this.value.top = parseFloat(this.value.y) / (document.getElementById('canvas').offsetHeight / 100);
+          console.log(this.value);
         },
         onend: (event) => {
           if (event.relatedTarget) {
@@ -50,6 +63,15 @@ export default {
       });
     this.calculateFontSizeAndHeight();
     this.$refs.textarea.focus();
+  },
+  computed: {
+    boxShadow() {
+      return this.colors.slice(1).reduce((shadows, color, i) => {
+        const size = (i + 1) * 4;
+        shadows.push(`-${size}px -${size}px ${color}`);
+        return shadows;
+      }, ['0px 1px 2px rgba(0, 0, 0, 0.3)']).join(',');
+    },
   },
   methods: {
     handleKeyUp(e) {
@@ -103,13 +125,12 @@ export default {
 .note {
   border: 0px;
   margin: 0px;
-  overflow: hidden;
-  width: 200px;
+  width: 15%;
   height: 40px;
   position: absolute;
   top:0;
   left: 0;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), -5px -5px #aec9ff, -10px -10px #BFFFBF;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
   background: rgba(255, 255, 127, 1);
   background: -moz-linear-gradient(-45deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
   background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(255, 255, 127, 1)), color-stop(100%, rgba(255, 255, 188, 1)));
@@ -143,4 +164,20 @@ export default {
   outline: none;
   background-color:  transparent;
 }
+
+.colors {
+  position: absolute;
+  top: -50px;
+  background-color: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  display: flex;
+}
+
+.color {
+  width: 30px;
+  height: 30px;
+  background-color: red;
+  margin: 4px;
+}
+
 </style>

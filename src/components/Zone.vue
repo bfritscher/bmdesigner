@@ -1,6 +1,6 @@
 <template>
   <div class="zone dropzone">
-
+    <div class="label">{{label}}</div>
   </div>
 </template>
 
@@ -9,6 +9,7 @@ import interact from 'interactjs';
 
 export default {
   name: 'zone',
+  props: ['label'],
   mounted() {
     interact('.dropzone').dropzone({
       accept: '.note',
@@ -51,11 +52,14 @@ export default {
 }
 
 .zone {
-  width: 400px;
-  height: 400px;
+  position: absolute;
   border: 1px solid black;
-  display: inline-block;
+  display: block;
   transition: background-color 0.3s;
+}
+
+.label {
+  margin: 5px;
 }
 
 .drop-active {
