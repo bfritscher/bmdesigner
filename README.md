@@ -37,8 +37,16 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> open zoom vp
 -> change z-order
 -> canvas background-image?
+-> duplicate canvas
+-> canvas selection menu
+-> login
+-> bugtrack
+-> backend
 
 # Nice to have
+-> screenshot
+-> search / filter
+-> share?
 -> start with vp shortcut
 -> custom templates
 -> list mode

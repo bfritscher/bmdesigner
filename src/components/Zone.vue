@@ -53,22 +53,21 @@ export default {
 
 .zone {
   position: absolute;
-  border: 1px solid black;
+  box-shadow: inset 0 0 0px 1px #818181;
   display: block;
   transition: background-color 0.3s;
 }
 
 .label {
   margin: 5px;
+  color: #333;
 }
 
 .drop-active {
-  border-color: red;
+
 }
 
 .drop-target {
   background-color: #29e;
-  border-color: #fff;
-  border-style: solid;
 }
 </style>

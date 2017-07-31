@@ -6,7 +6,7 @@
     </div>
     <!-- needed for textarea sizing bug -->
     <div class="text-box">
-      <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" v-model="text" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
+      <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" v-model="value.text" @blur="handleBlur" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
     </div>
   </div>
 </template>
@@ -20,11 +20,8 @@ export default {
   props: ['value'],
   data() {
     return {
-      text: '',
       height: 40,
       fontSize: 40,
-      x: 0,
-      y: 0,
       colors: ['#yellow', 'red', 'blue', 'green'],
     };
   },
@@ -38,21 +35,24 @@ export default {
           endOnly: true,
           elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
         },
-        autoScroll: true,
+        autoScroll: false,
         onstart: () => {
           this.value.x = this.$el.offsetLeft;
           this.value.y = this.$el.offsetTop;
+          // TODO: handle z-index
         },
         onmove: (event) => {
           this.value.x += event.dx;
           this.value.y += event.dy;
-          this.value.left = parseFloat(this.value.x) / (document.getElementById('canvas').offsetWidth / 100);
-          this.value.top = parseFloat(this.value.y) / (document.getElementById('canvas').offsetHeight / 100);
+          this.value.left = parseFloat(this.value.x) / (this.$el.parentElement.offsetWidth / 100);
+          this.value.top = parseFloat(this.value.y) / (this.$el.parentElement.offsetHeight / 100);
           console.log(this.value);
         },
         onend: (event) => {
           if (event.relatedTarget) {
-            this.text = event.relatedTarget.getAttribute('id');
+            this.value.text = event.relatedTarget.getAttribute('id');
+          } else {
+            this.value.text = 'NONE';
           }
         },
       })
@@ -61,8 +61,9 @@ export default {
           console.log('angle', event);
         },
       });
-    this.calculateFontSizeAndHeight();
-    this.$refs.textarea.focus();
+    this.calculateFontSizeAndHeight().then(() => {
+      this.$refs.textarea.focus();
+    });
   },
   computed: {
     boxShadow() {
@@ -80,11 +81,27 @@ export default {
         return;
       }
       if (e.keyCode === 13 && e.ctrlKey) {
+        // TODO: fix get offset
         this.$root.$emit('addNote', { x: this.value.x, y: this.value.y + this.height });
+        return;
+      }
+      if (e.keyCode === 27) {
+        if (this.value.text === '') {
+          this.$root.$emit('removeNote', this.value);
+          return;
+        }
       }
       this.calculateFontSizeAndHeight();
     },
+    handleBlur() {
+      if (this.value.text === '') {
+        this.$root.$emit('removeNote', this.value);
+      }
+    },
     async calculateFontSizeAndHeight() {
+      if (!this.$refs.textarea) {
+        return;
+      }
       while ((this.$refs.textarea.scrollHeight > this.$refs.textarea.offsetHeight ||
         this.$refs.textarea.scrollWidth > this.$refs.textarea.offsetWidth) && this.fontSize > 10) {
         // eslint-disable-next-line
