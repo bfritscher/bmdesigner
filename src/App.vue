@@ -50,7 +50,7 @@
     <main>
       <v-container fluid style="position: relative">
         <bmc></bmc>
-        <vpc></vpc>
+        <!-- <vpc></vpc> -->
         <router-view></router-view>
         </v-layout>
       </v-container>
@@ -62,68 +62,12 @@
 import Bmc from './components/BMC';
 import Vpc from './components/VPC';
 
-function totalOffset(node) {
-  const offsetTotal = {
-    top: 0,
-    left: 0,
-  };
-  while (node) {
-    offsetTotal.top += node.offsetTop;
-    offsetTotal.left += node.offsetLeft;
-    // eslint-disable-next-line
-    node = node.offsetParent;
-  }
-  return offsetTotal;
-}
-
 export default {
   name: 'app',
   data() {
     return {
-      notes: [{
-        x: 0,
-        y: 0,
-        left: 0,
-        top: 0,
-      }],
       drawer: true,
     };
-  },
-  mounted() {
-    this.$root.$on('addNote', (arg) => {
-      this.notes.push(arg);
-    });
-    this.$root.$on('removeNote', (arg) => {
-      const index = this.notes.indexOf(arg);
-      if (index > -1) {
-        this.notes.splice(index, 1);
-      }
-    });
-  },
-  methods: {
-    addNote(e) {
-      const c = document.getElementById('paper');
-      const offset = totalOffset(c);
-      const noteCenter = {
-        x: 100,
-        y: 20,
-      };
-      const x = e.x - noteCenter.x - offset.left;
-      const y = e.y - noteCenter.y - offset.top;
-
-      const note = {
-        x: 0,
-        y: 0,
-        left: x / (c.offsetWidth / 100),
-        top: y / (c.offsetHeight / 100),
-        text: '',
-      };
-
-      if (e.target.classList.contains('zone')) {
-        note.text = e.target.getAttribute('id');
-      }
-      this.notes.push(note);
-    },
   },
   components: {
     Bmc,

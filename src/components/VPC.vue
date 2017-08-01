@@ -1,6 +1,7 @@
 <template>
-  <div ref="canvas" class="canvas overlay overlay--active" @click.prevent.stop="addNote($event)">
-    <div class="paper" id="paper">
+  <div class="canvas  overlay overlay--active" @click.prevent.stop="addNote($event)">
+    <!--  -->
+    <div class="paper" ref="paper">
       <v-card class="elevation-10" style="position:absolute; left: 0; top:0; width: 40%; min-width:408px; bottom: 0">
         <v-toolbar class="grey darken-1" dark dense style="left: 0; top: -48px; position: absolute;">
           <v-menu :nudge-width="100" offset-y>
@@ -44,7 +45,7 @@
         <zone id="pain_gain" label="Pains & Gains" style="left: 0; top: 0; width: 50%; height: 100%;  background-color: white;"></zone>
         <zone id="job" label="Job to be done" style="left: 50%; top: 0; width: 50%; height: 100%;  background-color: white;"></zone>
       </v-card>
-      <note v-for="(n, i) in notes" :value="n" :key="i"></note>
+      <note v-for="n in notesVPC" :value="n" :key="n.id"></note>
     </div>
   </div>
 </template>
@@ -52,9 +53,36 @@
 <script>
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
+import { mapGetters } from 'vuex';
+import { totalOffset } from '@/utils';
 
 export default {
   name: 'vpc',
+  computed: {
+    ...mapGetters(['notesVPC']),
+  },
+  methods: {
+    addNote(e) {
+      const offset = totalOffset(this.$refs.paper);
+      const noteCenter = {
+        x: this.$refs.paper.offsetWidth / 15,
+        y: 20,
+      };
+      const x = e.x - noteCenter.x - offset.left;
+      const y = e.y - noteCenter.y - offset.top;
+
+      const note = {
+        left: x / (this.$refs.paper.offsetWidth / 100),
+        top: y / (this.$refs.paper.offsetHeight / 100),
+        type: 'vpc_tmp',
+      };
+
+      if (e.target.classList.contains('zone')) {
+        note.text = e.target.getAttribute('id');
+      }
+      this.$store.dispatch('NOTE_CREATE', note);
+    },
+  },
   components: {
     Note,
     Zone,
@@ -85,5 +113,4 @@ export default {
   margin: 48px auto 0 auto;
   position: relative;
 }
-
 </style>

@@ -1,0 +1,4 @@
+export const NOTE_CREATE = 'NOTE_CREATE';
+export const NOTE_DELETE = 'NOTE_DELETE';
+export const NOTE_MOVE = 'NOTE_MOVE';
+export const NOTE_UPDATE = 'NOTE_UPDATE';

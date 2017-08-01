@@ -20,6 +20,8 @@ export default {
   props: ['value'],
   data() {
     return {
+      x: 0,
+      y: 0,
       height: 40,
       fontSize: 40,
       colors: ['#yellow', 'red', 'blue', 'green'],
@@ -37,23 +39,31 @@ export default {
         },
         autoScroll: false,
         onstart: () => {
-          this.value.x = this.$el.offsetLeft;
-          this.value.y = this.$el.offsetTop;
+          this.x = this.$el.offsetLeft;
+          this.y = this.$el.offsetTop;
           // TODO: handle z-index
         },
         onmove: (event) => {
-          this.value.x += event.dx;
-          this.value.y += event.dy;
-          this.value.left = parseFloat(this.value.x) / (this.$el.parentElement.offsetWidth / 100);
-          this.value.top = parseFloat(this.value.y) / (this.$el.parentElement.offsetHeight / 100);
-          console.log(this.value);
+          this.x += event.dx;
+          this.y += event.dy;
+          const left = (parseFloat(this.x) / this.$el.parentElement.offsetWidth) * 100;
+          const top = (parseFloat(this.y) / this.$el.parentElement.offsetHeight) * 100;
+          this.$store.dispatch('NOTE_MOVE', { note: this.value, left, top });
         },
         onend: (event) => {
+          let type = '';
           if (event.relatedTarget) {
-            this.value.text = event.relatedTarget.getAttribute('id');
+            type = event.relatedTarget.getAttribute('id');
           } else {
-            this.value.text = 'NONE';
+            type = this.$el.parentElement.getAttribute('data-none');
           }
+          this.$store.dispatch('NOTE_UPDATE', {
+            note: this.value,
+            changes: {
+              text: type,
+              type,
+            },
+          });
         },
       })
       .gesturable({
@@ -81,13 +91,15 @@ export default {
         return;
       }
       if (e.keyCode === 13 && e.ctrlKey) {
-        // TODO: fix get offset
-        this.$root.$emit('addNote', { x: this.value.x, y: this.value.y + this.height });
+        const left = (this.$el.offsetLeft / this.$el.parentElement.offsetWidth) * 100;
+        const top = ((this.$el.offsetTop + this.$el.offsetHeight + 20)
+          / this.$el.parentElement.offsetHeight) * 100;
+        this.$store.dispatch('NOTE_CREATE', { type: this.value.type, left, top });
         return;
       }
       if (e.keyCode === 27) {
         if (this.value.text === '') {
-          this.$root.$emit('removeNote', this.value);
+          this.$store.dispatch('NOTE_DELETE', this.value);
           return;
         }
       }
@@ -95,7 +107,7 @@ export default {
     },
     handleBlur() {
       if (this.value.text === '') {
-        this.$root.$emit('removeNote', this.value);
+        this.$store.dispatch('NOTE_DELETE', this.value);
       }
     },
     async calculateFontSizeAndHeight() {

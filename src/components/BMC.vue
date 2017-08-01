@@ -1,6 +1,6 @@
 <template>
-  <div ref="canvas" class="canvas" @click.prevent.stop="addNote($event)">
-    <div class="paper elevation-10" id="paper">
+  <div class="canvas" @click.prevent.stop="addNote($event)">
+    <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
       <zone id="c" label="Cost Structure" style="left: 0; top: 75%; width: 50%; height: 25%"></zone>
       <zone id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%"></zone>
       <zone id="ka" label="Key Activities" style="left: 20%; top:0; width: 20%; height: 37.5%"></zone>
@@ -10,7 +10,7 @@
       <zone id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%"></zone>
       <zone id="cs" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%"></zone>
       <zone id="r" label="Revenue Streams" style="left: 50%; top: 75%; width: 50%; height: 25%"></zone>
-      <note v-for="(n, i) in notes" :value="n" :key="i"></note>
+      <note v-for="(n, i) in notesBMC" :value="n" :key="i"></note>
     </div>
   </div>
 </template>
@@ -18,9 +18,36 @@
 <script>
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
+import { mapGetters } from 'vuex';
+import { totalOffset } from '@/utils';
 
 export default {
   name: 'bmc',
+  computed: {
+    ...mapGetters(['notesBMC']),
+  },
+  methods: {
+    addNote(e) {
+      const offset = totalOffset(this.$refs.paper);
+      const noteCenter = {
+        x: this.$refs.paper.offsetWidth / 15,
+        y: 20,
+      };
+      const x = e.x - noteCenter.x - offset.left;
+      const y = e.y - noteCenter.y - offset.top;
+
+      const note = {
+        left: x / (this.$refs.paper.offsetWidth / 100),
+        top: y / (this.$refs.paper.offsetHeight / 100),
+        type: 'bmc_tmp',
+      };
+
+      if (e.target.classList.contains('zone')) {
+        note.text = e.target.getAttribute('id');
+      }
+      this.$store.dispatch('NOTE_CREATE', note);
+    },
+  },
   components: {
     Note,
     Zone,
