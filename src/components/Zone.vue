@@ -53,8 +53,7 @@ export default {
 
 <style>
 .note.can-drop {
-  color: #000 !important;
-  background-color: #4e4 !important;
+  
 }
 
 .zone {
@@ -75,6 +74,6 @@ export default {
 }
 
 .drop-target {
-  background-color: #29e !important;
+  background-color: #dcedc8 !important;
 }
 </style>

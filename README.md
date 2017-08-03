@@ -30,20 +30,13 @@ npm test
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 # BUGS
-- colors spacing
-- animate highlight vpc
-- animate note vpc delay
-- max font size
-- font color
-- dnd highlight colors
-- send new z-order
 
 ## TODO
 -> canvas selection menu
 -> login
 -> backend
     -> send data to
--> duplicate canvas
+    -> send new z-order
 -> credits
 -> bugtrack
 -> delete button?
@@ -51,6 +44,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> export/import from strategyzer
 
 # Nice to have
+-> duplicate canvas
 -> keep last used colors?
 -> without background? only text with 1 color?
 -> start with vp shortcut
@@ -61,6 +55,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> presentation mode
    - animation order
    - tap to show on projector?
+   - animation pan?
 -> list mode
     -> list to model as with smartart
 -> mechanics arrow?

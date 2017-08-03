@@ -80,14 +80,14 @@ export default {
 
 .color-selector .direction-top {
   position: absolute;
-  left:0;
-  bottom: -120px;
+  left: 0;
+  bottom: -96px;
 }
 
 .color-selector .direction-bottom {
   position: absolute;
-  left:0;
-  top: -120px;
+  left: 0;
+  top: -96px;
 }
 
 </style>

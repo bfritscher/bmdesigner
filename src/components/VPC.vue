@@ -3,7 +3,7 @@
     <div ref="vpc" key="vpc" class="canvas overlay-vpc" v-show="showVPC" @click.prevent.stop="addNote($event)">
       <div class="paper" ref="paper" data-none="vpc_tmp">
         <transition name="vpc-vp-transition" appear>
-          <v-card v-if="vp" class="vpc-vp elevation-10">
+          <v-card v-if="vp" class="vpc-vp elevation-10" :class="{'vpc-both': cs && vp}">
             <v-toolbar dense style="left: 0; top: -48px; position: absolute;" :class="COLORS_MATERIAL_DARK[vp.colors[0]]">
               <v-menu :nudge-width="100" offset-y @click.native.prevent.stop>
                 <v-toolbar-title slot="activator">
@@ -37,7 +37,7 @@
     </v-progress-circular>
 -->
         <transition name="vpc-cs-transition" appear>
-          <v-card v-if="cs" class="vpc-cs elevation-10">
+          <v-card v-if="cs" class="vpc-cs elevation-10" :class="{'vpc-both': cs && vp}">
             <v-toolbar dark dense style="left: 0; top: -48px; position: absolute;" :class="COLORS_MATERIAL_DARK[cs.colors[0]]">
               <v-menu :nudge-width="100" offset-y @click.native.prevent.stop>
                 <v-toolbar-title slot="activator">
@@ -59,7 +59,9 @@
             <zone dropzone-accept=".note-vpc" id="job" label="Job to be done" style="left: 50%; top: 0; width: 50%; height: 100%;  background-color: white;"></zone>
           </v-card>
         </transition>
-        <note v-for="n in notesVPC" :value="n" :key="n.id" class="note-vpc" :parent="$refs.paper"></note>
+        <transition-group name="note-transition" tag="div">
+          <note v-for="n in notesVPC" :value="n" :key="n.id" class="note-vpc"  :class="{'vpc-both': cs && vp}" :parent="$refs.paper"></note>
+        </transition-group>
       </div>
     </div>
   </transition>
@@ -139,6 +141,9 @@ export default {
         }
       }
       this.$store.dispatch('NOTE_CREATE', note);
+    },
+    afterEnter(e) {
+      console.log(e, this);
     },
     ...mapMutations(['LAYOUT_UPDATE']),
   },
@@ -237,6 +242,10 @@ export default {
   width: 40%;
   min-width: 408px;
   bottom: 0;
+}
+
+.vpc-both {
+  z-index: 2;
 }
 
 .vpc-cs-transition-enter-active,

@@ -5,12 +5,14 @@
       <zone dropzone-accept=".note-bmc" id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%"></zone>
       <zone dropzone-accept=".note-bmc" id="ka" label="Key Activities" style="left: 20%; top:0; width: 20%; height: 37.5%"></zone>
       <zone dropzone-accept=".note-bmc" id="kr" label="Key Resources" style="left: 20%; top:37.5%; width: 20%; height: 37.5%"></zone>
-      <zone dropzone-accept=".note-bmc" id="vp" :class="{'highlight': selectedCS && !selectedVP, 'elevation-10': selectedCS && !selectedVP}" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%"></zone>
+      <zone dropzone-accept=".note-bmc" id="vp" class="highlight" :class="{'highlight-on': selectedCS && !selectedVP, 'elevation-10': selectedCS && !selectedVP}" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%"></zone>
       <zone dropzone-accept=".note-bmc" id="cr" label="Customer Relationships" style="left: 60%; top:0; width: 20%; height: 37.5%"></zone>
       <zone dropzone-accept=".note-bmc" id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%"></zone>
-      <zone dropzone-accept=".note-bmc" id="cs" :class="{'highlight': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%"></zone>
+      <zone dropzone-accept=".note-bmc" id="cs" class="highlight" :class="{'highlight-on': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%"></zone>
       <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 50%; top: 75%; width: 50%; height: 25%"></zone>
-      <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc" :class="{'highlight': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
+      <transition-group name="note-transition" tag="div">
+        <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc highlight" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -86,6 +88,13 @@ export default {
 }
 
 .highlight {
-  z-index: 10;
+  z-index: 0;
+  transition: z-index 0.5s step-end !important;
 }
+
+.highlight-on {
+  z-index: 1;
+  transition: z-index 0.5s step-start !important;
+}
+
 </style>

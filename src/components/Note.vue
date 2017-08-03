@@ -23,6 +23,8 @@ import * as types from '@/store/mutation-types';
 import { VPC_VP_TYPES, VPC_CS_TYPES } from '@/store';
 import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
 
+const MAX_FONT_SIZE = 30;
+
 export default {
   name: 'note',
   props: ['value', 'parent'],
@@ -30,8 +32,8 @@ export default {
     return {
       x: 0,
       y: 0,
-      height: 40,
-      fontSize: 40,
+      height: MAX_FONT_SIZE,
+      fontSize: MAX_FONT_SIZE,
       colorList: COLORS_MATERIAL_DARK,
       colorsBG: COLORS_MATERIAL,
     };
@@ -75,10 +77,10 @@ export default {
           // TODO: refactor to make note note dependent almost same as in VPC
           // ignore tmp which is at position 0
           if (VPC_VP_TYPES.indexOf(type) > 0) {
-            payload.changes.parent = this.$store.state.layout.selectedCS.id;
+            payload.changes.parent = this.$store.state.layout.selectedVP.id;
           }
           if (VPC_CS_TYPES.indexOf(type) > 0) {
-            payload.changes.parent = this.$store.state.layout.selectedVP.id;
+            payload.changes.parent = this.$store.state.layout.selectedCS.id;
           }
           this.$store.dispatch('NOTE_UPDATE', payload);
         },
@@ -162,7 +164,7 @@ export default {
         && this.$refs.textarea.scrollHeight === this.$refs.textarea.offsetHeight) {
         // eslint-disable-next-line
         await Vue.nextTick(() => {
-          if (this.fontSize > 40) {
+          if (this.fontSize > MAX_FONT_SIZE) {
             this.height -= 1;
           } else {
             this.fontSize += 1;
@@ -206,6 +208,7 @@ export default {
   top: 0;
   left: 0;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1.1;
   /*
   background: rgba(255, 255, 127, 1);
   background: -moz-linear-gradient(-45deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
@@ -243,12 +246,13 @@ export default {
   outline: none;
   background-color: transparent;
   font-family: 'Itim', cursive;
+  color: #333;
 }
 
 .note .zoom {
   position: absolute;
-  bottom: -50px;
-  right: -40px;
+  bottom: -30px;
+  right: -25px;
 }
 
 .colors {
@@ -256,17 +260,29 @@ export default {
   top: -50px;
   left: -40px;
   display: flex;
+  align-items: flex-start;
 }
 
-.color {
-  width: 2vw;
-  height: 2vw;
-  border-radius: 10vw;
+.colors .btn {
   margin: 4px;
 }
 
 .btn--floating.btn--small .icon:not(:only-of-type):last-of-type {
   left: calc(50% - 9px);
   top: calc(50% - 9px);
+}
+
+.note-transition-enter-active {
+  transition: opacity 0.2s ease-in;
+}
+
+.note-transition-leave-active {
+  transition: opacity 0.2s ease-out;
+  ;
+}
+
+.note-transition-enter,
+.note-transition-leave-to {
+  opacity: 0;
 }
 </style>
