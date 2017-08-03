@@ -77,7 +77,6 @@ export default {
   name: 'vpc',
   data() {
     return {
-      showVPC: false,
       COLORS_MATERIAL_DARK,
     };
   },
@@ -110,6 +109,7 @@ export default {
       vp: state => state.layout.selectedVP,
       cs: state => state.layout.selectedCS,
       vpcSourceX: state => state.layout.vpcSourceX,
+      showVPC: state => state.layout.showVPC,
     }),
   },
   methods: {
@@ -122,8 +122,6 @@ export default {
       const x = e.x - noteCenter.x - offset.left;
       const y = e.y - noteCenter.y - offset.top;
 
-
-      // TODO add parent when dropped?
       const note = {
         left: x / (this.$refs.paper.offsetWidth / 100),
         top: y / (this.$refs.paper.offsetHeight / 100),
@@ -150,13 +148,13 @@ export default {
       if (val) {
         this.$refs.vpc.style.setProperty('--vpc-source-x', `${val.left}%`);
         this.$refs.vpc.style.setProperty('--vpc-source-y', `${val.top}%`);
-        this.showVPC = true;
+        this.LAYOUT_UPDATE({ showVPC: true });
       } else {
         this.$refs.vpc.style.setProperty('--vpc-source-x', `${oldVal.left}%`);
         this.$refs.vpc.style.setProperty('--vpc-source-y', `${oldVal.top}%`);
         if (!this.cs && this.showVPC) {
           Vue.nextTick(() => {
-            this.showVPC = false;
+            this.LAYOUT_UPDATE({ showVPC: false });
           });
         }
       }
@@ -165,13 +163,13 @@ export default {
       if (val) {
         this.$refs.vpc.style.setProperty('--vpc-source-x', `${val.left}%`);
         this.$refs.vpc.style.setProperty('--vpc-source-y', `${val.top}%`);
-        this.showVPC = true;
+        this.LAYOUT_UPDATE({ showVPC: true });
       } else {
         this.$refs.vpc.style.setProperty('--vpc-source-x', `${oldVal.left}%`);
         this.$refs.vpc.style.setProperty('--vpc-source-y', `${oldVal.top}%`);
         if (!this.vp && this.showVPC) {
           Vue.nextTick(() => {
-            this.showVPC = false;
+            this.LAYOUT_UPDATE({ showVPC: false });
           });
         }
       }

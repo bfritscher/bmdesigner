@@ -30,6 +30,7 @@ const initialState = {
     selectedVP: null,
     selectedCS: null,
     focusedNote: null,
+    showVPC: false,
   },
 };
 
@@ -62,6 +63,9 @@ const actions = {
   NOTE_DELETE({ commit }, payload) {
     commit(types.NOTE_DELETE, payload);
   },
+  NOTE_MOVE_TOP({ commit }, payload) {
+    commit(types.NOTE_MOVE_TOP, payload);
+  },
 };
 
 // mutations
@@ -83,6 +87,13 @@ const mutations = {
     const index = state.notes.indexOf(payload);
     if (index > -1) {
       state.notes.splice(index, 1);
+    }
+  },
+  [types.NOTE_MOVE_TOP](state, payload) {
+    const index = state.notes.indexOf(payload);
+    if (index > -1) {
+      state.notes.splice(index, 1);
+      state.notes.push(payload);
     }
   },
   [types.LAYOUT_UPDATE](state, payload) {

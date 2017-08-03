@@ -10,7 +10,7 @@
       <zone dropzone-accept=".note-bmc" id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%"></zone>
       <zone dropzone-accept=".note-bmc" id="cs" :class="{'highlight': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%"></zone>
       <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 50%; top: 75%; width: 50%; height: 25%"></zone>
-      <note v-for="(note, i) in notesBMC" :value="note" :key="i" class="note-bmc" :class="{'highlight': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
+      <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc" :class="{'highlight': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
     </div>
   </div>
 </template>

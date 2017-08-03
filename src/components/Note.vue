@@ -50,7 +50,7 @@ export default {
         onstart: () => {
           this.x = this.$el.offsetLeft;
           this.y = this.$el.offsetTop;
-          // TODO: handle z-index
+          this.$store.dispatch('NOTE_MOVE_TOP', this.value);
         },
         onmove: (event) => {
           this.x += event.dx;
@@ -175,7 +175,7 @@ export default {
       });
     },
     setColor(position, colorId) {
-      this.value.colors = Note.changeColor(this.value.colors, position, colorId);
+      this.$store.dispatch('NOTE_UPDATE', { changes: { colors: Note.changeColor(this.value.colors, position, colorId) }, note: this.value });
     },
     zoom() {
       const payload = {};

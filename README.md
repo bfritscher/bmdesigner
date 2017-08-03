@@ -36,16 +36,11 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 - max font size
 - font color
 - dnd highlight colors
-- adapt title dynamic
-- move showVPC to vueX
+- send new z-order
 
 ## TODO
--> change z-order
--> keep last used colors?
 -> canvas selection menu
 -> login
--> block and notes components and data structure (vuex?)
-    -> text update
 -> backend
     -> send data to
 -> duplicate canvas
@@ -56,7 +51,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> export/import from strategyzer
 
 # Nice to have
-
+-> keep last used colors?
 -> without background? only text with 1 color?
 -> start with vp shortcut
 -> canvas background-image?

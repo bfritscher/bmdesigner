@@ -41,7 +41,7 @@
       <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>BM|DESIGNER</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-title>Value Proposition Canvas</v-toolbar-title>
+      <transition name="title-fade-transition" mode="out-in"><v-toolbar-title :key="title">{{title}}</v-toolbar-title></transition>
       <v-spacer></v-spacer>
       <v-btn icon>
         <v-icon>more_vert</v-icon>
@@ -68,6 +68,11 @@ export default {
     return {
       drawer: true,
     };
+  },
+  computed: {
+    title() {
+      return this.$store.state.layout.showVPC ? 'Value Proposition Canvas' : 'Business Model Canvas';
+    },
   },
   components: {
     Bmc,
@@ -97,5 +102,18 @@ body {
 .navigation-drawer--persistent:not(.navigation-drawer--is-mobile).navigation-drawer--open:not(.navigation-drawer--right)~.footer:not(.footer--fixed):not(.footer--absolute),
 .navigation-drawer--persistent:not(.navigation-drawer--is-mobile).navigation-drawer--open:not(.navigation-drawer--right)~main {
   padding-left: 240px;
+}
+
+.title-fade-transition-enter-active {
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.title-fade-transition-leave-active {
+  transition: all 0.3s cubic-bezier(0.755, 0.05, 0.855, 0.06);
+}
+
+.title-fade-transition-enter,
+.title-fade-transition-leave-to {
+  opacity: 0;
 }
 </style>
