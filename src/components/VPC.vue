@@ -25,6 +25,17 @@
             <zone dropzone-accept=".note-vpc" id="solution" label="Solutions" style="left: 50%; top: 0; width: 50%; height: 100%; background-color: white;"></zone>
           </v-card>
         </transition>
+<!--
+   <v-progress-circular
+      v-show="vp && cs"
+      class="fit"
+      :size="160"
+      :width="30"
+      :value="75">
+      Fit<br>
+      {{ 50 }} %
+    </v-progress-circular>
+-->
         <transition name="vpc-cs-transition" appear>
           <v-card v-if="cs" class="vpc-cs elevation-10">
             <v-toolbar dark dense style="left: 0; top: -48px; position: absolute;" :class="COLORS_MATERIAL_DARK[cs.colors[0]]">
@@ -57,7 +68,6 @@
 <script>
 import Vue from 'vue';
 import { mapState, mapMutations } from 'vuex';
-// import { mapGetters } from 'vuex';
 import { totalOffset, COLORS_MATERIAL_DARK } from '@/utils';
 import { VPC_VP_TYPES, VPC_CS_TYPES } from '@/store';
 import Note from '@/components/Note';
@@ -67,7 +77,7 @@ export default {
   name: 'vpc',
   data() {
     return {
-      showVPC: this.vp || this.cs,
+      showVPC: false,
       COLORS_MATERIAL_DARK,
     };
   },
@@ -254,5 +264,11 @@ export default {
   width: 15%;
   min-width: 0;
   bottom: calc(95% - var(--vpc-source-y));
+}
+
+.fit {
+  position: absolute;
+  left: calc(50% - 80px);
+  top: calc(50% - 120px);
 }
 </style>

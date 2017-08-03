@@ -81,6 +81,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> multilingual
 
 # Future
+-> vpc dynamic fit display
 -> offline pwa?
 -> other zooms?
 -> validation
