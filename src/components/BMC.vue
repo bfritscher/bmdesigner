@@ -1,16 +1,16 @@
 <template>
   <div class="canvas" @click.prevent.stop="addNote($event)">
     <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
-      <zone id="c" label="Cost Structure" style="left: 0; top: 75%; width: 50%; height: 25%"></zone>
-      <zone id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%"></zone>
-      <zone id="ka" label="Key Activities" style="left: 20%; top:0; width: 20%; height: 37.5%"></zone>
-      <zone id="kr" label="Key Resources" style="left: 20%; top:37.5%; width: 20%; height: 37.5%"></zone>
-      <zone id="vp" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%"></zone>
-      <zone id="cr" label="Customer Relationships" style="left: 60%; top:0; width: 20%; height: 37.5%"></zone>
-      <zone id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%"></zone>
-      <zone id="cs" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%"></zone>
-      <zone id="r" label="Revenue Streams" style="left: 50%; top: 75%; width: 50%; height: 25%"></zone>
-      <note v-for="(n, i) in notesBMC" :value="n" :key="i"></note>
+      <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 50%; height: 25%"></zone>
+      <zone dropzone-accept=".note-bmc" id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%"></zone>
+      <zone dropzone-accept=".note-bmc" id="ka" label="Key Activities" style="left: 20%; top:0; width: 20%; height: 37.5%"></zone>
+      <zone dropzone-accept=".note-bmc" id="kr" label="Key Resources" style="left: 20%; top:37.5%; width: 20%; height: 37.5%"></zone>
+      <zone dropzone-accept=".note-bmc" id="vp" :class="{'highlight': selectedCS && !selectedVP, 'elevation-10': selectedCS && !selectedVP}" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%"></zone>
+      <zone dropzone-accept=".note-bmc" id="cr" label="Customer Relationships" style="left: 60%; top:0; width: 20%; height: 37.5%"></zone>
+      <zone dropzone-accept=".note-bmc" id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%"></zone>
+      <zone dropzone-accept=".note-bmc" id="cs" :class="{'highlight': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%"></zone>
+      <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 50%; top: 75%; width: 50%; height: 25%"></zone>
+      <note v-for="(note, i) in notesBMC" :value="note" :key="i" class="note-bmc" :class="{'highlight': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
     </div>
   </div>
 </template>
@@ -18,13 +18,17 @@
 <script>
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import { totalOffset } from '@/utils';
 
 export default {
   name: 'bmc',
   computed: {
     ...mapGetters(['notesBMC']),
+    ...mapState({
+      selectedVP: state => state.layout.selectedVP,
+      selectedCS: state => state.layout.selectedCS,
+    }),
   },
   methods: {
     addNote(e) {
@@ -43,7 +47,7 @@ export default {
       };
 
       if (e.target.classList.contains('zone')) {
-        note.text = e.target.getAttribute('id');
+        note.type = e.target.getAttribute('id');
       }
       this.$store.dispatch('NOTE_CREATE', note);
     },
@@ -79,6 +83,9 @@ export default {
   min-height: 560px;
   margin: auto;
   position: relative;
-  background-color: white;
+}
+
+.highlight {
+  z-index: 10;
 }
 </style>

@@ -50,7 +50,7 @@
     <main>
       <v-container fluid style="position: relative">
         <bmc></bmc>
-        <!-- <vpc></vpc> -->
+        <vpc></vpc>
         <router-view></router-view>
         </v-layout>
       </v-container>

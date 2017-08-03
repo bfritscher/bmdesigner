@@ -9,10 +9,16 @@ import interact from 'interactjs';
 
 export default {
   name: 'zone',
-  props: ['label'],
+  props: ['label', 'dropzoneAccept'],
+  data() {
+    return {
+      dropzone: null,
+    };
+  },
   mounted() {
-    interact('.dropzone').dropzone({
-      accept: '.note',
+    // const accept = this.dropzoneAccept;
+    this.dropzone = interact(this.$el).dropzone({
+      accept: this.dropzoneAccept,
       // Require a 75% element overlap for a drop to be possible
       overlap: 0.75,
       ondropactivate: (event) => {
@@ -33,7 +39,7 @@ export default {
         event.relatedTarget.classList.remove('can-drop');
       },
       ondrop: (event) => {
-        console.log(event);
+        event.relatedTarget.classList.remove('can-drop');
       },
       ondropdeactivate: (event) => {
         // remove active dropzone feedback
@@ -47,12 +53,13 @@ export default {
 
 <style>
 .note.can-drop {
-  color: #000;
-  background-color: #4e4;
+  color: #000 !important;
+  background-color: #4e4 !important;
 }
 
 .zone {
   position: absolute;
+  background-color: white;
   box-shadow: inset 0 0 0px 1px #818181;
   display: block;
   transition: background-color 0.3s;
@@ -68,6 +75,6 @@ export default {
 }
 
 .drop-target {
-  background-color: #29e;
+  background-color: #29e !important;
 }
 </style>

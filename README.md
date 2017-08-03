@@ -29,39 +29,61 @@ npm test
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
-## TODO
+# BUGS
+- colors spacing
+- animate highlight vpc
+- animate note vpc delay
+- max font size
+- font color
+- dnd highlight colors
+- adapt title dynamic
+- move showVPC to vueX
 
--> block and notes components and data structure (vuex?)
--> drop change block info
--> contextual show color switcher, text
--> open zoom vp
+## TODO
 -> change z-order
--> canvas background-image?
--> duplicate canvas
+-> keep last used colors?
 -> canvas selection menu
 -> login
--> bugtrack
+-> block and notes components and data structure (vuex?)
+    -> text update
 -> backend
+    -> send data to
+-> duplicate canvas
+-> credits
+-> bugtrack
+-> delete button?
+-> migrate user/data?`
+-> export/import from strategyzer
 
 # Nice to have
--> screenshot
--> search / filter
--> share?
+
+-> without background? only text with 1 color?
 -> start with vp shortcut
--> custom templates
--> list mode
--> sentence mode?
--> mechanics arrow?
+-> canvas background-image?
+
+-> allow image drop / lookup?
+
 -> presentation mode
    - animation order
    - tap to show on projector?
+-> list mode
+    -> list to model as with smartart
+-> mechanics arrow?
+
+-> screenshot
+
+-> mobile touch support
+-> invite collaborate / share
+-> import from other
+-> search / filter
+-> sentence mode?
+-> custom templates
+-> multilingual
 
 # Future
 -> offline pwa?
--> import data
 -> other zooms?
--> allow image drop / lookup?
 -> validation
 -> clone / history stream / version tree?
--> calculation
+-> calculation MathJS
 -> Checklist? (link to api of something?)

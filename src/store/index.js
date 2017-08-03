@@ -1,23 +1,36 @@
+import 'es6-promise/auto';
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Note from '@/models/Note';
 import * as types from './mutation-types';
 
-
+Vue.use(Vuex);
+// tmp has to be first for type filters using these lists to ignoring it
 export const BMC_TYPES = [
-  'vp', 'cs', 'r', 'c', 'dc', 'cr', 'kr', 'ka', 'pn', 'bmc_tmp',
+  'bmc_tmp', 'vp', 'cs', 'r', 'c', 'dc', 'cr', 'kr', 'ka', 'pn',
 ];
 
 export const VPC_TYPES = [
-  'features', 'solution', 'pain_gain', 'job', 'vpc_tmp',
+  'vpc_tmp', 'features', 'solution', 'pain_gain', 'job',
 ];
 
+export const VPC_VP_TYPES = [
+  'vpc_tmp', 'features', 'solution',
+];
 
-Vue.use(Vuex);
+export const VPC_CS_TYPES = [
+  'vpc_tmp', 'pain_gain', 'job',
+];
 
 // initial state
 const initialState = {
   notes: [],
+  layout: {
+    selectedVP: null,
+    selectedCS: null,
+    focusedNote: null,
+  },
 };
 
 // getters
@@ -31,6 +44,8 @@ const gettersDefinition = {
   },
   notesBMC: (state, getters) => getters.getNotesByTypes(BMC_TYPES),
   notesVPC: (state, getters) => getters.getNotesByTypes(VPC_TYPES),
+  notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
+  notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
 };
 
 // actions
@@ -61,7 +76,7 @@ const mutations = {
   },
   [types.NOTE_UPDATE](state, payload) {
     Object.keys(payload.changes).forEach((key) => {
-      payload.note[key] = payload.changes[key];
+      Vue.set(payload.note, key, payload.changes[key]);
     });
   },
   [types.NOTE_DELETE](state, payload) {
@@ -69,6 +84,11 @@ const mutations = {
     if (index > -1) {
       state.notes.splice(index, 1);
     }
+  },
+  [types.LAYOUT_UPDATE](state, payload) {
+    Object.keys(payload).forEach((key) => {
+      Vue.set(state.layout, key, payload[key]);
+    });
   },
 };
 

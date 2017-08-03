@@ -1,12 +1,15 @@
 <template>
-  <div @click.prevent.stop class="draggable note" :style="{height: `${height}px`, left: `${value.left}%`, top: `${value.top}%`, 'box-shadow': boxShadow}">
-    <div class="colors">
-      <div class="color"></div>
-      <div class="color"></div>
+  <div @click.prevent.stop class="draggable note" :style="{'background-color': colorsBG[color], height: `${height}px`, left: `${value.left}%`, top: `${value.top}%`, 'box-shadow': boxShadow}">
+    <div class="colors" v-if="isEdit">
+      <color-selector v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
+      <color-selector @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
+    <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" fab small class="zoom" light @click.native="zoom()">
+      <v-icon>zoom_in</v-icon>
+    </v-btn>
     <!-- needed for textarea sizing bug -->
     <div class="text-box">
-      <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" v-model="value.text" @blur="handleBlur" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
+      <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :value="value.text" @input="updateText" @blur="handleBlur" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
     </div>
   </div>
 </template>
@@ -14,17 +17,23 @@
 <script>
 import interact from 'interactjs';
 import Vue from 'vue';
+import Note from '@/models/Note';
+import ColorSelector from '@/components/ColorSelector';
+import * as types from '@/store/mutation-types';
+import { VPC_VP_TYPES, VPC_CS_TYPES } from '@/store';
+import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
 
 export default {
   name: 'note',
-  props: ['value'],
+  props: ['value', 'parent'],
   data() {
     return {
       x: 0,
       y: 0,
       height: 40,
       fontSize: 40,
-      colors: ['#yellow', 'red', 'blue', 'green'],
+      colorList: COLORS_MATERIAL_DARK,
+      colorsBG: COLORS_MATERIAL,
     };
   },
   mounted() {
@@ -46,8 +55,8 @@ export default {
         onmove: (event) => {
           this.x += event.dx;
           this.y += event.dy;
-          const left = (parseFloat(this.x) / this.$el.parentElement.offsetWidth) * 100;
-          const top = (parseFloat(this.y) / this.$el.parentElement.offsetHeight) * 100;
+          const left = (parseFloat(this.x) / this.parent.offsetWidth) * 100;
+          const top = (parseFloat(this.y) / this.parent.offsetHeight) * 100;
           this.$store.dispatch('NOTE_MOVE', { note: this.value, left, top });
         },
         onend: (event) => {
@@ -55,19 +64,28 @@ export default {
           if (event.relatedTarget) {
             type = event.relatedTarget.getAttribute('id');
           } else {
-            type = this.$el.parentElement.getAttribute('data-none');
+            type = this.parent.getAttribute('data-none');
           }
-          this.$store.dispatch('NOTE_UPDATE', {
+          const payload = {
             note: this.value,
             changes: {
-              text: type,
               type,
             },
-          });
+          };
+          // TODO: refactor to make note note dependent almost same as in VPC
+          // ignore tmp which is at position 0
+          if (VPC_VP_TYPES.indexOf(type) > 0) {
+            payload.changes.parent = this.$store.state.layout.selectedCS.id;
+          }
+          if (VPC_CS_TYPES.indexOf(type) > 0) {
+            payload.changes.parent = this.$store.state.layout.selectedVP.id;
+          }
+          this.$store.dispatch('NOTE_UPDATE', payload);
         },
       })
       .gesturable({
         onmove: (event) => {
+          // TODO: support angle?
           console.log('angle', event);
         },
       });
@@ -76,24 +94,35 @@ export default {
     });
   },
   computed: {
+    color() {
+      return this.value.colors[0];
+    },
     boxShadow() {
-      return this.colors.slice(1).reduce((shadows, color, i) => {
-        const size = (i + 1) * 4;
-        shadows.push(`-${size}px -${size}px ${color}`);
+      return this.value.colors.slice(1).reduce((shadows, colorCode, i) => {
+        let size = (i + 1) * 5;
+        if (i === 0) {
+          size += 0.5;
+        }
+        shadows.push(`-${size}px -${size}px ${COLORS_MATERIAL[colorCode]}`);
         return shadows;
       }, ['0px 1px 2px rgba(0, 0, 0, 0.3)']).join(',');
+    },
+    direction() {
+      return this.value.top > 70 ? 'top' : 'bottom';
+    },
+    isEdit() {
+      return this.$store.state.layout.focusedNote === this.value;
     },
   },
   methods: {
     handleKeyUp(e) {
-      console.log(e);
       if ([35, 36, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
         return;
       }
       if (e.keyCode === 13 && e.ctrlKey) {
         const left = (this.$el.offsetLeft / this.$el.parentElement.offsetWidth) * 100;
         const top = ((this.$el.offsetTop + this.$el.offsetHeight + 20)
-          / this.$el.parentElement.offsetHeight) * 100;
+          / this.parent.offsetHeight) * 100;
         this.$store.dispatch('NOTE_CREATE', { type: this.value.type, left, top });
         return;
       }
@@ -104,6 +133,9 @@ export default {
         }
       }
       this.calculateFontSizeAndHeight();
+    },
+    handleFocus() {
+      this.$store.commit(types.LAYOUT_UPDATE, { focusedNote: this.value });
     },
     handleBlur() {
       if (this.value.text === '') {
@@ -127,7 +159,7 @@ export default {
         });
       }
       while (this.$refs.textarea.scrollWidth === this.$refs.textarea.offsetWidth
-      && this.$refs.textarea.scrollHeight === this.$refs.textarea.offsetHeight) {
+        && this.$refs.textarea.scrollHeight === this.$refs.textarea.offsetHeight) {
         // eslint-disable-next-line
         await Vue.nextTick(() => {
           if (this.fontSize > 40) {
@@ -142,6 +174,20 @@ export default {
         this.height += 1;
       });
     },
+    setColor(position, colorId) {
+      this.value.colors = Note.changeColor(this.value.colors, position, colorId);
+    },
+    zoom() {
+      const payload = {};
+      payload[`selected${this.value.type.toUpperCase()}`] = this.value;
+      this.$store.commit(types.LAYOUT_UPDATE, payload);
+    },
+    updateText(e) {
+      this.$store.dispatch('NOTE_UPDATE', { changes: { text: e.target.value }, note: this.value });
+    },
+  },
+  components: {
+    ColorSelector,
   },
 };
 </script>
@@ -157,9 +203,10 @@ export default {
   width: 15%;
   height: 40px;
   position: absolute;
-  top:0;
+  top: 0;
   left: 0;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+  /*
   background: rgba(255, 255, 127, 1);
   background: -moz-linear-gradient(-45deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
   background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(255, 255, 127, 1)), color-stop(100%, rgba(255, 255, 188, 1)));
@@ -168,7 +215,9 @@ export default {
   background: -ms-linear-gradient(-45deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
   background: linear-gradient(135deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff7f', endColorstr='#ffffbc', GradientType=1);
+  */
 }
+
 .note .text-box {
   position: absolute;
   top: 0;
@@ -177,6 +226,7 @@ export default {
   left: 0;
   margin: 4px;
 }
+
 .note textarea {
   overflow-wrap: normal;
   overflow: hidden;
@@ -191,22 +241,32 @@ export default {
   display: block;
   border: none;
   outline: none;
-  background-color:  transparent;
+  background-color: transparent;
+  font-family: 'Itim', cursive;
+}
+
+.note .zoom {
+  position: absolute;
+  bottom: -50px;
+  right: -40px;
 }
 
 .colors {
   position: absolute;
   top: -50px;
-  background-color: rgba(0, 0, 0, 0.7);
-  width: 100%;
+  left: -40px;
   display: flex;
 }
 
 .color {
-  width: 30px;
-  height: 30px;
-  background-color: red;
+  width: 2vw;
+  height: 2vw;
+  border-radius: 10vw;
   margin: 4px;
 }
 
+.btn--floating.btn--small .icon:not(:only-of-type):last-of-type {
+  left: calc(50% - 9px);
+  top: calc(50% - 9px);
+}
 </style>
