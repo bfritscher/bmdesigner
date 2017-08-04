@@ -58,14 +58,17 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
    - animation pan?
 -> list mode
     -> list to model as with smartart
--> mechanics arrow?
 
+-> search / filter
+-> tags
 -> screenshot
+
+-> mechanics arrow?
 
 -> mobile touch support
 -> invite collaborate / share
 -> import from other
--> search / filter
+
 -> sentence mode?
 -> custom templates
 -> multilingual

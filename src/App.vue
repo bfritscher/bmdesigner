@@ -1,7 +1,17 @@
 <template>
   <v-app dark toolbar>
-    <v-navigation-drawer light class="drawer" persistent enable-resize-watcher clipped v-model="drawer">
+    <v-navigation-drawer class="drawer" light persistent enable-resize-watcher clipped v-model="drawer">
       <v-list dense>
+        <v-list-tile replace :to="{name: 'home'}">
+          <v-list-tile-action>
+            <v-icon light>home</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Home
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
         <v-list-tile v-for="item in items" :key="item.text">
           <v-list-tile-action>
             <v-icon light>{{ item.icon }}</v-icon>
@@ -54,20 +64,22 @@
         v-model="right"
       ></v-navigation-drawer>
       -->
-    <v-toolbar fixed>
+    <v-toolbar fixed class="blue-grey darken-2">
       <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>BM|DESIGNER</v-toolbar-title>
+      <v-toolbar-title><router-link :to="{name: 'home'}">BM|DESIGNER</router-link></v-toolbar-title>
+      <v-text-field append-icon="search" hide-details single-line></v-text-field>
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in"><v-toolbar-title :key="title">{{title}}</v-toolbar-title></transition>
       <v-spacer></v-spacer>
+      <v-btn primary>Sign in</v-btn>
+      <!--
       <v-btn icon>
         <v-icon>more_vert</v-icon>
       </v-btn>
+      -->
     </v-toolbar>
     <main>
       <v-container fluid style="position: relative">
-        <bmc></bmc>
-        <vpc></vpc>
         <router-view></router-view>
         </v-layout>
       </v-container>
@@ -76,9 +88,6 @@
 </template>
 
 <script>
-import Bmc from './components/BMC';
-import Vpc from './components/VPC';
-
 export default {
   name: 'app',
   data() {
@@ -106,10 +115,6 @@ export default {
       const type = this.$store.state.layout.showVPC ? 'Value Proposition Canvas' : 'Business Model Canvas';
       return `Test 123 - ${type}`;
     },
-  },
-  components: {
-    Bmc,
-    Vpc,
   },
 };
 </script>
