@@ -103,7 +103,8 @@ export default {
   },
   computed: {
     title() {
-      return this.$store.state.layout.showVPC ? 'Value Proposition Canvas' : 'Business Model Canvas';
+      const type = this.$store.state.layout.showVPC ? 'Value Proposition Canvas' : 'Business Model Canvas';
+      return `Test 123 - ${type}`;
     },
   },
   components: {

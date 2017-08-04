@@ -209,16 +209,6 @@ export default {
   left: 0;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
   line-height: 1.1;
-  /*
-  background: rgba(255, 255, 127, 1);
-  background: -moz-linear-gradient(-45deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
-  background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(255, 255, 127, 1)), color-stop(100%, rgba(255, 255, 188, 1)));
-  background: -webkit-linear-gradient(-45deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
-  background: -o-linear-gradient(-45deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
-  background: -ms-linear-gradient(-45deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
-  background: linear-gradient(135deg, rgba(255, 255, 127, 1) 0%, rgba(255, 255, 188, 1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff7f', endColorstr='#ffffbc', GradientType=1);
-  */
 }
 
 .note .text-box {
