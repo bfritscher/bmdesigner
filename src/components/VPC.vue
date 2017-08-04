@@ -5,7 +5,7 @@
         <transition name="vpc-vp-transition" appear>
           <v-card v-if="vp" class="vpc-vp elevation-10" :class="{'vpc-both': cs && vp}">
             <v-toolbar dense style="left: 0; top: -48px; position: absolute;" :class="COLORS_MATERIAL_DARK[vp.colors[0]]">
-              <v-menu :nudge-width="100" offset-y @click.native.prevent.stop>
+              <v-menu :nudge-width="100"  @click.native.prevent.stop>
                 <v-toolbar-title slot="activator">
                   <span>{{vp.text}}</span>
                   <v-icon>arrow_drop_down</v-icon>
@@ -39,7 +39,7 @@
         <transition name="vpc-cs-transition" appear>
           <v-card v-if="cs" class="vpc-cs elevation-10" :class="{'vpc-both': cs && vp}">
             <v-toolbar dark dense style="left: 0; top: -48px; position: absolute;" :class="COLORS_MATERIAL_DARK[cs.colors[0]]">
-              <v-menu :nudge-width="100" offset-y @click.native.prevent.stop>
+              <v-menu :nudge-width="100" @click.native.prevent.stop>
                 <v-toolbar-title slot="activator">
                   <span>{{cs.text}}</span>
                   <v-icon dark>arrow_drop_down</v-icon>
@@ -102,10 +102,12 @@ export default {
       return notes;
     },
     notesCS() {
-      return this.$store.getters.getNotesByTypes('cs').filter(note => note !== this.cs);
+      const list = this.$store.getters.getNotesByTypes('cs');
+      return [this.cs].concat(list.filter(note => note !== this.cs));
     },
     notesVP() {
-      return this.$store.getters.getNotesByTypes('vp').filter(note => note !== this.vp);
+      const list = this.$store.getters.getNotesByTypes('vp');
+      return [this.vp].concat(list.filter(note => note !== this.vp));
     },
     ...mapState({
       vp: state => state.layout.selectedVP,
@@ -277,5 +279,9 @@ export default {
   position: absolute;
   left: calc(50% - 80px);
   top: calc(50% - 120px);
+}
+
+.vpc .menu .list {
+  padding: 0;
 }
 </style>
