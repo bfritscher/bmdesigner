@@ -1,42 +1,59 @@
 <template>
   <v-app dark toolbar>
-    <v-navigation-drawer class="drawer" persistent enable-resize-watcher clipped v-model="drawer">
-      <!--
-                      <v-list dense>
-                        <v-list-tile v-for="item in items" :key="item.text">
-                          <v-list-tile-action>
-                            <v-icon>{{ item.icon }}</v-icon>
-                          </v-list-tile-action>
-                          <v-list-tile-content>
-                            <v-list-tile-title>
-                              {{ item.text }}
-                            </v-list-tile-title>
-                          </v-list-tile-content>
-                        </v-list-tile>
-                        <v-subheader class="mt-3 grey--text text--darken-1">SUBSCRIPTIONS</v-subheader>
-                        <v-list>
-                          <v-list-tile v-for="item in items2" :key="item.text" avatar>
-                            <v-list-tile-avatar>
-                              <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
-                            </v-list-tile-avatar>
-                            <v-list-tile-title v-text="item.text"></v-list-tile-title>
-                          </v-list-tile>
-                        </v-list>
-                        <v-list-tile class="mt-3">
-                          <v-list-tile-action>
-                            <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
-                          </v-list-tile-action>
-                          <v-list-tile-title class="grey--text text--darken-1">Browse Channels</v-list-tile-title>
-                        </v-list-tile>
-                        <v-list-tile>
-                          <v-list-tile-action>
-                            <v-icon class="grey--text text--darken-1">settings</v-icon>
-                          </v-list-tile-action>
-                          <v-list-tile-title class="grey--text text--darken-1">Manage Subscriptions</v-list-tile-title>
-                        </v-list-tile>
-                      </v-list>
-                      -->
+    <v-navigation-drawer light class="drawer" persistent enable-resize-watcher clipped v-model="drawer">
+      <v-list dense>
+        <v-list-tile v-for="item in items" :key="item.text">
+          <v-list-tile-action>
+            <v-icon light>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              {{ item.text }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-divider
+            class="my-2"
+          ></v-divider>
+
+        <v-subheader class="mt-2 grey--text text--darken-1">SUBSCRIPTIONS</v-subheader>
+
+        <v-list>
+          <v-list-tile v-for="item in items2" :key="item.text" avatar>
+            <v-list-tile-avatar>
+              <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
+            </v-list-tile-avatar>
+            <v-list-tile-title v-text="item.text"></v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+
+          <v-divider
+            class="my-2"
+          ></v-divider>
+
+        <v-list-tile class="mt-2">
+          <v-list-tile-action>
+            <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-title class="grey--text text--darken-1">Browse Channels</v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon class="grey--text text--darken-1">settings</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-title class="grey--text text--darken-1">Manage Subscriptions</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
     </v-navigation-drawer>
+    <!--
+    <v-navigation-drawer
+        right
+        persistent
+        clipped
+        v-model="right"
+      ></v-navigation-drawer>
+      -->
     <v-toolbar fixed>
       <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>BM|DESIGNER</v-toolbar-title>
@@ -67,6 +84,21 @@ export default {
   data() {
     return {
       drawer: true,
+      right: true,
+      items: [
+        { icon: 'trending_up', text: 'Most Popular' },
+        { icon: 'subscriptions', text: 'Subscriptions' },
+        { icon: 'history', text: 'History' },
+        { icon: 'featured_play_list', text: 'Playlists' },
+        { icon: 'watch_later', text: 'Watch Later' },
+      ],
+      items2: [
+        { picture: 28, text: 'Joseph' },
+        { picture: 38, text: 'Apple' },
+        { picture: 48, text: 'Xbox Ahoy' },
+        { picture: 58, text: 'Nokia' },
+        { picture: 78, text: 'MKBHD' },
+      ],
     };
   },
   computed: {
@@ -81,7 +113,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="stylus">
+@import './stylus/main'
+
 html {
   overflow-y: auto;
 }
