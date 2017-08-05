@@ -32,12 +32,25 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 # BUGS
 -user-select
 -> note top on click not only move for color to be on top.
--> note icon positions
+-> note icon positions depending on mode?
 -> zone paddings
 -> logo
 
+# liste mode
+-> sort starting list of drag move on drop if different
+-> handle top of dropzone as starting point
+-> handle item height
+-> handle too many items?
+-> animate change
+
+# modes
+list or free
+free-mixed
+    text, pic, note
+
 ## TODO
 -> list home add date, nb, badges...
+-> view/edit mode?
 -> canvas selection menu
 -> login
 -> backend
@@ -52,11 +65,20 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> title
 -> save menu state to localstorage and/or user's profile
 -> add custom props/values to note
+-> where to put menus?
 
 # Nice to have
 -> duplicate canvas
 -> keep last used colors?
 -> without background? only text with 1 color?
+
+-> enable/disable multi color mode
+    -> especially with pictures
+    -> image mode hide/show labels allow elements without text?
+
+-> Quiz mode
+-> convert image size for space
+
 -> start with vp shortcut
 -> canvas background-image?
 
@@ -92,6 +114,10 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 # Future
 -> vpc dynamic fit display
+    -> connection + and -
+    -> cs  % fit
+    -> vp % efficency
+    -> + total over all cs & vp
 -> offline pwa?
 -> other zooms?
 -> validation

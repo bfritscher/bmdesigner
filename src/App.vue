@@ -68,7 +68,7 @@
 
         <v-list>
           <v-list-tile v-for="item in items2" :key="item.text" avatar>
-            <v-list-tile-avatar>
+            <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }">
               <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
             </v-list-tile-avatar>
             <v-list-tile-title v-text="item.text"></v-list-tile-title>
@@ -164,6 +164,7 @@ html {
 
 body {
   font-family: 'Open Sans';
+  user-select: none;
 }
 
 .navigation-drawer--mini-variant .list__tile {
@@ -182,4 +183,12 @@ body {
 .title-fade-transition-leave-to {
   opacity: 0;
 }
+
+.avatar.list__tile__avatar.badge--overlap.badge:after {
+  left: 26px;
+  top: 28px;
+  height: 16px;
+  width: 16px;
+}
+
 </style>

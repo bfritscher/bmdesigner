@@ -62,7 +62,6 @@ const actions = {
   },
   NOTE_DELETE({ commit }, payload) {
     commit(types.NOTE_DELETE, payload);
-    commit(types.LAYOUT_UPDATE, { focusedNote: null });
   },
   NOTE_MOVE_TOP({ commit }, payload) {
     commit(types.NOTE_MOVE_TOP, payload);
@@ -78,6 +77,9 @@ const mutations = {
   [types.NOTE_MOVE](state, payload) {
     payload.note.left = payload.left;
     payload.note.top = payload.top;
+    if (payload.type) {
+      payload.note.type = payload.type;
+    }
   },
   [types.NOTE_UPDATE](state, payload) {
     Object.keys(payload.changes).forEach((key) => {

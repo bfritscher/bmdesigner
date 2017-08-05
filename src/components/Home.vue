@@ -7,7 +7,7 @@
             <!-- :src="'http://lorempixel.com/400/200/?' + i" -->
             <v-container fill-height fluid>
               <v-layout fill-height>
-                <v-flex xs12 align-end>
+                <v-flex xs12 align-end flexbox>
                   <span class="headline white--text">{{m.title}}</span>
                 </v-flex>
               </v-layout>
