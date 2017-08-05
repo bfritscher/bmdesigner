@@ -21,8 +21,12 @@
                 <v-icon>close</v-icon>
               </v-btn>
             </v-toolbar>
-            <zone dropzone-accept=".note-vpc" id="features" label="Products & Services" style="left: 0; top: 0; width: 50%; height: 100%; background-color: white;"></zone>
-            <zone dropzone-accept=".note-vpc" id="solution" label="Solutions" style="left: 50%; top: 0; width: 50%; height: 100%; background-color: white;"></zone>
+            <zone dropzone-accept=".note-vpc" id="features" label="Products & services" style="left: 0; top: 0; width: 50%; height: 100%; background-color: white;">
+              <v-icon light slot="icon">extension</v-icon>
+            </zone>
+            <zone dropzone-accept=".note-vpc" id="solution" label="Solutions" style="left: 50%; top: 0; width: 50%; height: 100%; background-color: white;">
+              <v-icon light slot="icon">done_all</v-icon>
+            </zone>
           </v-card>
         </transition>
 <!--
@@ -55,8 +59,12 @@
                 <v-icon>close</v-icon>
               </v-btn>
             </v-toolbar>
-            <zone dropzone-accept=".note-vpc" id="pain_gain" label="Pains & Gains" style="left: 0; top: 0; width: 50%; height: 100%;  background-color: white;"></zone>
-            <zone dropzone-accept=".note-vpc" id="job" label="Job to be done" style="left: 50%; top: 0; width: 50%; height: 100%;  background-color: white;"></zone>
+            <zone dropzone-accept=".note-vpc" id="pain_gain" label="Gains & pains" style="left: 0; top: 0; width: 50%; height: 100%;  background-color: white;">
+              <v-icon light slot="icon">thumbs_up_down</v-icon>
+            </zone>
+            <zone dropzone-accept=".note-vpc" id="job" label="Job to be done" style="left: 50%; top: 0; width: 50%; height: 100%;  background-color: white;">
+              <v-icon light slot="icon">list</v-icon>
+            </zone>
           </v-card>
         </transition>
         <transition-group name="note-transition" tag="div">

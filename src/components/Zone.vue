@@ -1,6 +1,10 @@
 <template>
   <div class="zone dropzone">
-    <div class="label">{{label}}</div>
+    <v-layout class="label subheading">
+      <div>{{label}}</div>
+       <v-flex></v-flex>
+       <slot name="icon"></slot>
+    </v-layout>
   </div>
 </template>
 
@@ -53,7 +57,7 @@ export default {
 
 <style>
 .note.can-drop {
-  
+
 }
 
 .zone {

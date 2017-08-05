@@ -13,6 +13,21 @@ export default new Router({
       component: Home,
     },
     {
+      path: '/about',
+      name: 'about',
+      component: Home,
+    },
+    {
+      path: '/inspire',
+      name: 'inspire',
+      component: Home,
+    },
+    {
+      path: '/learn',
+      name: 'learn',
+      component: Home,
+    },
+    {
       path: '/bmc',
       name: 'bmc',
       component: BMC,

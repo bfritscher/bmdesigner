@@ -1,8 +1,27 @@
 <template>
   <v-app dark toolbar>
-    <v-navigation-drawer class="drawer" light persistent enable-resize-watcher clipped v-model="drawer">
+    <v-navigation-drawer class="drawer" absolute overflow :mini-variant="mini" light persistent enable-resize-watcher v-model="drawer">
+      <v-toolbar flat class="blue-grey darken-2" v-show="!mini">
+        <v-toolbar-title>
+          <router-link :to="{name: 'home'}">BM|DESIGNER</router-link>
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon @click.native.stop="mini = !mini">
+          <v-icon>chevron_left</v-icon>
+        </v-btn>
+      </v-toolbar>
       <v-list dense>
-        <v-list-tile replace :to="{name: 'home'}">
+        <v-list-tile v-show="mini" @click.native.stop="mini = !mini">
+          <v-list-tile-action>
+            <v-icon light>chevron_right</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Home
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile exact :to="{name: 'home'}">
           <v-list-tile-action>
             <v-icon light>home</v-icon>
           </v-list-tile-action>
@@ -12,22 +31,40 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile v-for="item in items" :key="item.text">
+        <v-list-tile replace :to="{name: 'inspire'}">
           <v-list-tile-action>
-            <v-icon light>{{ item.icon }}</v-icon>
+            <v-icon light>lightbulb_outline</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              {{ item.text }}
+              Inspire
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile replace :to="{name: 'learn'}">
+          <v-list-tile-action>
+            <v-icon light>school</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Learn
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile replace :to="{name: 'about'}">
+          <v-list-tile-action>
+            <v-icon light>question_answer</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              About
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <div  v-if="$route.name === 'bmc'">
+        <v-divider class="my-2"></v-divider>
 
-        <v-divider
-            class="my-2"
-          ></v-divider>
-
-        <v-subheader class="mt-2 grey--text text--darken-1">SUBSCRIPTIONS</v-subheader>
+        <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
 
         <v-list>
           <v-list-tile v-for="item in items2" :key="item.text" avatar>
@@ -38,15 +75,13 @@
           </v-list-tile>
         </v-list>
 
-          <v-divider
-            class="my-2"
-          ></v-divider>
+        <v-divider class="my-2"></v-divider>
 
         <v-list-tile class="mt-2">
           <v-list-tile-action>
             <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
           </v-list-tile-action>
-          <v-list-tile-title class="grey--text text--darken-1">Browse Channels</v-list-tile-title>
+          <v-list-tile-title class="grey--text text--darken-1">Invite a person</v-list-tile-title>
         </v-list-tile>
         <v-list-tile>
           <v-list-tile-action>
@@ -54,29 +89,31 @@
           </v-list-tile-action>
           <v-list-tile-title class="grey--text text--darken-1">Manage Subscriptions</v-list-tile-title>
         </v-list-tile>
+        </div>
       </v-list>
     </v-navigation-drawer>
     <!--
-    <v-navigation-drawer
-        right
-        persistent
-        clipped
-        v-model="right"
-      ></v-navigation-drawer>
-      -->
+      <v-navigation-drawer
+          right
+          temporary
+          hide-overlay
+          :value="$store.state.layout.focusedNote"
+        ></v-navigation-drawer>
+        -->
     <v-toolbar fixed class="blue-grey darken-2">
-      <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title><router-link :to="{name: 'home'}">BM|DESIGNER</router-link></v-toolbar-title>
-      <v-text-field append-icon="search" hide-details single-line></v-text-field>
+      <v-toolbar-side-icon  @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
+      <v-text-field class="ml-5" v-if="$route.name === 'home'" append-icon="search" hide-details single-line></v-text-field>
       <v-spacer></v-spacer>
-      <transition name="title-fade-transition" mode="out-in"><v-toolbar-title :key="title">{{title}}</v-toolbar-title></transition>
+      <transition v-if="$route.name === 'bmc'" name="title-fade-transition" mode="out-in">
+        <v-toolbar-title :key="title">{{title}}</v-toolbar-title>
+      </transition>
       <v-spacer></v-spacer>
       <v-btn primary>Sign in</v-btn>
       <!--
-      <v-btn icon>
-        <v-icon>more_vert</v-icon>
-      </v-btn>
-      -->
+        <v-btn icon>
+          <v-icon>more_vert</v-icon>
+        </v-btn>
+        -->
     </v-toolbar>
     <main>
       <v-container fluid style="position: relative">
@@ -93,6 +130,7 @@ export default {
   data() {
     return {
       drawer: true,
+      mini: false,
       right: true,
       items: [
         { icon: 'trending_up', text: 'Most Popular' },
@@ -105,8 +143,6 @@ export default {
         { picture: 28, text: 'Joseph' },
         { picture: 38, text: 'Apple' },
         { picture: 48, text: 'Xbox Ahoy' },
-        { picture: 58, text: 'Nokia' },
-        { picture: 78, text: 'MKBHD' },
       ],
     };
   },
@@ -130,18 +166,8 @@ body {
   font-family: 'Open Sans';
 }
 
-
-.navigation-drawer {
-  width: 240px;
-}
-
-.navigation-drawer--permanent.navigation-drawer--open:not(.navigation-drawer--right):not(.navigation-drawer--clipped):not(.navigation-drawer--floating)~.toolbar,
-.navigation-drawer--permanent.navigation-drawer--open:not(.navigation-drawer--right)~.footer:not(.footer--fixed):not(.footer--absolute),
-.navigation-drawer--permanent.navigation-drawer--open:not(.navigation-drawer--right)~main,
-.navigation-drawer--persistent:not(.navigation-drawer--is-mobile).navigation-drawer--open:not(.navigation-drawer--right):not(.navigation-drawer--clipped):not(.navigation-drawer--floating)~.toolbar,
-.navigation-drawer--persistent:not(.navigation-drawer--is-mobile).navigation-drawer--open:not(.navigation-drawer--right)~.footer:not(.footer--fixed):not(.footer--absolute),
-.navigation-drawer--persistent:not(.navigation-drawer--is-mobile).navigation-drawer--open:not(.navigation-drawer--right)~main {
-  padding-left: 240px;
+.navigation-drawer--mini-variant .list__tile {
+  padding 0 8px;
 }
 
 .title-fade-transition-enter-active {

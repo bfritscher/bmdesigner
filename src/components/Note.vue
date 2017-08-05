@@ -4,8 +4,11 @@
       <color-selector v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
       <color-selector @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
-    <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" fab small class="zoom" light @click.native="zoom()">
+    <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" flat icon primary small class="zoom" light @click.native="zoom()">
       <v-icon>zoom_in</v-icon>
+    </v-btn>
+    <v-btn v-if="isEdit" flat icon primary small class="description" light>
+      <v-icon>description</v-icon>
     </v-btn>
     <!-- needed for textarea sizing bug -->
     <div class="text-box">
@@ -244,6 +247,13 @@ export default {
   bottom: -30px;
   right: -25px;
 }
+
+.note .description {
+  position: absolute;
+  bottom: -30px;
+  right: 10px;
+}
+
 
 .colors {
   position: absolute;

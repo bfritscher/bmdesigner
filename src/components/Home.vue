@@ -1,13 +1,13 @@
 <template>
   <v-container fluid grid-list-lg>
     <v-layout row wrap>
-      <v-flex sm6 md4 v-for="(m, i) in models" :key="i">
+      <v-flex sm6 md4 xl3 v-for="(m, i) in models" :key="i">
         <v-card hover class="model">
-          <v-card-media  :contain="m.logo" :class="{'default-background': !m.logo}" :style="{'background-color': m.color ? m.color : colorHash(m.title)}" :src="m.logo ? m.logo : 'http://www.leanpump.com/wp-content/uploads/2015/03/IMG_8493-1080x675.jpg'" height="200px">
+          <v-card-media  :contain="!!m.logo" :class="{'default-background': !m.logo}" :style="{'background-color': m.color ? m.color : colorHash(m.title)}" :src="m.logo ? m.logo : 'http://www.leanpump.com/wp-content/uploads/2015/03/IMG_8493-1080x675.jpg'" height="200px">
             <!-- :src="'http://lorempixel.com/400/200/?' + i" -->
             <v-container fill-height fluid>
               <v-layout fill-height>
-                <v-flex xs12 align-end flexbox>
+                <v-flex xs12 align-end>
                   <span class="headline white--text">{{m.title}}</span>
                 </v-flex>
               </v-layout>

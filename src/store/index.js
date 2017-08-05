@@ -62,6 +62,7 @@ const actions = {
   },
   NOTE_DELETE({ commit }, payload) {
     commit(types.NOTE_DELETE, payload);
+    commit(types.LAYOUT_UPDATE, { focusedNote: null });
   },
   NOTE_MOVE_TOP({ commit }, payload) {
     commit(types.NOTE_MOVE_TOP, payload);

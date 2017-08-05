@@ -2,15 +2,36 @@
   <div>
     <div class="canvas" @click.prevent.stop="addNote($event)">
       <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
-        <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 50%; height: 25%"></zone>
-        <zone dropzone-accept=".note-bmc" id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%"></zone>
-        <zone dropzone-accept=".note-bmc" id="ka" label="Key Activities" style="left: 20%; top:0; width: 20%; height: 37.5%"></zone>
-        <zone dropzone-accept=".note-bmc" id="kr" label="Key Resources" style="left: 20%; top:37.5%; width: 20%; height: 37.5%"></zone>
-        <zone dropzone-accept=".note-bmc" id="vp" class="highlight" :class="{'highlight-on': selectedCS && !selectedVP, 'elevation-10': selectedCS && !selectedVP}" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%"></zone>
-        <zone dropzone-accept=".note-bmc" id="cr" label="Customer Relationships" style="left: 60%; top:0; width: 20%; height: 37.5%"></zone>
-        <zone dropzone-accept=".note-bmc" id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%"></zone>
-        <zone dropzone-accept=".note-bmc" id="cs" class="highlight" :class="{'highlight-on': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%"></zone>
-        <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 50%; top: 75%; width: 50%; height: 25%"></zone>
+        <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 40%; height: 25%">
+          <v-icon light slot="icon">account_balance</v-icon>
+        </zone>
+        <zone dropzone-accept=".note-bmc" id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%">
+          <v-icon light slot="icon">share</v-icon>
+        </zone>
+        <zone dropzone-accept=".note-bmc" id="ka" label="Key Activities" style="left: 20%; top:0; width: 20%; height: 37.5%">
+          <v-icon light slot="icon">settings</v-icon>
+        </zone>
+        <zone dropzone-accept=".note-bmc" id="kr" label="Key Resources" style="left: 20%; top:37.5%; width: 20%; height: 37.5%">
+          <v-icon light slot="icon">store</v-icon>
+        </zone>
+        <zone dropzone-accept=".note-bmc" id="vp" class="highlight" :class="{'highlight-on': selectedCS && !selectedVP, 'elevation-10': selectedCS && !selectedVP}" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%">
+          <v-icon light slot="icon">group_work</v-icon>
+        </zone>
+        <zone dropzone-accept=".note-bmc" id="cr" label="Customer Relationships" style="left: 60%; top:0; width: 20%; height: 37.5%">
+          <v-icon light slot="icon">favorite</v-icon>
+        </zone>
+        <zone dropzone-accept=".note-bmc" id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%">
+          <v-icon light slot="icon">local_shipping</v-icon>
+        </zone>
+        <zone dropzone-accept=".note-bmc" id="cs" class="highlight" :class="{'highlight-on': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%">
+          <v-icon light slot="icon">people</v-icon>
+        </zone>
+        <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 60%; top: 75%; width: 40%; height: 25%">
+          <v-icon light slot="icon">attach_money</v-icon>
+        </zone>
+        <div class="zone logo" light>
+          TODO title?
+        </div>
         <transition-group name="note-transition" tag="div">
           <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc highlight" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
         </transition-group>
@@ -100,5 +121,19 @@ export default {
 .highlight-on {
   z-index: 1;
   transition: z-index 0.5s step-start !important;
+}
+
+.zone.logo {
+  position: absolute;
+  top: 75%;
+  left: 40%;
+  width: 20%;
+  height: 25%;
+  /*
+  background-color: rgb(236, 28, 36);
+  background-position: 50% 50%;
+  background-size: contain;
+  background-image: url(//upload.wikimedia.org/wikipedia/commons/thumb/7/76/Hilti_logo.svg/2000px-Hilti_logo.svg.png);
+  */
 }
 </style>

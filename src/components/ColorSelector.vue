@@ -1,6 +1,6 @@
 <template>
   <v-speed-dial class="color-selector" :class="{'top-index': isOpen}" :direction="direction" v-model="isOpen" :transition="transition">
-    <v-btn slot="activator"  :light="value === -1" :class="COLORS_MATERIAL_DARK[value]" fab v-model="isOpen" :small="small">
+    <v-btn flat outline slot="activator"  :light="value === -1" :class="COLORS_MATERIAL_DARK[value]" fab v-model="isOpen" :small="small">
       <v-icon>{{value > -1 ? small ? '' : 'color_lens' : 'add'}}</v-icon>
       <v-icon>close</v-icon>
     </v-btn>

@@ -30,18 +30,28 @@ npm test
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 # BUGS
+-user-select
+-> note top on click not only move for color to be on top.
+-> note icon positions
+-> zone paddings
+-> logo
 
 ## TODO
+-> list home add date, nb, badges...
 -> canvas selection menu
 -> login
 -> backend
     -> send data to
     -> send new z-order
+    -> vuexfire https://github.com/posva/vuexfire
 -> credits
 -> bugtrack
 -> delete button?
 -> migrate user/data?`
 -> export/import from strategyzer
+-> title
+-> save menu state to localstorage and/or user's profile
+-> add custom props/values to note
 
 # Nice to have
 -> duplicate canvas
@@ -49,6 +59,13 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> without background? only text with 1 color?
 -> start with vp shortcut
 -> canvas background-image?
+
+-> viewonly mode
+    -> embed?
+
+-> logo upload
+    -> extract color https://github.com/lokesh/color-thief
+
 
 -> allow image drop / lookup?
 
