@@ -7,6 +7,7 @@ export default class Note {
     this.top = args.top || 0;
     this.listLeft = args.listLeft || 0;
     this.listTop = args.listTop || 0;
+    this.angle = args.angle || 0;
     this.height = args.height || 5;
     this.type = args.type || '';
     this.text = args.text || '';

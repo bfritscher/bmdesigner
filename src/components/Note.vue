@@ -1,8 +1,8 @@
 <template>
-  <div @click.prevent.stop class="draggable note" :class="{'list-mode': $store.state.layout.listMode}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, 'box-shadow': boxShadow}">
+  <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': $store.state.layout.listMode}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, transform: `rotate(${angle}deg)`, 'box-shadow': boxShadow}">
     <div class="colors" v-if="isEdit && !dragging">
-      <color-selector v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
-      <color-selector @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
+      <color-selector :style="{transform: `rotate(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
+      <color-selector :style="{transform: `rotate(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
     <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" flat icon primary small class="zoom" light @click.native="zoom()">
       <v-icon>zoom_in</v-icon>
@@ -179,6 +179,9 @@ export default {
     top() {
       return this.$store.state.layout.listMode ? this.value.listTop : this.value.top;
     },
+    angle() {
+      return this.$store.state.layout.listMode ? 0 : this.value.angle;
+    },
   },
   watch: {
     isEdit(val) {
@@ -211,6 +214,12 @@ export default {
     handleFocus() {
       this.$store.commit(types.LAYOUT_UPDATE, { focusedNote: this.value });
       this.$store.commit(types.NOTE_MOVE_TOP, this.value);
+    },
+    handleWheel(e) {
+      if (!this.$store.state.layout.listMode) {
+        const delta = (e.deltaY - (e.deltaY % 100)) / 50;
+        this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: this.value.angle + delta });
+      }
     },
     removeIfEmpty() {
       if (this.value.text === '') {

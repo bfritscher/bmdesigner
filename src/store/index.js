@@ -76,7 +76,7 @@ const mutations = {
     state.notes.push(new Note(payload));
   },
   [types.NOTE_MOVE](state, payload) {
-    ['left', 'top', 'listLeft', 'listTop', 'type'].forEach((key) => {
+    ['left', 'top', 'listLeft', 'listTop', 'type', 'angle'].forEach((key) => {
       if (key in payload) {
         payload.note[key] = payload[key];
       }

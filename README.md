@@ -33,15 +33,13 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> font and note height also relative to canvas size?
 -> zone paddings + relative title size
 
--> note icon positions depending on mode.
-
 # modes
 free-mixed
     text, pic, note
 -> image mode hide/show labels allow elements without text?
 
 ## TODO
--> rotate with middle
+-> note icon positions depending on mode.
 -> keep last used colors?
 
 -> list home add date, nb, badges...
@@ -95,7 +93,7 @@ free-mixed
 
 -> screenshot preview / export
 
--> calculation MathJS + https://github.com/marcelklehr/toposort
+-> calculation integrate with options and UI?
 
 -> bugtrack sentry
 -> feedback form
