@@ -40,8 +40,6 @@ free-mixed
 -> image mode hide/show labels allow elements without text?
 
 ## TODO
--> note icon positions depending on mode.
-
 -> list home add date, nb, badges...
 -> search / filter
 -> canvas selection menu / create new

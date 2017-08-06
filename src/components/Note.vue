@@ -4,12 +4,14 @@
       <color-selector :style="{transform: `rotate(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
       <color-selector :style="{transform: `rotate(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
-    <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" flat icon primary small class="zoom" light @click.native="zoom()">
-      <v-icon>zoom_in</v-icon>
-    </v-btn>
-    <v-btn v-if="isEdit" flat icon primary small class="description" light>
-      <v-icon>description</v-icon>
-    </v-btn>
+    <div class="icons">
+      <v-btn v-if="isEdit" flat icon primary small class="description" light>
+        <v-icon>description</v-icon>
+      </v-btn>
+      <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" flat icon primary small class="zoom" light @click.native="zoom()">
+        <v-icon>zoom_in</v-icon>
+      </v-btn>
+    </div>
     <!-- needed for textarea sizing bug -->
     <div class="text-box" @click.prevent.stop>
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
@@ -393,18 +395,21 @@ export default {
   text-align: left;
 }
 
-.note .zoom {
+.note .icons {
   position: absolute;
-  bottom: -30px;
-  right: -25px;
+  bottom: -12px;
+  right: -12px;
 }
 
-.note .description {
+.note.list-mode .icons {
   position: absolute;
-  bottom: -30px;
-  right: 10px;
+  bottom: 0;
+  right: -25%;
 }
 
+.note .icons .btn {
+  margin: 0;
+}
 
 .colors {
   position: absolute;
