@@ -38,53 +38,55 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 # modes
 free-mixed
     text, pic, note
+-> image mode hide/show labels allow elements without text?
 
 ## TODO
 -> rotate with middle
 -> keep last used colors?
 
 -> list home add date, nb, badges...
--> logo zone
--> view/edit mode?
+-> search / filter
 -> canvas selection menu / create new
--> duplicate canvas
--> where to put menus?
--> title
--> save menu state to localstorage and/or user's profile
--> login
--> backend
-    -> send data to
-    -> send new z-order
-    -> vuexfire https://github.com/posva/vuexfire
--> bugtrack sentry
--> feedback form
--> info pages
--> credits
 -> delete button?
 
--> add custom props/values to note
--> migrate user/data?`
--> export/import from strategyzer
-
--> search / filter
+-> title
 -> tags
 
-# Nice to have
--> track which user did what action
--> image mode hide/show labels allow elements without text?
+-> logo zone
 -> allow image drop / lookup?
 -> convert image size for space
--> viewonly mode
-    -> embed?
 -> logo upload
     -> extract color https://github.com/lokesh/color-thief
 
+
+-> where to put menus?
+
+-> add custom props/values to note
+
+
+-> save menu state to localstorage and/or user's profile
+-> login
+-> backend
+    -> duplicate canvas
+    -> send data to
+    -> send new z-order
+    -> vuexfire https://github.com/posva/vuexfire
+-> view/edit mode?
+    -> embed?
+
+-> export/import from strategyzer
+-> migrate user/data? bmdesigner
+
+
+# Nice to have
 -> presentation mode
    - animation order
    - tap to show on projector?
    - animation pan order list?
 
 -> animate change
+-> track which user did what action
+
 
 -> invite collaborate / share
     -> remove collaborator
@@ -93,6 +95,12 @@ free-mixed
 
 -> screenshot preview / export
 
+-> calculation MathJS + https://github.com/marcelklehr/toposort
+
+-> bugtrack sentry
+-> feedback form
+-> info pages
+-> credits
 
 # Future
 -> handle too many items?
@@ -114,5 +122,4 @@ free-mixed
 -> other zooms?
 -> validation
 -> clone / history stream / version tree?
--> calculation MathJS + https://github.com/marcelklehr/toposort
 -> Checklist? (link to api of something?)

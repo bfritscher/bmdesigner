@@ -8,7 +8,7 @@
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
     "build": "node build/build.js",
-    "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
+    "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
@@ -17,6 +17,8 @@
     "color-hash": "^1.0.3",
     "es6-promise": "^4.1.1",
     "interactjs": "^1.3.0-alpha.3",
+    "mathjs": "^3.16.0",
+    "toposort": "^1.0.3",
     "uuid": "^3.1.0",
     "vue": "^2.3.3",
     "vue-router": "^2.3.1",
