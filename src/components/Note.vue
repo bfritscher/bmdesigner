@@ -311,7 +311,10 @@ export default {
       });
     },
     setColor(position, colorId) {
-      this.$store.dispatch('NOTE_UPDATE', { changes: { colors: Note.changeColor(this.value.colors, position, colorId) }, note: this.value });
+      const colors = Note.changeColor(this.value.colors, position, colorId);
+      console.log(colors);
+      this.$store.dispatch('NOTE_UPDATE', { changes: { colors }, note: this.value });
+      this.$store.commit(types.LAYOUT_UPDATE, { lastUsedColors: colors });
     },
     zoom() {
       const payload = {};

@@ -11,7 +11,7 @@ export default class Note {
     this.height = args.height || 5;
     this.type = args.type || '';
     this.text = args.text || '';
-    this.colors = args.colors || [0];
+    this.colors = args.colors && args.colors.length > 0 ? args.colors : [0];
     this.parent = args.parent;
   }
 

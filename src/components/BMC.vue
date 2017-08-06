@@ -73,6 +73,7 @@ export default {
         listLeft: x / (this.$refs.paper.offsetWidth / 100),
         listTop: y / (this.$refs.paper.offsetHeight / 100),
         type: 'bmc_tmp',
+        colors: this.$store.getters.lastUsedColors,
       };
 
       if (e.target.classList.contains('zone')) {

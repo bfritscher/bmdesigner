@@ -32,11 +32,13 @@ const initialState = {
     focusedNote: null,
     showVPC: false,
     listMode: false,
+    lastUsedColors: [0],
   },
 };
 
 // getters
 const gettersDefinition = {
+  lastUsedColors: state => state.layout.lastUsedColors.slice(0),
   getNotesByTypes: state => (filteredTypes) => {
     let list = filteredTypes;
     if (!Array.isArray(list)) {

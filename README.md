@@ -32,6 +32,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 # BUGS
 -> font and note height also relative to canvas size?
 -> zone paddings + relative title size
+-> box-shadow spacing in list mode
 
 # modes
 free-mixed
@@ -40,7 +41,6 @@ free-mixed
 
 ## TODO
 -> note icon positions depending on mode.
--> keep last used colors?
 
 -> list home add date, nb, badges...
 -> search / filter
