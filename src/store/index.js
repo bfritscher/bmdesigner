@@ -31,6 +31,7 @@ const initialState = {
     selectedCS: null,
     focusedNote: null,
     showVPC: false,
+    listMode: false,
   },
 };
 
@@ -75,11 +76,11 @@ const mutations = {
     state.notes.push(new Note(payload));
   },
   [types.NOTE_MOVE](state, payload) {
-    payload.note.left = payload.left;
-    payload.note.top = payload.top;
-    if (payload.type) {
-      payload.note.type = payload.type;
-    }
+    ['left', 'top', 'listLeft', 'listTop', 'type'].forEach((key) => {
+      if (key in payload) {
+        payload.note[key] = payload[key];
+      }
+    });
   },
   [types.NOTE_UPDATE](state, payload) {
     Object.keys(payload.changes).forEach((key) => {

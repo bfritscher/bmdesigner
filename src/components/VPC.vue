@@ -137,6 +137,8 @@ export default {
       const note = {
         left: x / (this.$refs.paper.offsetWidth / 100),
         top: y / (this.$refs.paper.offsetHeight / 100),
+        listLeft: x / (this.$refs.paper.offsetWidth / 100),
+        listTop: y / (this.$refs.paper.offsetHeight / 100),
         type: 'vpc_tmp',
       };
 

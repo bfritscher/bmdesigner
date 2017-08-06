@@ -62,6 +62,14 @@
           </v-list-tile-content>
         </v-list-tile>
         <div  v-if="$route.name === 'bmc'">
+
+        <v-divider class="my-2"></v-divider>
+
+        <v-btn-toggle class="red" mandatory
+           :items="[{text: 'Free', value: 'free'}, {text: 'List', value: 'list'}]"
+           :input-value="listModeText" @change="changeListMode"></v-btn-toggle>
+        {{ $store.state.layout.listMode }}
+
         <v-divider class="my-2"></v-divider>
 
         <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
@@ -150,6 +158,15 @@ export default {
     title() {
       const type = this.$store.state.layout.showVPC ? 'Value Proposition Canvas' : 'Business Model Canvas';
       return `Test 123 - ${type}`;
+    },
+    listModeText() {
+      return this.$store.state.layout.listMode ? 'list' : 'free';
+    },
+  },
+  methods: {
+    changeListMode(data) {
+      console.log(data);
+      this.$store.state.layout.listMode = data === 'list';
     },
   },
 };

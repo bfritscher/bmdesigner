@@ -5,6 +5,9 @@ export default class Note {
     this.id = args.id || uuidv4();
     this.left = args.left || 0;
     this.top = args.top || 0;
+    this.listLeft = args.listLeft || 0;
+    this.listTop = args.listTop || 0;
+    this.height = args.height || 5;
     this.type = args.type || '';
     this.text = args.text || '';
     this.colors = args.colors || [0];
