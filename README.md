@@ -40,13 +40,14 @@ free-mixed
 -> image mode hide/show labels allow elements without text?
 
 ## TODO
--> list home add date, nb, badges...
--> search / filter
+-> list home sections? sort?
+-> title
+-> tags
+
 -> canvas selection menu / create new
 -> delete button?
 
--> title
--> tags
+
 
 -> logo zone
 -> allow image drop / lookup?
@@ -58,6 +59,8 @@ free-mixed
 -> where to put menus?
 
 -> add custom props/values to note
+    -> integrate calc
+    -> model slugs
 
 
 -> save menu state to localstorage and/or user's profile
@@ -67,6 +70,15 @@ free-mixed
     -> send data to
     -> send new z-order
     -> vuexfire https://github.com/posva/vuexfire
+
+-> search / filter
+    -> update data onChange
+    -> algolia? search through notes?
+        models,
+        notes
+        ...
+            permissions
+
 -> view/edit mode?
     -> embed?
 

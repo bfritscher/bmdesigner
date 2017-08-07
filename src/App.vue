@@ -31,7 +31,19 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile replace :to="{name: 'inspire'}">
+
+        <v-list-tile :to="{name: 'favorite'}">
+          <v-list-tile-action>
+            <v-icon light>favorite</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Favorite
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-list-tile :to="{name: 'inspire'}">
           <v-list-tile-action>
             <v-icon light>lightbulb_outline</v-icon>
           </v-list-tile-action>
@@ -41,7 +53,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile replace :to="{name: 'learn'}">
+        <v-list-tile  :to="{name: 'learn'}">
           <v-list-tile-action>
             <v-icon light>school</v-icon>
           </v-list-tile-action>
@@ -51,7 +63,17 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile replace :to="{name: 'about'}">
+        <v-list-tile  :to="{name: 'learn'}">
+          <v-list-tile-action>
+            <v-icon light>games</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Play
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile  :to="{name: 'about'}">
           <v-list-tile-action>
             <v-icon light>question_answer</v-icon>
           </v-list-tile-action>
@@ -110,7 +132,7 @@
         -->
     <v-toolbar fixed class="blue-grey darken-2">
       <v-toolbar-side-icon  @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
-      <v-text-field class="ml-5" v-if="$route.name === 'home'" append-icon="search" hide-details single-line></v-text-field>
+      <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field>
       <v-spacer></v-spacer>
       <transition v-if="$route.name === 'bmc'" name="title-fade-transition" mode="out-in">
         <v-toolbar-title :key="title">{{title}}</v-toolbar-title>
