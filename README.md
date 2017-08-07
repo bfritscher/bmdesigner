@@ -106,8 +106,6 @@ free-mixed
 -> calculation integrate with options and UI?
 
 -> bugtrack sentry
--> feedback form
--> info pages
 -> credits
 
 # Future

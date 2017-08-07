@@ -1,9 +1,9 @@
 <template>
   <v-app dark toolbar>
-    <v-navigation-drawer class="drawer" absolute overflow :mini-variant="mini" light persistent enable-resize-watcher v-model="drawer">
+    <v-navigation-drawer class="drawer" overflow :mini-variant="mini" light persistent enable-resize-watcher v-model="drawer">
       <v-toolbar flat class="blue-grey darken-2" v-show="!mini">
         <v-toolbar-title>
-          <router-link :to="{name: 'home'}">BM|DESIGNER</router-link>
+          <router-link :to="{name: 'home'}">BM|Designer</router-link>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click.native.stop="mini = !mini">
@@ -32,7 +32,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile :to="{name: 'favorite'}">
+        <v-list-tile :to="{name: 'favorites'}">
           <v-list-tile-action>
             <v-icon light>favorite</v-icon>
           </v-list-tile-action>
@@ -63,7 +63,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile  :to="{name: 'learn'}">
+        <v-list-tile  :to="{name: 'play'}">
           <v-list-tile-action>
             <v-icon light>games</v-icon>
           </v-list-tile-action>
@@ -79,7 +79,7 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              About
+              Ideas & Feedback
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -134,7 +134,7 @@
       <v-toolbar-side-icon  @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
       <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field>
       <v-spacer></v-spacer>
-      <transition v-if="$route.name === 'bmc'" name="title-fade-transition" mode="out-in">
+      <transition name="title-fade-transition" mode="out-in">
         <v-toolbar-title :key="title">{{title}}</v-toolbar-title>
       </transition>
       <v-spacer></v-spacer>
@@ -148,7 +148,6 @@
     <main>
       <v-container fluid style="position: relative">
         <router-view></router-view>
-        </v-layout>
       </v-container>
     </main>
   </v-app>
@@ -178,8 +177,12 @@ export default {
   },
   computed: {
     title() {
-      const type = this.$store.state.layout.showVPC ? 'Value Proposition Canvas' : 'Business Model Canvas';
-      return `Test 123 - ${type}`;
+      /*
+      const type = this.$store.state.layout.showVPC ? 'Value Proposition Canvas'
+      : 'Business Model Canvas';
+      */
+      return typeof this.$route.meta.title === 'string' ?
+        this.$route.meta.title : this.$route.meta.title(this.$route);
     },
     listModeText() {
       return this.$store.state.layout.listMode ? 'list' : 'free';
