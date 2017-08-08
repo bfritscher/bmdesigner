@@ -34,6 +34,9 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> zone paddings + relative title size
 -> box-shadow spacing in list mode
 
+-> add question to end of quiz
+-> learn section add cards design layout
+
 # modes
 free-mixed
     text, pic, note
@@ -87,6 +90,8 @@ free-mixed
 
 
 # Nice to have
+-> tour intro.js or hopscotch
+
 -> presentation mode
    - animation order
    - tap to show on projector?
