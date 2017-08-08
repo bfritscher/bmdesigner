@@ -36,6 +36,8 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 -> add question to end of quiz
 -> learn section add cards design layout
+-> logo zone what else?
+-> where to put menus?
 
 # modes
 free-mixed
@@ -50,16 +52,7 @@ free-mixed
 -> canvas selection menu / create new
 -> delete button?
 
-
-
--> logo zone
 -> allow image drop / lookup?
--> convert image size for space
--> logo upload
-    -> extract color https://github.com/lokesh/color-thief
-
-
--> where to put menus?
 
 -> add custom props/values to note
     -> integrate calc

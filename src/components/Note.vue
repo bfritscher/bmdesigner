@@ -12,6 +12,7 @@
         <v-icon>zoom_in</v-icon>
       </v-btn>
     </div>
+    <image-zone style="height: 100px;"></image-zone>
     <!-- needed for textarea sizing bug -->
     <div class="text-box" @click.prevent.stop>
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
@@ -22,6 +23,7 @@
 <script>
 import interact from 'interactjs';
 import Vue from 'vue';
+import ImageZone from '@/components/ImageZone';
 import Note from '@/models/Note';
 import ColorSelector from '@/components/ColorSelector';
 import * as types from '@/store/mutation-types';
@@ -329,6 +331,7 @@ export default {
   },
   components: {
     ColorSelector,
+    ImageZone,
   },
 };
 </script>
@@ -365,9 +368,9 @@ export default {
   bottom: 0;
   left: 0;
   margin: 4px;
-  /* pic mode
+  /* pic mode */
   padding-top: 100px;
-  */
+
 }
 
 .note.list-mode .text-box {

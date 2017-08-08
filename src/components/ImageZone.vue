@@ -1,18 +1,10 @@
 <template>
-  <div :style="{'background-color': color, 'background-image': createImgUrl}">
-    <div class="vicp-drop-area" @dragleave="preventDefault" @dragover="preventDefault" @dragenter="preventDefault" @click="handleClick" @drop="handleChange">
-      <i class="vicp-icon1" v-show="loading != 1">
-        <i class="vicp-icon1-arrow"></i>
-        <i class="vicp-icon1-body"></i>
-        <i class="vicp-icon1-bottom"></i>
-      </i>
-      <span class="vicp-hint" v-show="loading !== 1">{{ lang.hint }}</span>
-      <span class="vicp-no-supported-hint" v-show="!isSupported">{{ lang.noSupported }}</span>
-      <input style="display:none" type="file" @click.stop @change="handleChange" ref="fileinput">
-    </div>
-    <div class="vicp-error" v-show="hasError">
-      <i class="vicp-icon2"></i> {{ errorMsg }}
-    </div>
+  <div class="image-zone" :class="{'drop-target': dropTarget}" :style="{'background-color': color, 'background-image': `url(${image})`}" @dragleave.prevent="dropTarget=false" @dragexit.prevent="dropTarget=false" @dragover.prevent="dropTarget=true" @dragenter.prevent="dropTarget=true" @click.stop="handleClick" @drop.prevent.stop="handleChange">
+    <v-alert error v-model="hasError">
+      {{ errorMsg}}
+    </v-alert>
+    <div v-show="!image"><v-icon light>file_upload</v-icon>{{ lang.hint }}</div>
+    <input style="display:none" type="file" @click.stop @change="handleChange" ref="fileinput">
     <canvas style="display:none" :width="width" :height="height" ref="canvas"></canvas>
   </div>
 </template>
@@ -23,46 +15,67 @@ import Vue from 'vue';
 const colorThief = new ColorThief();
 
 export default {
+  name: 'image-zone',
+  props: {
+    maxWidth: {
+      default: 200,
+      type: Number,
+    },
+    maxHeight: {
+      default: 200,
+      type: Number,
+    },
+    value: {
+      default: '',
+      type: String,
+    },
+    color: {
+      default: 'transparent',
+      type: String,
+    },
+  },
   data() {
     return {
-      color: 'transparent',
-      loading: 0,
       hasError: false,
+      dropTarget: false,
       errorMsg: '',
-      progress: 0,
       maxSize: 10240,
       width: 0,
       height: 0,
-      maxHeight: 168,
-      maxWidth: 400,
-      sourceImgUrl: '',
-      createImgUrl: '',
+      image: '',
       lang: {
-        hint: 'Drag an image here or click',
-        loading: 'Uploading...',
-        noSupported: 'Browser not supported, please use IE10+ or other browsers',
+        hint: 'Drop image here or click to upload.',
         error: {
+          notSupported: 'Browser not supported, please use IE10+ or other browsers',
           onlyImg: 'Only images are supported',
           outOfSize: 'Image exceeds size limit: ',
         },
       },
-      isSupported: typeof FormData === 'function',
     };
   },
-  methods: {
-    preventDefault(e) {
-      e.preventDefault();
-      return false;
+  watch: {
+    value(val) {
+      this.image = val;
     },
+  },
+  methods: {
     handleClick() {
       this.$refs.fileinput.click();
     },
     handleChange(e) {
-      e.preventDefault();
+      this.dropTarget = false;
       const files = e.target.files || e.dataTransfer.files;
-      this.reset();
-      if (this.checkFile(files[0])) {
+      if (files.length > 0 && this.checkFile(files[0])) {
+        this.reset();
         this.setSourceImg(files[0]);
+      } else {
+        const imageUrl = e.dataTransfer.getData('text/html');
+        const extracSrc = /src="?([^"\s]+)"?\s*/;
+        const url = extracSrc.exec(imageUrl);
+        console.log(e, url);
+        if (url) {
+          this.loadImage(url[1]);
+        }
       }
     },
     checkFile(file) {
@@ -82,58 +95,67 @@ export default {
     setSourceImg(file) {
       const fr = new FileReader();
       fr.onload = (e) => {
-        this.sourceImgUrl = e.target.result;
-        this.loadImage();
+        this.loadImage(e.target.result);
       };
       fr.readAsDataURL(file);
     },
-    loadImage() {
+    loadImage(src) {
       const img = new Image();
+      img.crossOrigin = 'Anonymous';
       img.onload = () => {
         this.width = img.naturalWidth;
         this.height = img.naturalHeight;
         const [r, g, b] = colorThief.getColor(img);
         this.color = `rgb(${r}, ${g}, ${b})`;
-        this.resize(img);
+        this.$emit('color', this.color);
+        if (this.width <= this.maxWidth && this.height <= this.maxHeight) {
+          this.image = src;
+          this.$emit('input', this.image);
+        } else {
+          this.resize(img);
+        }
       };
-      img.src = this.sourceImgUrl;
+      img.src = src;
     },
     resize(img) {
-      if (this.width <= this.maxWidth && this.height <= this.maxHeight) {
-        this.createImgUrl = this.sourceImgUrl;
+      const maxRatio = this.maxWidth / this.maxHeight;
+      const ratio = this.width / this.height;
+      if ((ratio > 1 && maxRatio > 1) ||
+        (ratio > 1 && maxRatio < 1) ||
+        (ratio === 1 && maxRatio < 1) ||
+        (ratio > 1 && maxRatio === 1)) {
+        this.width = this.maxWidth;
+        this.height = this.maxWidth / ratio;
+      } else if ((ratio < 1 && maxRatio < 1) ||
+        (ratio < 1 && maxRatio > 1) ||
+        (ratio === 1 && maxRatio > 1) ||
+        (ratio < 1 && maxRatio === 1)) {
+        this.width = this.maxHeight * ratio;
+        this.height = this.maxHeight;
       } else {
-        const maxRatio = this.maxWidth / this.maxHeight;
-        let ratio = this.width / this.height;
-        if (ratio === 1) {
-          ratio = maxRatio;
-        }
-        if ((ratio > 1 && maxRatio > 1) || (ratio > 1 && maxRatio < 1)) {
-          this.height = this.maxWidth / ratio;
-          this.width = this.maxWidth;
-        } else if ((ratio > 1 && maxRatio < 1) || (ratio < 1 && maxRatio > 1)) {
-          this.width = this.maxHeight * ratio;
-          this.height = this.maxHeight;
-        } else if (ratio === 1) {
-          this.width = this.maxWidth;
-          this.height = this.maxHeight;
-        }
-
-        this.width = this.width > this.maxWidth ? this.maxWidth : this.width;
-        this.height = this.height > this.maxHeight ? this.maxHeight : this.height;
-        Vue.nextTick(() => {
-          const canvas = this.$refs.canvas;
-          const ctx = canvas.getContext('2d');
-          ctx.clearRect(0, 0, this.width, this.height);
-          ctx.drawImage(img, 0, 0, this.width, this.height);
-          this.createImgUrl = canvas.toDataURL();
-        });
+        this.width = this.maxWidth;
+        this.height = this.maxHeight;
       }
+      Vue.nextTick(() => {
+        const canvas = this.$refs.canvas;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, this.width, this.height);
+        ctx.drawImage(img, 0, 0, this.width, this.height);
+        this.image = canvas.toDataURL();
+        this.$emit('input', this.image);
+      });
     },
     reset() {
-      this.loading = 0;
       this.hasError = false;
       this.errorMsg = '';
-      this.progress = 0;
+      this.image = '';
+      this.color = '';
+      this.$emit('input', this.image);
+      this.$emit('color', this.color);
+      if (typeof FormData !== 'function') {
+        this.hasError = true;
+        this.errorMsg = this.lang.error.notSupported;
+      }
     },
   },
 };
@@ -141,5 +163,18 @@ export default {
 </script>
 
 <style>
+.image-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-position: 50% 50%;
+  background-size: contain;
+  flex-direction: column;
+}
 
+.image-zone.drop-target {
+  background-color: #dcedc8 !important;
+  opacity: 0.6;
+}
 </style>

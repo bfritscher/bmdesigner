@@ -29,10 +29,8 @@
         <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 60%; top: 75%; width: 40%; height: 25%">
           <v-icon light slot="icon">attach_money</v-icon>
         </zone>
-        <div class="logo" :style="{'background-color': color, 'background-image': `url(${imgDataUrl})`}" light>
-  <image-zone></image-zone>
-          TODO title?
-          <img ref="logo" :src="imgDataUrl" style="display:none;">
+        <div class="logo" light>
+          <image-zone></image-zone>
         </div>
         <transition-group name="note-transition" tag="div">
           <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc highlight" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
@@ -136,11 +134,16 @@ export default {
   left: 40%;
   width: 20%;
   height: 25%;
-  /*
-  background-color: rgb(236, 28, 36);
-  background-position: 50% 50%;
-  background-size: contain;
-  background-image: url(//upload.wikimedia.org/wikipedia/commons/thumb/7/76/Hilti_logo.svg/2000px-Hilti_logo.svg.png);
-  */
+  box-shadow: inset 0 0 0px 1px #818181;
+  background-color: #fff;
+  color: #333;
+}
+
+.logo > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 </style>
