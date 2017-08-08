@@ -29,8 +29,10 @@
         <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 60%; top: 75%; width: 40%; height: 25%">
           <v-icon light slot="icon">attach_money</v-icon>
         </zone>
-        <div class="zone logo" light>
+        <div class="logo" :style="{'background-color': color, 'background-image': `url(${imgDataUrl})`}" light>
+  <image-zone></image-zone>
           TODO title?
+          <img ref="logo" :src="imgDataUrl" style="display:none;">
         </div>
         <transition-group name="note-transition" tag="div">
           <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc highlight" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
@@ -45,6 +47,7 @@
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
 import Vpc from '@/components/VPC';
+import ImageZone from '@/components/ImageZone';
 import { mapGetters, mapState } from 'vuex';
 import { totalOffset } from '@/utils';
 
@@ -86,6 +89,7 @@ export default {
     Note,
     Zone,
     Vpc,
+    ImageZone,
   },
 };
 </script>
@@ -126,7 +130,7 @@ export default {
   transition: z-index 0.5s step-start !important;
 }
 
-.zone.logo {
+.logo {
   position: absolute;
   top: 75%;
   left: 40%;

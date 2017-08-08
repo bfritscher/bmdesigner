@@ -104,8 +104,6 @@ free-mixed
 -> screenshot preview / export
 
 -> calculation integrate with options and UI?
-
--> bugtrack sentry
 -> credits
 
 # Future
