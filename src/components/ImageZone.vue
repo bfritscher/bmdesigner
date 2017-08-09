@@ -1,9 +1,13 @@
 <template>
-  <div class="image-zone" :class="{'drop-target': dropTarget}" :style="{'background-color': color, 'background-image': `url(${image})`}" @dragleave.prevent="dropTarget=false" @dragexit.prevent="dropTarget=false" @dragover.prevent="dropTarget=true" @dragenter.prevent="dropTarget=true" @click.stop="handleClick" @drop.prevent.stop="handleChange">
+  <div class="image-zone" :class="{'drop-target': dropTarget}" @dragleave.prevent.stop="dropTarget=false" @dragexit.prevent.stop="dropTarget=false" @dragover.prevent.stop="dropTarget=true" @dragenter.prevent.stop="dropTarget=true" @drop.prevent.stop="handleChange" @click="handleClick">
     <v-alert error v-model="hasError">
       {{ errorMsg}}
     </v-alert>
-    <div v-show="!image"><v-icon light>file_upload</v-icon>{{ lang.hint }}</div>
+    <slot>
+      <div class="image-display" :style="{'background-color': color, 'background-image': `url(${image})`}">
+        <div v-show="!image"><v-icon light>file_upload</v-icon>{{ lang.hint }}</div>
+      </div>
+    </slot>
     <input style="display:none" type="file" @click.stop @change="handleChange" ref="fileinput">
     <canvas style="display:none" :width="width" :height="height" ref="canvas"></canvas>
   </div>
@@ -25,13 +29,17 @@ export default {
       default: 200,
       type: Number,
     },
-    value: {
+    image: {
       default: '',
       type: String,
     },
     color: {
       default: 'transparent',
       type: String,
+    },
+    allowClick: {
+      default: true,
+      type: Boolean,
     },
   },
   data() {
@@ -42,7 +50,7 @@ export default {
       maxSize: 10240,
       width: 0,
       height: 0,
-      image: '',
+      lastEvent: null,
       lang: {
         hint: 'Drop image here or click to upload.',
         error: {
@@ -54,25 +62,30 @@ export default {
     };
   },
   watch: {
-    value(val) {
-      this.image = val;
+    image() {
+      console.log('new image');
     },
   },
   methods: {
-    handleClick() {
-      this.$refs.fileinput.click();
+    handleClick(e) {
+      if (this.allowClick) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.$refs.fileinput.click();
+      }
+      return true;
     },
     handleChange(e) {
-      this.dropTarget = false;
       const files = e.target.files || e.dataTransfer.files;
+      this.reset();
+      this.dropTarget = false;
+      this.lastEvent = e;
       if (files.length > 0 && this.checkFile(files[0])) {
-        this.reset();
         this.setSourceImg(files[0]);
       } else {
         const imageUrl = e.dataTransfer.getData('text/html');
         const extracSrc = /src="?([^"\s]+)"?\s*/;
         const url = extracSrc.exec(imageUrl);
-        console.log(e, url);
         if (url) {
           this.loadImage(url[1]);
         }
@@ -106,11 +119,9 @@ export default {
         this.width = img.naturalWidth;
         this.height = img.naturalHeight;
         const [r, g, b] = colorThief.getColor(img);
-        this.color = `rgb(${r}, ${g}, ${b})`;
-        this.$emit('color', this.color);
+        this.$emit('update:color', `rgb(${r}, ${g}, ${b})`);
         if (this.width <= this.maxWidth && this.height <= this.maxHeight) {
-          this.image = src;
-          this.$emit('input', this.image);
+          this.setNewImage(src);
         } else {
           this.resize(img);
         }
@@ -141,17 +152,22 @@ export default {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, this.width, this.height);
         ctx.drawImage(img, 0, 0, this.width, this.height);
-        this.image = canvas.toDataURL();
-        this.$emit('input', this.image);
+        this.setNewImage(canvas.toDataURL());
       });
+    },
+    setNewImage(src) {
+      this.$emit('update:image', src);
+      if (this.lastEvent && this.lastEvent.type === 'drop') {
+        this.lastEvent.image = src;
+        this.$emit('image-drop', this.lastEvent);
+      }
     },
     reset() {
       this.hasError = false;
       this.errorMsg = '';
-      this.image = '';
-      this.color = '';
-      this.$emit('input', this.image);
-      this.$emit('color', this.color);
+      this.lastEvent = null;
+      this.$emit('update:image', '');
+      this.$emit('update:color', '');
       if (typeof FormData !== 'function') {
         this.hasError = true;
         this.errorMsg = this.lang.error.notSupported;
@@ -159,11 +175,10 @@ export default {
     },
   },
 };
-
 </script>
 
 <style>
-.image-zone {
+.image-display {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,9 +186,11 @@ export default {
   background-position: 50% 50%;
   background-size: contain;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
-.image-zone.drop-target {
+.drop-target {
   background-color: #dcedc8 !important;
   opacity: 0.6;
 }

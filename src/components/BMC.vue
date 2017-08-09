@@ -1,10 +1,12 @@
 <template>
   <div>
-    <div class="canvas" @click.prevent.stop="addNote($event)">
+    <image-zone :allow-click="false" @image-drop="addNote" class="canvas" @click.native.prevent.stop="addNote($event)">
       <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
-        <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 40%; height: 25%">
-          <v-icon light slot="icon">account_balance</v-icon>
-        </zone>
+
+          <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 40%; height: 25%">
+            <v-icon light slot="icon">account_balance</v-icon>
+          </zone>
+
         <zone dropzone-accept=".note-bmc" id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%">
           <v-icon light slot="icon">share</v-icon>
         </zone>
@@ -30,13 +32,13 @@
           <v-icon light slot="icon">attach_money</v-icon>
         </zone>
         <div class="logo" light>
-          <image-zone></image-zone>
+          <image-zone :image.sync="logo.image" :color.sync="logo.color"></image-zone>
         </div>
         <transition-group name="note-transition" tag="div">
           <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc highlight" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
         </transition-group>
       </div>
-    </div>
+    </image-zone>
     <vpc></vpc>
   </div>
 </template>
@@ -51,6 +53,14 @@ import { totalOffset } from '@/utils';
 
 export default {
   name: 'bmc',
+  data() {
+    return {
+      logo: {
+        image: '',
+        color: '',
+      },
+    };
+  },
   computed: {
     ...mapGetters(['notesBMC']),
     ...mapState({
@@ -75,6 +85,7 @@ export default {
         listTop: y / (this.$refs.paper.offsetHeight / 100),
         type: 'bmc_tmp',
         colors: this.$store.getters.lastUsedColors,
+        image: e.image,
       };
 
       if (e.target.classList.contains('zone')) {

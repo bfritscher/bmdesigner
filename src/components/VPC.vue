@@ -1,6 +1,6 @@
 <template>
   <transition name="vpc-overlay-transition">
-    <div ref="vpc" key="vpc" class="canvas overlay-vpc" v-show="showVPC" @click.prevent.stop="addNote($event)">
+    <image-zone ref="vpc" key="vpc" :allow-click="false" @image-drop="addNote" class="canvas overlay-vpc" v-show="showVPC" @click.native.prevent.stop="addNote($event)">
       <div class="paper" ref="paper" data-none="vpc_tmp">
         <transition name="vpc-vp-transition" appear>
           <v-card v-if="vp" class="vpc-vp elevation-10" :class="{'vpc-both': cs && vp}">
@@ -71,7 +71,7 @@
           <note v-for="n in notesVPC" :value="n" :key="n.id" class="note-vpc"  :class="{'vpc-both': cs && vp}" :parent="$refs.paper"></note>
         </transition-group>
       </div>
-    </div>
+    </image-zone>
   </transition>
 </template>
 
@@ -82,6 +82,7 @@ import { totalOffset, COLORS_MATERIAL_DARK } from '@/utils';
 import { VPC_VP_TYPES, VPC_CS_TYPES } from '@/store';
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
+import ImageZone from '@/components/ImageZone';
 
 export default {
   name: 'vpc',
@@ -140,6 +141,8 @@ export default {
         listLeft: x / (this.$refs.paper.offsetWidth / 100),
         listTop: y / (this.$refs.paper.offsetHeight / 100),
         type: 'vpc_tmp',
+        colors: this.$store.getters.lastUsedColors,
+        image: e.image,
       };
 
       if (e.target.classList.contains('zone')) {
@@ -154,21 +157,18 @@ export default {
       }
       this.$store.dispatch('NOTE_CREATE', note);
     },
-    afterEnter(e) {
-      console.log(e, this);
-    },
     ...mapMutations(['LAYOUT_UPDATE']),
   },
   watch: {
     // TODO: refactor?
     vp(val, oldVal) {
       if (val) {
-        this.$refs.vpc.style.setProperty('--vpc-source-x', `${val.left}%`);
-        this.$refs.vpc.style.setProperty('--vpc-source-y', `${val.top}%`);
+        this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${val.left}%`);
+        this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${val.top}%`);
         this.LAYOUT_UPDATE({ showVPC: true });
       } else {
-        this.$refs.vpc.style.setProperty('--vpc-source-x', `${oldVal.left}%`);
-        this.$refs.vpc.style.setProperty('--vpc-source-y', `${oldVal.top}%`);
+        this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${oldVal.left}%`);
+        this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${oldVal.top}%`);
         if (!this.cs && this.showVPC) {
           Vue.nextTick(() => {
             this.LAYOUT_UPDATE({ showVPC: false });
@@ -177,13 +177,14 @@ export default {
       }
     },
     cs(val, oldVal) {
+      console.log(val, 'cs');
       if (val) {
-        this.$refs.vpc.style.setProperty('--vpc-source-x', `${val.left}%`);
-        this.$refs.vpc.style.setProperty('--vpc-source-y', `${val.top}%`);
+        this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${val.left}%`);
+        this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${val.top}%`);
         this.LAYOUT_UPDATE({ showVPC: true });
       } else {
-        this.$refs.vpc.style.setProperty('--vpc-source-x', `${oldVal.left}%`);
-        this.$refs.vpc.style.setProperty('--vpc-source-y', `${oldVal.top}%`);
+        this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${oldVal.left}%`);
+        this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${oldVal.top}%`);
         if (!this.vp && this.showVPC) {
           Vue.nextTick(() => {
             this.LAYOUT_UPDATE({ showVPC: false });
@@ -195,6 +196,7 @@ export default {
   components: {
     Note,
     Zone,
+    ImageZone,
   },
 };
 </script>

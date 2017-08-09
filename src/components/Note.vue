@@ -12,7 +12,7 @@
         <v-icon>zoom_in</v-icon>
       </v-btn>
     </div>
-    <image-zone style="height: 100px;"></image-zone>
+    <image-zone style="height: 100px;" :image="value.image"></image-zone>
     <!-- needed for textarea sizing bug -->
     <div class="text-box" @click.prevent.stop>
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
@@ -226,7 +226,7 @@ export default {
       }
     },
     removeIfEmpty() {
-      if (this.value.text === '') {
+      if (this.value.text === '' && this.value.image === '') {
         this.$store.dispatch('NOTE_DELETE', this.value);
       }
     },

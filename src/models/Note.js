@@ -12,6 +12,7 @@ export default class Note {
     this.type = args.type || '';
     this.text = args.text || '';
     this.colors = args.colors && args.colors.length > 0 ? args.colors : [0];
+    this.image = args.image || '';
     this.parent = args.parent;
   }
 
