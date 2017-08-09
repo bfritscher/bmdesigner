@@ -1,9 +1,9 @@
 <template>
-  <v-app dark toolbar>
-    <v-navigation-drawer class="drawer" overflow :mini-variant="mini" light persistent enable-resize-watcher v-model="drawer">
-      <v-toolbar flat class="blue-grey darken-2" v-show="!mini">
+  <v-app toolbar>
+    <v-navigation-drawer class="drawer" overflow :mini-variant="mini" persistent enable-resize-watcher v-model="drawer">
+      <v-toolbar flat class="blue-grey darken-2" dark v-show="!mini">
         <v-toolbar-title>
-          <router-link :to="{name: 'home'}">BM|Designer</router-link>
+          <router-link :to="{name: 'home'}" id="logo-title">BM|Designer</router-link>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click.native.stop="mini = !mini">
@@ -130,30 +130,43 @@
 
           <v-divider class="my-2"></v-divider>
 
-          <v-list-tile class="mt-2" v-ripple>
-            <v-list-tile-action>
-              <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-title class="grey--text text--darken-1">Invite a person</v-list-tile-title>
-          </v-list-tile>
+          <v-dialog v-model="showDialogInvite" persistent style="display:block">
+            <v-list-tile class="mt-2" v-ripple slot="activator">
+              <v-list-tile-action>
+                <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-title class="grey--text text--darken-1">Invite a person</v-list-tile-title>
+            </v-list-tile>
+            <v-card>
+              <v-card-text>
+                <v-text-field label="Send invite to email" required type="email" light v-model="inviteEmail"></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="black--text" flat @click.native="showDialogInvite = false">Cancel</v-btn>
+                <v-btn class="blue--text darken-1" flat @click.native="showDialogInvite = false">Send</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
           <v-list-tile v-ripple>
             <v-list-tile-action>
               <v-icon class="grey--text text--darken-1">settings</v-icon>
             </v-list-tile-action>
-            <v-list-tile-title class="grey--text text--darken-1">Manage Subscriptions</v-list-tile-title>
+            <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
           </v-list-tile>
         </div>
       </v-list>
     </v-navigation-drawer>
     <!--
-            <v-navigation-drawer
-                right
-                temporary
-                hide-overlay
-                :value="$store.state.layout.focusedNote"
-              ></v-navigation-drawer>
-              -->
-    <v-toolbar fixed class="blue-grey darken-2">
+              <v-navigation-drawer
+                  right
+                  temporary
+                  hide-overlay
+                  :value="$store.state.layout.focusedNote"
+                ></v-navigation-drawer>
+                -->
+    <v-toolbar fixed class="blue-grey darken-2" dark>
       <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
       <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field>
       <v-spacer></v-spacer>
@@ -163,23 +176,27 @@
       <v-spacer></v-spacer>
       <v-btn primary>Sign in</v-btn>
       <!--
-              <v-btn icon>
-                <v-icon>more_vert</v-icon>
-              </v-btn>
-              -->
+                <v-btn icon>
+                  <v-icon>more_vert</v-icon>
+                </v-btn>
+                -->
     </v-toolbar>
     <main>
       <v-container fluid style="position: relative">
         <router-view></router-view>
       </v-container>
     </main>
+    <note-options></note-options>
   </v-app>
 </template>
 
 <script>
-import { COLORS_MATERIAL } from '@/utils';
-import * as types from '@/store/mutation-types';
 import { mapGetters } from 'vuex';
+import { COLORS_MATERIAL } from '@/utils';
+
+import * as types from '@/store/mutation-types';
+import NoteOptions from '@/components/NoteOptions';
+
 
 export default {
   name: 'app',
@@ -188,13 +205,15 @@ export default {
       drawer: true,
       mini: false,
       right: true,
+      showDialogInvite: false,
+      inviteEmail: '',
+      isColorsOpen: false,
+      COLORS_MATERIAL,
       items2: [
         { picture: 28, text: 'Joseph' },
         { picture: 38, text: 'Apple' },
         { picture: 48, text: 'Xbox Ahoy' },
       ],
-      isColorsOpen: false,
-      COLORS_MATERIAL,
     };
   },
   computed: {
@@ -235,6 +254,9 @@ export default {
       });
     },
   },
+  components: {
+    NoteOptions,
+  },
 };
 </script>
 
@@ -248,6 +270,11 @@ html {
 body {
   font-family: 'Open Sans';
   user-select: none;
+}
+
+#logo-title {
+  color: #fff;
+  text-decoration: none;
 }
 
 .navigation-drawer--mini-variant .list__tile {

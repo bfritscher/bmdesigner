@@ -5,14 +5,13 @@
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
     <div class="icons">
-      <v-btn v-if="isEdit" flat icon primary small class="description" light>
+      <v-btn v-if="isEdit" flat icon primary small class="description" light @click.native.prevent.stop="showNoteOptions">
         <v-icon>description</v-icon>
       </v-btn>
       <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" flat icon primary small class="zoom" light @click.native="zoom()">
         <v-icon>zoom_in</v-icon>
       </v-btn>
     </div>
-    <image-zone style="height: 100px;" :image="value.image"></image-zone>
     <!-- needed for textarea sizing bug -->
     <div class="text-box" @click.prevent.stop>
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
@@ -27,7 +26,7 @@ import ImageZone from '@/components/ImageZone';
 import Note from '@/models/Note';
 import ColorSelector from '@/components/ColorSelector';
 import * as types from '@/store/mutation-types';
-import { VPC_VP_TYPES, VPC_CS_TYPES } from '@/store';
+import { VPC_VP_TYPES, VPC_CS_TYPES, VPC_TYPES } from '@/store';
 import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
 
 const MAX_FONT_SIZE = 30; // /2 if pic mode
@@ -205,6 +204,9 @@ export default {
     },
   },
   methods: {
+    showNoteOptions() {
+      this.$store.commit(types.LAYOUT_UPDATE, { showNoteOptions: true });
+    },
     handleKeyUp(e) {
       if ([35, 36, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
         return;
@@ -238,7 +240,7 @@ export default {
       if (this.value.text === '' && this.value.image === '') {
         this.$store.dispatch('NOTE_DELETE', this.value);
       }
-    },
+    }, // TODO move?
     sortSortable(type, options) {
       let zoneTop = 0;
       let zoneLeft = -10; // for tmp outside of paper
@@ -255,9 +257,26 @@ export default {
         zoneLeft = parseFloat(zone.style.left);
         zoneHeight = parseFloat(zone.style.height);
         zoneWidth = parseFloat(zone.style.width);
+        if (type === 'solution') {
+          zoneWidth = 20;
+          zoneLeft = 20;
+        }
+        if (type === 'pain_gain') {
+          zoneWidth = 20;
+          zoneLeft = 60;
+        }
+        if (type === 'job') {
+          zoneWidth = 20;
+          zoneLeft = 80;
+        }
+      }
+      let ordered = this.$store.getters.getNotesByTypes(type);
+      if (VPC_TYPES.includes(type)) {
+        ordered = ordered.filter((note => note.parent === this.$store.state.layout.selectedVP.id ||
+          note.parent === this.$store.state.layout.selectedCS.id
+        ));
       }
 
-      const ordered = this.$store.getters.getNotesByTypes(type);
       ordered.sort((a, b) => {
         if (a.listLeft - b.listLeft > 10) {
           return 1;
@@ -377,7 +396,9 @@ export default {
   left: 0;
   margin: 4px;
   /* pic mode */
+  /*
   padding-top: 100px;
+  */
 
 }
 

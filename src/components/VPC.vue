@@ -4,13 +4,13 @@
       <div class="paper" ref="paper" data-none="vpc_tmp">
         <transition name="vpc-vp-transition" appear>
           <v-card v-if="vp" class="vpc-vp elevation-10" :class="{'vpc-both': cs && vp}">
-            <v-toolbar dense style="left: 0; top: -48px; position: absolute;" :class="COLORS_MATERIAL_DARK[vp.colors[0]]">
+            <v-toolbar dense :class="COLORS_MATERIAL_DARK[vp.colors[0]]">
               <v-menu :nudge-width="100"  @click.native.prevent.stop>
                 <v-toolbar-title slot="activator">
                   <span>{{vp.text}}</span>
                   <v-icon>arrow_drop_down</v-icon>
                 </v-toolbar-title>
-                <v-list>
+                <v-list class="list">
                   <v-list-tile v-for="note in notesVP" :key="note.id" @click.native.prevent="LAYOUT_UPDATE({selectedVP: note})" :class="COLORS_MATERIAL_DARK[note.colors[0]]">
                     <v-list-tile-title v-text="note.text"></v-list-tile-title>
                   </v-list-tile>
@@ -42,13 +42,13 @@
 -->
         <transition name="vpc-cs-transition" appear>
           <v-card v-if="cs" class="vpc-cs elevation-10" :class="{'vpc-both': cs && vp}">
-            <v-toolbar dark dense style="left: 0; top: -48px; position: absolute;" :class="COLORS_MATERIAL_DARK[cs.colors[0]]">
+            <v-toolbar dense :class="COLORS_MATERIAL_DARK[cs.colors[0]]">
               <v-menu :nudge-width="100" @click.native.prevent.stop>
                 <v-toolbar-title slot="activator">
                   <span>{{cs.text}}</span>
-                  <v-icon dark>arrow_drop_down</v-icon>
+                  <v-icon>arrow_drop_down</v-icon>
                 </v-toolbar-title>
-                <v-list>
+                <v-list class="list">
                   <v-list-tile v-for="note in notesCS" :key="note.id" @click.native.prevent="LAYOUT_UPDATE({selectedCS: note})" :class="COLORS_MATERIAL_DARK[note.colors[0]]">
                     <v-list-tile-title v-text="note.text"></v-list-tile-title>
                   </v-list-tile>
@@ -213,6 +213,10 @@ export default {
   flex-direction: column;
 }
 
+.list {
+  padding: 0;
+}
+
 .paper {
   width: 82vw;
   height: calc(54.88vw - 96px);
@@ -255,6 +259,13 @@ export default {
   width: 40%;
   min-width: 408px;
   bottom: 0;
+}
+
+.vpc-vp .toolbar,
+.vpc-cs .toolbar {
+  left: 0;
+  top: -48px;
+  position: absolute;
 }
 
 .vpc-both {

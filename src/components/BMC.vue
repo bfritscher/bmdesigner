@@ -2,11 +2,9 @@
   <div>
     <image-zone :allow-click="false" @image-drop="addNote" class="canvas" @click.native.prevent.stop="addNote($event)">
       <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
-
-          <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 40%; height: 25%">
-            <v-icon light slot="icon">account_balance</v-icon>
-          </zone>
-
+        <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 40%; height: 25%">
+          <v-icon light slot="icon">account_balance</v-icon>
+        </zone>
         <zone dropzone-accept=".note-bmc" id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%">
           <v-icon light slot="icon">share</v-icon>
         </zone>

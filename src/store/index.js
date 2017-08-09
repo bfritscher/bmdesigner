@@ -31,6 +31,7 @@ const initialState = {
     selectedCS: null,
     focusedNote: null,
     showVPC: false,
+    showNoteOptions: false,
     listMode: false,
     lastUsedColors: [0],
     colorsVisibility: [1, 1, 1, 1, 1, 1],
