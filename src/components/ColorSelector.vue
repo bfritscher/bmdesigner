@@ -1,12 +1,12 @@
 <template>
   <v-speed-dial class="color-selector" :class="{'top-index': isOpen}" :direction="direction" v-model="isOpen" :transition="transition">
-    <v-btn flat outline fab  slot="activator"  :light="value === -1" :class="COLORS_MATERIAL_DARK[value]" v-model="isOpen" :small="small">
+    <v-btn :class="[{'color-selector-bg': value === -1}, COLORS_MATERIAL_DARK[value]]" flat outline fab  slot="activator"  :light="value === -1"  v-model="isOpen" :small="small">
       <v-icon>{{value > -1 ? small ? '' : 'color_lens' : 'add'}}</v-icon>
       <v-icon>close</v-icon>
     </v-btn>
     <v-btn v-for="(colorCode, colorId) in COLORS_MATERIAL_DARK" :class="colorCode" fab small
        @click="setColor(colorId)" v-show="value !== colorId && hide.indexOf(colorId) === -1" :key="colorId"></v-btn>
-    <v-btn flat outline fab small light :class="'direction-' + direction" v-if="canDelete" @click="setColor(value)">
+    <v-btn class="color-selector-bg" flat outline fab small light :class="'direction-' + direction" v-if="canDelete" @click="setColor(value)">
       <v-icon>format_color_reset</v-icon>
     </v-btn>
   </v-speed-dial>
@@ -76,6 +76,10 @@ export default {
 <style>
 .color-selector.top-index {
   z-index: 99;
+}
+
+.color-selector-bg {
+  background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .color-selector .direction-top {
