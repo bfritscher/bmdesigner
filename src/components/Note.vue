@@ -1,5 +1,5 @@
 <template>
-  <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': $store.state.layout.listMode}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, transform: `rotateZ(${angle}deg)`, 'box-shadow': boxShadow}">
+  <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': $store.state.layout.listMode}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, transform: `rotateZ(${angle}deg)`, 'box-shadow': boxShadow, opacity}">
     <div class="colors" v-if="isEdit && !dragging">
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
@@ -155,6 +155,15 @@ export default {
   computed: {
     color() {
       return this.value.colors[0];
+    },
+    opacity() {
+      // calculate visibility based on colors
+      return this.$store.state.layout.colorsVisibility.reduce((totalOpacity, opacity, colorId) => {
+        if (this.value.colors.includes(colorId)) {
+          totalOpacity += opacity;
+        }
+        return Math.min(totalOpacity, 1);
+      }, 0);
     },
     boxShadow() {
       return this.value.colors.reduce((shadows, colorCode, i) => {

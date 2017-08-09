@@ -87,20 +87,24 @@
 
           <v-divider class="my-2"></v-divider>
 
-          <v-list-group no-action v-model="item.active">
-            <v-list-tile slot="item">
+          <v-list-group no-action v-model="isColorsOpen">
+            <v-list-tile slot="item" @click.native="showColors">
+              <v-list-tile-action>
+                <v-icon light>color_lens</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>Colors visibility</v-list-tile-title>
+              </v-list-tile-content>
               <v-list-tile-action>
                 <v-icon light>keyboard_arrow_down</v-icon>
               </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>Colors</v-list-tile-title>
-              </v-list-tile-content>
             </v-list-tile>
-            <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL_DARK" :key="colorId" v-show="colorsUsedInCanvas.has(colorId)"
-            :class="colorCode">
-            <v-slider :value="colorsVisibility[colorId]" @input="toggleColorVisibility($event, colorId)"></v-slider>
+            <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL_DARK" :key="colorId" v-show="colorsUsedInCanvas.has(colorId)">
+
+              <v-btn-toggle flat :class="colorCode" :items="[{text: 'off', value: '0'}, {text: '1/4', value: '0.25'}, {text: '1/2', value: '0.5'},  {text: '3/4', value: '0.75'}, {text: 'on', value: '1'},]" mandatory :input-value="colorsVisibility[colorId]" @change="toggleColorVisibility($event, colorId)"> </v-btn-toggle>
 
             </v-list-tile>
+
           </v-list-group>
 
           <v-btn-toggle class="red" mandatory :items="[{text: 'Free', value: 'free'}, {text: 'List', value: 'list'}]" :input-value="listModeText" @change="changeListMode"></v-btn-toggle>
@@ -142,13 +146,13 @@
       </v-list>
     </v-navigation-drawer>
     <!--
-          <v-navigation-drawer
-              right
-              temporary
-              hide-overlay
-              :value="$store.state.layout.focusedNote"
-            ></v-navigation-drawer>
-            -->
+            <v-navigation-drawer
+                right
+                temporary
+                hide-overlay
+                :value="$store.state.layout.focusedNote"
+              ></v-navigation-drawer>
+              -->
     <v-toolbar fixed class="blue-grey darken-2">
       <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
       <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field>
@@ -159,10 +163,10 @@
       <v-spacer></v-spacer>
       <v-btn primary>Sign in</v-btn>
       <!--
-            <v-btn icon>
-              <v-icon>more_vert</v-icon>
-            </v-btn>
-            -->
+              <v-btn icon>
+                <v-icon>more_vert</v-icon>
+              </v-btn>
+              -->
     </v-toolbar>
     <main>
       <v-container fluid style="position: relative">
@@ -184,26 +188,12 @@ export default {
       drawer: true,
       mini: false,
       right: true,
-      items: [
-        { icon: 'trending_up', text: 'Most Popular' },
-        { icon: 'subscriptions', text: 'Subscriptions' },
-        { icon: 'history', text: 'History' },
-        { icon: 'featured_play_list', text: 'Playlists' },
-        { icon: 'watch_later', text: 'Watch Later' },
-      ],
       items2: [
         { picture: 28, text: 'Joseph' },
         { picture: 38, text: 'Apple' },
         { picture: 48, text: 'Xbox Ahoy' },
       ],
-      item: {
-        active: true,
-        items: [
-          { title: 'Breakfast & brunch', on: false },
-          { title: 'New American', on: false },
-          { title: 'Sushi', on: false },
-        ],
-      },
+      isColorsOpen: false,
       COLORS_MATERIAL_DARK,
     };
   },
@@ -224,16 +214,22 @@ export default {
       return ['home', 'play', 'inspire', 'learn', 'favorites', 'about'].includes(this.$route.name);
     },
     colorsVisibility() {
-      return this.$store.state.layout.colorsVisibility.map(opacity => opacity * 100);
+      return this.$store.state.layout.colorsVisibility.map(opacity => opacity.toString());
     },
   },
   methods: {
     changeListMode(data) {
       this.$store.state.layout.listMode = data === 'list';
     },
+    showColors() {
+      if (this.mini) {
+        this.mini = false;
+        this.isColorsOpen = true;
+      }
+    },
     toggleColorVisibility(value, colorId) {
       const newArray = this.$store.state.layout.colorsVisibility.slice(0);
-      newArray[colorId] = parseFloat(value) / 100.0;
+      newArray[colorId] = parseFloat(value); // / 100.0;
       this.$store.commit(types.LAYOUT_UPDATE, {
         colorsVisibility: newArray,
       });

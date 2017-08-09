@@ -35,7 +35,6 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 -> box-shadow spacing in list mode
 
 -> add question to end of quiz
--> learn section add cards design layout
 -> logo zone what else?
 -> where to put menus?
 
@@ -52,11 +51,11 @@ free-mixed
 -> canvas selection menu / create new
 -> delete button?
 
--> allow image drop / lookup?
-
 -> add custom props/values to note
     -> integrate calc
+    -> calculation integrate with options and UI?
     -> model slugs
+    -> image drop file popup
 
 
 -> save menu state to localstorage and/or user's profile
@@ -75,36 +74,32 @@ free-mixed
         ...
             permissions
 
--> view/edit mode?
-    -> embed?
-
 -> export/import from strategyzer
 -> migrate user/data? bmdesigner
 
+-> credits
 
 # Nice to have
--> tour intro.js or hopscotch
-
 -> presentation mode
    - animation order
-   - tap to show on projector?
    - animation pan order list?
+   - tap to show on projector?
 
 -> animate change
 -> track which user did what action
 
-
 -> invite collaborate / share
     -> remove collaborator
 
--> mobile touch support
 
+-> mobile touch support
 -> screenshot preview / export
 
--> calculation integrate with options and UI?
--> credits
 
 # Future
+-> tour intro.js or hopscotch
+-> view/edit mode?
+    -> embed?
 -> handle too many items?
 -> start with vp shortcut ?
 -> canvas background-image?

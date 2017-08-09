@@ -31,6 +31,7 @@ Raven
       }
       return true;
     },
+    /*
     ignoreErrors: [
       // Random plugins/extensions
       'top.GLOBALS',
@@ -70,6 +71,7 @@ Raven
       /webappstoolbarba\.texthelp\.com\//i,
       /metrics\.itunes\.apple\.com\.edgesuite\.net\//i,
     ],
+    */
   })
   .addPlugin(RavenVue, Vue)
   .install();
