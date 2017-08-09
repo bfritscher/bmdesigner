@@ -33,6 +33,7 @@ const initialState = {
     showVPC: false,
     listMode: false,
     lastUsedColors: [0],
+    colorsVisibility: [1, 1, 1, 1, 1, 1],
   },
 };
 
@@ -50,6 +51,10 @@ const gettersDefinition = {
   notesVPC: (state, getters) => getters.getNotesByTypes(VPC_TYPES),
   notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
   notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
+  colorsUsedInCanvas: state => state.notes.reduce((colors, note) => {
+    note.colors.forEach(c => colors.add(c));
+    return colors;
+  }, new Set()),
 };
 
 // actions

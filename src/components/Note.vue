@@ -1,8 +1,8 @@
 <template>
-  <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': $store.state.layout.listMode}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, transform: `rotate(${angle}deg)`, 'box-shadow': boxShadow}">
+  <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': $store.state.layout.listMode}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, transform: `rotateZ(${angle}deg)`, 'box-shadow': boxShadow}">
     <div class="colors" v-if="isEdit && !dragging">
-      <color-selector :style="{transform: `rotate(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
-      <color-selector :style="{transform: `rotate(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
+      <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
+      <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
     <div class="icons">
       <v-btn v-if="isEdit" flat icon primary small class="description" light>
@@ -316,7 +316,6 @@ export default {
     },
     setColor(position, colorId) {
       const colors = Note.changeColor(this.value.colors, position, colorId);
-      console.log(colors);
       this.$store.dispatch('NOTE_UPDATE', { changes: { colors }, note: this.value });
       this.$store.commit(types.LAYOUT_UPDATE, { lastUsedColors: colors });
     },

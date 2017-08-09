@@ -15,8 +15,6 @@
 
 <script>
 import Vue from 'vue';
-// eslint-disable-next-line
-const colorThief = new ColorThief();
 
 export default {
   name: 'image-zone',
@@ -118,6 +116,8 @@ export default {
       img.onload = () => {
         this.width = img.naturalWidth;
         this.height = img.naturalHeight;
+        // eslint-disable-next-line
+        const colorThief = new ColorThief();
         const [r, g, b] = colorThief.getColor(img);
         this.$emit('update:color', `rgb(${r}, ${g}, ${b})`);
         if (this.width <= this.maxWidth && this.height <= this.maxHeight) {

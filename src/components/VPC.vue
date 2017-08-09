@@ -177,7 +177,6 @@ export default {
       }
     },
     cs(val, oldVal) {
-      console.log(val, 'cs');
       if (val) {
         this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${val.left}%`);
         this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${val.top}%`);

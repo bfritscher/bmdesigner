@@ -21,7 +21,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile exact :to="{name: 'home'}">
+        <v-list-tile exact :to="{name: 'home'}" v-ripple>
           <v-list-tile-action>
             <v-icon light>home</v-icon>
           </v-list-tile-action>
@@ -32,7 +32,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile :to="{name: 'favorites'}">
+        <v-list-tile :to="{name: 'favorites'}" v-show="isModelList" v-ripple>
           <v-list-tile-action>
             <v-icon light>favorite</v-icon>
           </v-list-tile-action>
@@ -43,7 +43,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile :to="{name: 'inspire'}">
+        <v-list-tile :to="{name: 'inspire'}" v-show="isModelList" v-ripple>
           <v-list-tile-action>
             <v-icon light>lightbulb_outline</v-icon>
           </v-list-tile-action>
@@ -53,7 +53,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile  :to="{name: 'learn'}">
+        <v-list-tile :to="{name: 'learn'}" v-show="isModelList" v-ripple>
           <v-list-tile-action>
             <v-icon light>school</v-icon>
           </v-list-tile-action>
@@ -63,7 +63,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile  :to="{name: 'play'}">
+        <v-list-tile :to="{name: 'play'}" v-show="isModelList" v-ripple>
           <v-list-tile-action>
             <v-icon light>games</v-icon>
           </v-list-tile-action>
@@ -73,7 +73,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile  :to="{name: 'about'}">
+        <v-list-tile :to="{name: 'about'}" v-ripple>
           <v-list-tile-action>
             <v-icon light>question_answer</v-icon>
           </v-list-tile-action>
@@ -83,55 +83,74 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <div  v-if="$route.name === 'bmc'">
+        <div v-if="$route.name === 'bmc'">
 
-        <v-divider class="my-2"></v-divider>
+          <v-divider class="my-2"></v-divider>
 
-        <v-btn-toggle class="red" mandatory
-           :items="[{text: 'Free', value: 'free'}, {text: 'List', value: 'list'}]"
-           :input-value="listModeText" @change="changeListMode"></v-btn-toggle>
-        {{ $store.state.layout.listMode }}
+          <v-list-group no-action v-model="item.active">
+            <v-list-tile slot="item">
+              <v-list-tile-action>
+                <v-icon light>keyboard_arrow_down</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>Colors</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL_DARK" :key="colorId" v-show="colorsUsedInCanvas.has(colorId)"
+            :class="colorCode">
+            <v-slider :value="colorsVisibility[colorId]" @input="toggleColorVisibility($event, colorId)"></v-slider>
 
-        <v-divider class="my-2"></v-divider>
+            </v-list-tile>
+          </v-list-group>
 
-        <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
+          <v-btn-toggle class="red" mandatory :items="[{text: 'Free', value: 'free'}, {text: 'List', value: 'list'}]" :input-value="listModeText" @change="changeListMode"></v-btn-toggle>
+          {{ $store.state.layout.listMode }}
 
-        <v-list>
-          <v-list-tile v-for="item in items2" :key="item.text" avatar>
-            <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }">
-              <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
-            </v-list-tile-avatar>
-            <v-list-tile-title v-text="item.text"></v-list-tile-title>
+          <v-divider class="my-2"></v-divider>
+
+          <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
+
+          <v-list>
+            <v-list-tile v-for="item in items2" :key="item.text" avatar v-ripple>
+              <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }">
+                <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title v-text="item.text"></v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-icon v-bind:class="[item.active ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+          </v-list>
+
+          <v-divider class="my-2"></v-divider>
+
+          <v-list-tile class="mt-2" v-ripple>
+            <v-list-tile-action>
+              <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-title class="grey--text text--darken-1">Invite a person</v-list-tile-title>
           </v-list-tile>
-        </v-list>
-
-        <v-divider class="my-2"></v-divider>
-
-        <v-list-tile class="mt-2">
-          <v-list-tile-action>
-            <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title class="grey--text text--darken-1">Invite a person</v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon class="grey--text text--darken-1">settings</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title class="grey--text text--darken-1">Manage Subscriptions</v-list-tile-title>
-        </v-list-tile>
+          <v-list-tile v-ripple>
+            <v-list-tile-action>
+              <v-icon class="grey--text text--darken-1">settings</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-title class="grey--text text--darken-1">Manage Subscriptions</v-list-tile-title>
+          </v-list-tile>
         </div>
       </v-list>
     </v-navigation-drawer>
     <!--
-      <v-navigation-drawer
-          right
-          temporary
-          hide-overlay
-          :value="$store.state.layout.focusedNote"
-        ></v-navigation-drawer>
-        -->
+          <v-navigation-drawer
+              right
+              temporary
+              hide-overlay
+              :value="$store.state.layout.focusedNote"
+            ></v-navigation-drawer>
+            -->
     <v-toolbar fixed class="blue-grey darken-2">
-      <v-toolbar-side-icon  @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
       <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field>
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
@@ -140,10 +159,10 @@
       <v-spacer></v-spacer>
       <v-btn primary>Sign in</v-btn>
       <!--
-        <v-btn icon>
-          <v-icon>more_vert</v-icon>
-        </v-btn>
-        -->
+            <v-btn icon>
+              <v-icon>more_vert</v-icon>
+            </v-btn>
+            -->
     </v-toolbar>
     <main>
       <v-container fluid style="position: relative">
@@ -154,6 +173,10 @@
 </template>
 
 <script>
+import { COLORS_MATERIAL_DARK } from '@/utils';
+import * as types from '@/store/mutation-types';
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'app',
   data() {
@@ -173,9 +196,19 @@ export default {
         { picture: 38, text: 'Apple' },
         { picture: 48, text: 'Xbox Ahoy' },
       ],
+      item: {
+        active: true,
+        items: [
+          { title: 'Breakfast & brunch', on: false },
+          { title: 'New American', on: false },
+          { title: 'Sushi', on: false },
+        ],
+      },
+      COLORS_MATERIAL_DARK,
     };
   },
   computed: {
+    ...mapGetters(['colorsUsedInCanvas']),
     title() {
       /*
       const type = this.$store.state.layout.showVPC ? 'Value Proposition Canvas'
@@ -187,11 +220,23 @@ export default {
     listModeText() {
       return this.$store.state.layout.listMode ? 'list' : 'free';
     },
+    isModelList() {
+      return ['home', 'play', 'inspire', 'learn', 'favorites', 'about'].includes(this.$route.name);
+    },
+    colorsVisibility() {
+      return this.$store.state.layout.colorsVisibility.map(opacity => opacity * 100);
+    },
   },
   methods: {
     changeListMode(data) {
-      console.log(data);
       this.$store.state.layout.listMode = data === 'list';
+    },
+    toggleColorVisibility(value, colorId) {
+      const newArray = this.$store.state.layout.colorsVisibility.slice(0);
+      newArray[colorId] = parseFloat(value) / 100.0;
+      this.$store.commit(types.LAYOUT_UPDATE, {
+        colorsVisibility: newArray,
+      });
     },
   },
 };
@@ -231,6 +276,10 @@ body {
   top: 28px;
   height: 16px;
   width: 16px;
+}
+
+.list--group__header--active .list__tile .list__tile__action .icon {
+  transform: rotateZ(-180deg);
 }
 
 </style>

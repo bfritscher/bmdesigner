@@ -9,7 +9,7 @@ import BMC from '@/components/BMC';
 Vue.use(Router);
 
 function makeTitle(route) {
-  console.log(route);
+  console.log('TODO title from route', route);
   return 'test';
 }
 
