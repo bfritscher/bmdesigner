@@ -99,9 +99,9 @@
                 <v-icon light>keyboard_arrow_down</v-icon>
               </v-list-tile-action>
             </v-list-tile>
-            <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL_DARK" :key="colorId" v-show="colorsUsedInCanvas.has(colorId)">
+            <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL" :key="colorId" v-show="colorsUsedInCanvas.has(colorId)">
 
-              <v-btn-toggle flat :class="colorCode" :items="[{text: 'off', value: '0'}, {text: '1/4', value: '0.25'}, {text: '1/2', value: '0.5'},  {text: '3/4', value: '0.75'}, {text: 'on', value: '1'},]" mandatory :input-value="colorsVisibility[colorId]" @change="toggleColorVisibility($event, colorId)"> </v-btn-toggle>
+              <v-btn-toggle class="color-btn" :style="{'background-color': colorCode}" :class="colorCode" :items="[{text: 'off', value: '0'}, {text: '1/4', value: '0.25'}, {text: '1/2', value: '0.5'},  {text: '3/4', value: '0.75'}, {text: 'on', value: '1'},]" mandatory :input-value="colorsVisibility[colorId]" @change="toggleColorVisibility($event, colorId)"> </v-btn-toggle>
 
             </v-list-tile>
 
@@ -177,7 +177,7 @@
 </template>
 
 <script>
-import { COLORS_MATERIAL_DARK } from '@/utils';
+import { COLORS_MATERIAL } from '@/utils';
 import * as types from '@/store/mutation-types';
 import { mapGetters } from 'vuex';
 
@@ -194,7 +194,7 @@ export default {
         { picture: 48, text: 'Xbox Ahoy' },
       ],
       isColorsOpen: false,
-      COLORS_MATERIAL_DARK,
+      COLORS_MATERIAL,
     };
   },
   computed: {
@@ -276,6 +276,14 @@ body {
 
 .list--group__header--active .list__tile .list__tile__action .icon {
   transform: rotateZ(-180deg);
+}
+
+.color-btn .btn {
+  color: black;
+}
+
+.color-btn.btn-toggle--selected {
+  box-shadow: none;
 }
 
 </style>
