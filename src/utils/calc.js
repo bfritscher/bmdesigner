@@ -30,12 +30,12 @@ function generateDeps(notes) {
         graph = graph.concat(extractVar(math.parse(note.values[key])).map((dep) => {
           if (dep.indexOf('.') === -1) {
             // eslint-disable-next-line
-            dep = `${note.id}.${dep}`;
+            dep = `${note.calcId}.${dep}`;
           }
-          return [`${note.id}.${key}`, dep];
+          return [`${note.calcId}.${key}`, dep];
         }));
       } catch (e) {
-        console.log(e.message);
+        console.log(e.message, graph);
       }
     });
   });
@@ -43,19 +43,34 @@ function generateDeps(notes) {
 }
 
 export default function solve(notes) {
-  const sortedDeps = toposort(generateDeps(notes));
+  let sortedDeps;
+  try {
+    const nodes = notes.reduce((list, note) => list.concat(Object.keys(note.values).map(k => `${note.calcId}.${k}`)), []);
+    sortedDeps = toposort.array(nodes, generateDeps(notes));
+    console.log('deps', sortedDeps);
+  } catch (e) {
+    const regex = /(.*): "(.*)"/;
+    const m = regex.exec(e.message);
+    return {
+      [`err_${m[2]}`]: m[1],
+    };
+  }
   sortedDeps.reverse();
   const parser = math.parser();
   const dict = notes.reduce((d, note) => {
     // eslint-disable-next-line
-    d[note.id] = note;
-    parser.eval(`${note.id} = {}`);
+    d[note.calcId] = note;
+    parser.eval(`${note.calcId} = {}`);
     return d;
   }, {});
   sortedDeps.forEach((dep) => {
-    const [id, key] = dep.split('.');
-    console.log(`${dep} = ${dict[id].values[key]}`);
-    parser.eval(`${dep} = ${dict[id].values[key]}`);
+    const [calcId, key] = dep.split('.');
+    console.log(`${dep} = ${dict[calcId].values[key]}`);
+    try {
+      parser.eval(`${dep} = ${dict[calcId].values[key]}`);
+    } catch (e) {
+      parser.set(`err_${dep}`, e.message);
+    }
   });
 
   return parser.getAll();

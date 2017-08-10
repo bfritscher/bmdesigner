@@ -13,7 +13,7 @@
       </v-btn>
     </div>
     <!-- needed for textarea sizing bug -->
-    <div class="text-box" @click.prevent.stop>
+    <div class="text-box" @click.prevent.stop :style="{'background-image': `url(${value.image})`}" :class="{image: value.image}">
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
     </div>
   </div>
@@ -395,11 +395,11 @@ export default {
   bottom: 0;
   left: 0;
   margin: 4px;
-  /* pic mode */
-  /*
-  padding-top: 100px;
-  */
+}
 
+.note .text-box.image {
+  background-position: 50% 50%;
+  background-size: contain;
 }
 
 .note.list-mode .text-box {

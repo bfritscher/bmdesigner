@@ -5,14 +5,14 @@ describe('utils/calc', () => {
     it('should eval even if variables are given in wrong order', () => {
       expect(solve([
         {
-          id: 'cs1',
+          calcId: 'cs1',
           values: {
             market: 100,
             vip: 4,
           },
         },
         {
-          id: 'r1',
+          calcId: 'r1',
           values: {
             revenue: 'r1.size * r1.price',
             size: 'r1.share * cs1.market',

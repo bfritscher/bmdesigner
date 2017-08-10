@@ -301,10 +301,6 @@ body {
   width: 16px;
 }
 
-.list--group__header--active .list__tile .list__tile__action .icon {
-  transform: rotateZ(-180deg);
-}
-
 .color-btn .btn {
   color: black;
 }

@@ -29,6 +29,12 @@ npm test
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
+#calc
+store vuex
+update globally
+auto add id?
+display where?
+
 # BUGS
 -> font and note height also relative to canvas size?
 -> zone paddings + relative title size
@@ -44,9 +50,7 @@ free-mixed
 -> image mode hide/show labels allow elements without text?
 
 ## TODO
--> list home sections? sort?
 -> title
--> tags
 
 -> canvas selection menu / create new
 -> delete button?
@@ -66,6 +70,14 @@ free-mixed
     -> send new z-order
     -> vuexfire https://github.com/posva/vuexfire
 
+-> credits
+-> invite collaborate / share
+    -> remove collaborator
+
+-> export/import from strategyzer
+-> migrate user/data? bmdesigner
+
+# Nice to have
 -> search / filter
     -> update data onChange
     -> algolia? search through notes?
@@ -73,13 +85,9 @@ free-mixed
         notes
         ...
             permissions
+-> tags
+-> list home sections? sort?
 
--> export/import from strategyzer
--> migrate user/data? bmdesigner
-
--> credits
-
-# Nice to have
 -> presentation mode
    - animation order
    - animation pan order list?
@@ -87,10 +95,6 @@ free-mixed
 
 -> animate change
 -> track which user did what action
-
--> invite collaborate / share
-    -> remove collaborator
-
 
 -> mobile touch support
 -> screenshot preview / export
