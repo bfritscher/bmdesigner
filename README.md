@@ -30,25 +30,16 @@ npm test
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 
-
-
 # BUGS
--> font and note height also relative to canvas size?
--> zone paddings + relative title size
 -> box-shadow spacing in list mode
-
--> add question to end of quiz
--> logo zone what else?
--> where to put menus?
-
--> title sync with active model
-
-# modes
-free-mixed
-    text, pic, note
--> image mode hide/show labels allow elements without text?
+-> recompute list layout on note height change
 
 ## TODO
+
+-> logo zone what else? options to hide?
+-> title sync with active model
+-> where to put menus?
+-> trigger resize on mode switch
 -> delete button? canvas / note?
 -> canvas selection menu / create new
 
@@ -93,6 +84,7 @@ free-mixed
 
 # Future
 
+-> add question to end of quiz
 
 ## Demo
     -> calc

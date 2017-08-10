@@ -1,6 +1,6 @@
 <template>
   <div class="zone dropzone">
-    <v-layout class="label subheading">
+    <v-layout class="zone-label">
       <div>{{label}}</div>
        <v-flex></v-flex>
        <slot name="icon"></slot>
@@ -68,9 +68,14 @@ export default {
   transition: background-color 0.3s;
 }
 
-.label {
+.zone-label {
   margin: 5px;
   color: #333;
+  font-weight: 400;
+  font-size: var(--zoneLabelFontSize);
+}
+.application .zone-label .icon {
+  font-size: var(--zoneLabelIconFontSize);
 }
 
 .drop-active {

@@ -61,6 +61,13 @@ export default {
       },
     };
   },
+  mounted() {
+    window.addEventListener('resize', this.handleWindowResize);
+    this.handleWindowResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleWindowResize);
+  },
   computed: {
     ...mapGetters(['notesBMC']),
     ...mapState({
@@ -69,6 +76,10 @@ export default {
     }),
   },
   methods: {
+    handleWindowResize() {
+      this.$refs.paper.style.setProperty('--zoneLabelFontSize', `${this.$refs.paper.offsetHeight * 0.02}px`);
+      this.$refs.paper.style.setProperty('--zoneLabelIconFontSize', `${this.$refs.paper.offsetHeight * 0.03}px`);
+    },
     addNote(e) {
       const offset = totalOffset(this.$refs.paper);
       const noteCenter = {
