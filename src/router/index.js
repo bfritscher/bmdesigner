@@ -8,11 +8,6 @@ import BMC from '@/components/BMC';
 
 Vue.use(Router);
 
-function makeTitle(route) {
-  console.log('TODO title from route', route);
-  return 'test';
-}
-
 const router = new Router({
   routes: [
     {
@@ -55,19 +50,9 @@ const router = new Router({
       path: '/bmc',
       name: 'bmc',
       component: BMC,
-      meta: { title: makeTitle },
+      meta: { title: '' },
     },
   ],
-});
-
-router.beforeEach((to, from, next) => {
-  let title = 'BM|Designer';
-  const subTitle = typeof to.meta.title === 'string' ? to.meta.title : to.meta.title(to);
-  if (subTitle) {
-    title += ` | ${subTitle}`;
-  }
-  document.title = title;
-  next();
 });
 
 export default router;

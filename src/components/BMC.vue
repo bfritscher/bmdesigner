@@ -53,6 +53,7 @@ export default {
   name: 'bmc',
   data() {
     return {
+      title: 'helllo',
       logo: {
         image: '',
         color: '',
@@ -148,7 +149,7 @@ export default {
   color: #333;
 }
 
-.logo > div {
+.logo>div {
   position: absolute;
   top: 0;
   left: 0;

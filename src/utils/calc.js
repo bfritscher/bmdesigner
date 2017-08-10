@@ -47,7 +47,6 @@ export default function solve(notes) {
   try {
     const nodes = notes.reduce((list, note) => list.concat(Object.keys(note.values).map(k => `${note.calcId}.${k}`)), []);
     sortedDeps = toposort.array(nodes, generateDeps(notes));
-    console.log('deps', sortedDeps);
   } catch (e) {
     const regex = /(.*): "(.*)"/;
     const m = regex.exec(e.message);
@@ -65,7 +64,6 @@ export default function solve(notes) {
   }, {});
   sortedDeps.forEach((dep) => {
     const [calcId, key] = dep.split('.');
-    console.log(`${dep} = ${dict[calcId].values[key]}`);
     try {
       parser.eval(`${dep} = ${dict[calcId].values[key]}`);
     } catch (e) {

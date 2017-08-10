@@ -1,9 +1,9 @@
 <template>
   <v-container fluid grid-list-lg>
     <v-layout row wrap>
-          <v-btn fab class="floating-action" @click.native="newModel">
-      <v-icon>add</v-icon>
-    </v-btn>
+      <v-btn fab primary dark class="floating-action" @click.native="newModel">
+        <v-icon>add</v-icon>
+      </v-btn>
       <v-flex sm6 md4 xl3 v-for="(m, i) in models" :key="i">
         <v-card class="model">
           <v-card-media :contain="!!m.logo" :class="{'default-background': !m.logo}" :style="{'background-color': m.color ? m.color : colorHash(m.title)}" :src="m.logo ? m.logo : require('@/assets/default_bmc_logo_background.jpg')" height="160px">
@@ -153,9 +153,10 @@ export default {
 }
 
 .model .left-icons {
-  position:absolute;
+  position: absolute;
   top: 5px;
   left: 10px;
+  color: #fff;
 }
 
 .model .card__media .icon {

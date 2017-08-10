@@ -139,7 +139,8 @@
             </v-list-tile>
             <v-card>
               <v-card-text>
-                <v-text-field label="Send invite to email" required type="email" light v-model="inviteEmail"></v-text-field>
+                <h3 class="headline">Send invitation to?</h3>
+                <v-text-field label="Email" required type="email" light v-model="inviteEmail"></v-text-field>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -171,7 +172,21 @@
       <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field>
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
-        <v-toolbar-title :key="title">{{title}}</v-toolbar-title>
+         <v-dialog v-model="showDialogTitle" persistent :disabled="!isModelEdit">
+            <v-toolbar-title :key="title" slot="activator">{{title}}</v-toolbar-title>
+            <v-card>
+              <v-card-text>
+                <h3 class="headline">Name of project?</h3>
+                <v-text-field required light v-model="title"></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="black--text" flat @click.native="showDialogTitle = false">Cancel</v-btn>
+                <v-btn class="blue--text darken-1" flat @click.native="showDialogTitle = false">Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
       </transition>
       <v-spacer></v-spacer>
       <v-btn primary>Sign in</v-btn>
@@ -206,6 +221,7 @@ export default {
       mini: false,
       right: true,
       showDialogInvite: false,
+      showDialogTitle: false,
       inviteEmail: '',
       isColorsOpen: false,
       COLORS_MATERIAL,
@@ -219,18 +235,19 @@ export default {
   computed: {
     ...mapGetters(['colorsUsedInCanvas']),
     title() {
-      /*
-      const type = this.$store.state.layout.showVPC ? 'Value Proposition Canvas'
-      : 'Business Model Canvas';
-      */
-      return typeof this.$route.meta.title === 'string' ?
-        this.$route.meta.title : this.$route.meta.title(this.$route);
+      const title = this.$route.meta.title;
+      document.title = `BM|Designer | ${title}`;
+      return title;
     },
     listModeText() {
       return this.$store.state.layout.listMode ? 'list' : 'free';
     },
     isModelList() {
       return ['home', 'play', 'inspire', 'learn', 'favorites', 'about'].includes(this.$route.name);
+    },
+    isModelEdit() {
+      // TODO: adapt
+      return ['bmc'].includes(this.$route.name);
     },
     colorsVisibility() {
       return this.$store.state.layout.colorsVisibility.map(opacity => opacity.toString());
