@@ -31,7 +31,7 @@
           <v-icon light slot="icon">attach_money</v-icon>
         </zone>
         <div class="logo" light>
-          <image-zone :image.sync="logo.image" :color.sync="logo.color"></image-zone>
+          <image-zone :image="canvas.logoImage" @update:image="canvasUpdate({logoImage: $event})" :color="canvas.logoColor" @update:color="canvasUpdate({logoColor: $event})"></image-zone>
         </div>
         <transition-group name="note-transition" tag="div">
           <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc highlight" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
@@ -47,18 +47,13 @@ import Note from '@/components/Note';
 import Zone from '@/components/Zone';
 import Vpc from '@/components/VPC';
 import ImageZone from '@/components/ImageZone';
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState, mapActions } from 'vuex';
 import { totalOffset } from '@/utils';
 
 export default {
   name: 'bmc',
   data() {
     return {
-      title: 'helllo',
-      logo: {
-        image: '',
-        color: '',
-      },
     };
   },
   mounted() {
@@ -73,7 +68,15 @@ export default {
     ...mapState({
       selectedVP: state => state.layout.selectedVP,
       selectedCS: state => state.layout.selectedCS,
+      listMode: state => state.layout.listMode,
+      canvas: state => state.canvas,
     }),
+  },
+  watch: {
+    listMode() {
+      // triggers heigh calculations
+      window.dispatchEvent(new Event('resize'));
+    },
   },
   methods: {
     handleWindowResize() {
@@ -104,6 +107,7 @@ export default {
       }
       this.$store.dispatch('NOTE_CREATE', note);
     },
+    ...mapActions(['canvasUpdate']),
   },
   components: {
     Note,

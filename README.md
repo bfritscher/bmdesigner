@@ -33,13 +33,13 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 # BUGS
 -> box-shadow spacing in list mode
 -> recompute list layout on note height change
+-> 1024px menu bar show
+-> mini bar top margin
 
 ## TODO
 
--> logo zone what else? options to hide?
--> title sync with active model
+vuex canvas title, logo, image,
 -> where to put menus?
--> trigger resize on mode switch
 -> delete button? canvas / note?
 -> canvas selection menu / create new
 
@@ -52,6 +52,8 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
     -> vuexfire https://github.com/posva/vuexfire
 
 -> save menu state to localstorage and/or user's profile
+    listMode for models?
+    menu states
 
 -> invite collaborate / share
     -> remove collaborator
@@ -95,6 +97,9 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
     check uniquness of ids
 
 ## other
+
+-> logo zone what else? options to hide?
+    -> total calc?
 -> tour intro.js or hopscotch
 -> view/edit mode?
     -> embed?

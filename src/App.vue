@@ -1,6 +1,6 @@
 <template>
   <v-app toolbar>
-    <v-navigation-drawer class="drawer" overflow :mini-variant="mini" persistent enable-resize-watcher v-model="drawer">
+    <v-navigation-drawer :mobile-break-point="1440" class="drawer" overflow :mini-variant="mini" persistent enable-resize-watcher v-model="drawer">
       <v-toolbar flat class="blue-grey darken-2" dark v-show="!mini">
         <v-toolbar-title>
           <router-link :to="{name: 'home'}" id="logo-title">BM|Designer</router-link>
@@ -99,6 +99,11 @@
                 <v-icon light>keyboard_arrow_down</v-icon>
               </v-list-tile-action>
             </v-list-tile>
+            <v-list-tile v-if="colorsUsedInCanvas.size === 0">
+              <v-list-tile-content>
+                No used colors
+              </v-list-tile-content>
+            </v-list-tile>
             <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL" :key="colorId" v-show="colorsUsedInCanvas.has(colorId)">
 
               <v-btn-toggle class="color-btn" :style="{'background-color': colorCode}" :class="colorCode" :items="[{text: 'off', value: '0'}, {text: '1/4', value: '0.25'}, {text: '1/2', value: '0.5'},  {text: '3/4', value: '0.75'}, {text: 'on', value: '1'},]" mandatory :input-value="colorsVisibility[colorId]" @change="toggleColorVisibility($event, colorId)"> </v-btn-toggle>
@@ -107,8 +112,16 @@
 
           </v-list-group>
 
-          <v-btn-toggle class="red" mandatory :items="[{text: 'Free', value: 'free'}, {text: 'List', value: 'list'}]" :input-value="listModeText" @change="changeListMode"></v-btn-toggle>
-          {{ $store.state.layout.listMode }}
+          <v-list-tile v-ripple @click.native="changeListMode">
+            <v-list-tile-action>
+              <v-icon>{{listModeSwitch.icon}}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{listModeSwitch.text}}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
 
           <v-divider class="my-2"></v-divider>
 
@@ -140,7 +153,7 @@
             <v-card>
               <v-card-text>
                 <h3 class="headline">Send invitation to?</h3>
-                <v-text-field label="Email" required type="email" light v-model="inviteEmail"></v-text-field>
+                <v-text-field label="Email" required type="email" light v-model="inviteEmail" :autofocus="true"></v-text-field>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -149,52 +162,53 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-
-          <v-list-tile v-ripple>
-            <v-list-tile-action>
-              <v-icon class="grey--text text--darken-1">settings</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
-          </v-list-tile>
+          <!--
+                <v-list-tile v-ripple>
+                  <v-list-tile-action>
+                    <v-icon class="grey--text text--darken-1">settings</v-icon>
+                  </v-list-tile-action>
+                  <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
+                </v-list-tile>
+      -->
         </div>
       </v-list>
     </v-navigation-drawer>
     <!--
-              <v-navigation-drawer
-                  right
-                  temporary
-                  hide-overlay
-                  :value="$store.state.layout.focusedNote"
-                ></v-navigation-drawer>
-                -->
+                    <v-navigation-drawer
+                        right
+                        temporary
+                        hide-overlay
+                        :value="$store.state.layout.focusedNote"
+                      ></v-navigation-drawer>
+                      -->
     <v-toolbar fixed class="blue-grey darken-2" dark>
       <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
-      <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field>
+      <!-- <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field> -->
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
-         <v-dialog v-model="showDialogTitle" persistent :disabled="!isModelEdit">
-            <v-toolbar-title :key="title" slot="activator">{{title}}</v-toolbar-title>
-            <v-card>
-              <v-card-text>
-                <h3 class="headline">Name of project?</h3>
-                <v-text-field required light v-model="title"></v-text-field>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn class="black--text" flat @click.native="showDialogTitle = false">Cancel</v-btn>
-                <v-btn class="blue--text darken-1" flat @click.native="showDialogTitle = false">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+        <v-dialog v-model="showDialogTitle" persistent :disabled="!isModelEdit">
+          <v-toolbar-title :key="title" slot="activator">{{title}}</v-toolbar-title>
+          <v-card>
+            <v-card-text>
+              <h3 class="headline">Name of project?</h3>
+              <v-text-field required light :value="$store.state.canvas.title" @input="localTitle=$event" :autofocus="true"></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn class="black--text" flat @click.native="showDialogTitle = false">Cancel</v-btn>
+              <v-btn class="blue--text darken-1" flat @click.native="saveNewTitle">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
       </transition>
       <v-spacer></v-spacer>
       <v-btn primary>Sign in</v-btn>
       <!--
-                <v-btn icon>
-                  <v-icon>more_vert</v-icon>
-                </v-btn>
-                -->
+                      <v-btn icon>
+                        <v-icon>more_vert</v-icon>
+                      </v-btn>
+                      -->
     </v-toolbar>
     <main>
       <v-container fluid style="position: relative">
@@ -222,6 +236,7 @@ export default {
       right: true,
       showDialogInvite: false,
       showDialogTitle: false,
+      localTitle: '',
       inviteEmail: '',
       isColorsOpen: false,
       COLORS_MATERIAL,
@@ -237,7 +252,7 @@ export default {
     title() {
       let title = this.$route.meta && this.$route.meta.title ? this.$route.meta.title : '';
       if (this.isModelEdit) {
-        title += 'Hilti | ';
+        title += `${this.$store.state.canvas.title} | `;
         if (this.$store.state.layout.showVPC) {
           if (this.$store.state.layout.selectedVP) {
             title += 'Value Proposition Zoom';
@@ -255,8 +270,8 @@ export default {
       document.title = `BM|Designer | ${title}`;
       return title;
     },
-    listModeText() {
-      return this.$store.state.layout.listMode ? 'list' : 'free';
+    listModeSwitch() {
+      return this.$store.state.layout.listMode ? { text: 'Switch to sticky notes', icon: 'widgets' } : { text: 'Switch to lists', icon: 'list' };
     },
     isModelList() {
       return ['home', 'play', 'inspire', 'learn', 'favorites', 'about'].includes(this.$route.name);
@@ -270,8 +285,12 @@ export default {
     },
   },
   methods: {
-    changeListMode(data) {
-      this.$store.state.layout.listMode = data === 'list';
+    changeListMode() {
+      this.$store.commit('LAYOUT_UPDATE', { listMode: !this.$store.state.layout.listMode });
+    },
+    saveNewTitle() {
+      this.showDialogTitle = false;
+      this.$store.dispatch('canvasUpdate', { title: this.localTitle });
     },
     showColors() {
       if (this.mini) {

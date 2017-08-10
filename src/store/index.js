@@ -27,6 +27,18 @@ export const VPC_CS_TYPES = [
 // initial state
 const initialState = {
   notes: [],
+  canvas: {
+    title: '',
+    logoImage: '',
+    logoColor: '',
+    date: '',
+    nb: 0,
+    users: {},
+  },
+  user: {
+    canvases: {},
+    favorites: {},
+  },
   calcResults: {},
   layout: {
     selectedVP: null,
@@ -80,6 +92,9 @@ const actions = {
   NOTE_UPDATE_CALC_VAR({ commit }, payload) {
     commit(types.NOTE_UPDATE_CALC_VAR, payload);
   },
+  canvasUpdate({ commit }, payload) {
+    commit(types.CANVAS_UPDATE, payload);
+  },
 };
 
 // mutations
@@ -120,6 +135,11 @@ const mutations = {
   [types.LAYOUT_UPDATE](state, payload) {
     Object.keys(payload).forEach((key) => {
       Vue.set(state.layout, key, payload[key]);
+    });
+  },
+  [types.CANVAS_UPDATE](state, payload) {
+    Object.keys(payload).forEach((key) => {
+      Vue.set(state.canvas, key, payload[key]);
     });
   },
 };
