@@ -5,8 +5,13 @@
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
     <div class="icons">
-      <v-btn v-if="isEdit" flat icon primary small class="description" light @click.native.prevent.stop="showNoteOptions">
+      <v-spacer v-if="$store.state.layout.listMode"></v-spacer>
+      <v-btn @mouseover="moveToTop" v-tooltip:bottom="{ html: value.description }" v-if="value.description" flat icon primary small class="description" light @click.native.prevent.stop="showNoteOptions">
         <v-icon>description</v-icon>
+      </v-btn>
+      <v-spacer v-if="!$store.state.layout.listMode"></v-spacer>
+      <v-btn v-if="isEdit" flat icon primary small class="show-detail" light @click.native.prevent.stop="showNoteOptions">
+        <v-icon>mode_edit</v-icon>
       </v-btn>
       <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" flat icon primary small class="zoom" light @click.native="zoom()">
         <v-icon>zoom_in</v-icon>
@@ -16,6 +21,18 @@
     <div class="text-box" @click.prevent.stop :style="{'background-image': `url(${value.image})`}" :class="{image: value.image}">
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
     </div>
+    <div class="calcvar-display">
+      <div class="calcvar-display-b" v-if="value.calcDisplayB" v-tooltip:bottom="{ html: value.calcDisplayB }">
+        {{this.calcResults[value.calcId][value.calcDisplayB] | humanformat}}
+      </div>
+      <div class="calcvar-display-r" v-if="value.calcDisplayR" v-tooltip:bottom="{ html: value.calcDisplayR }">
+        {{this.calcResults[value.calcId][value.calcDisplayR] | humanformat}}
+      </div>
+      <div class="calcvar-display-g" v-if="value.calcDisplayG" v-tooltip:bottom="{ html: value.calcDisplayG }">
+        {{this.calcResults[value.calcId][value.calcDisplayG] | humanformat}}
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -38,6 +55,7 @@ export default {
     return {
       x: 0,
       y: 0,
+      total: 1100000,
       height: 5, // TODO init with watch
       dragging: false,
       dragStartType: '',
@@ -62,7 +80,7 @@ export default {
           this.dragging = true;
           this.x = this.$el.offsetLeft;
           this.y = this.$el.offsetTop;
-          this.$store.dispatch('NOTE_MOVE_TOP', this.value);
+          this.moveToTop();
         },
         onmove: (event) => {
           this.x += event.dx;
@@ -155,6 +173,9 @@ export default {
     color() {
       return this.value.colors[0];
     },
+    calcResults() {
+      return this.$store.state.calcResults;
+    },
     opacity() {
       // calculate visibility based on colors
       return this.$store.state.layout.colorsVisibility.reduce((totalOpacity, opacity, colorId) => {
@@ -226,9 +247,12 @@ export default {
       }
       this.calculateFontSizeAndHeight();
     },
+    moveToTop() {
+      this.$store.dispatch('NOTE_MOVE_TOP', this.value);
+    },
     handleFocus() {
       this.$store.commit(types.LAYOUT_UPDATE, { focusedNote: this.value });
-      this.$store.commit(types.NOTE_MOVE_TOP, this.value);
+      this.moveToTop();
     },
     handleWheel(e) {
       if (!this.$store.state.layout.listMode) {
@@ -272,9 +296,16 @@ export default {
       }
       let ordered = this.$store.getters.getNotesByTypes(type);
       if (VPC_TYPES.includes(type)) {
-        ordered = ordered.filter((note => note.parent === this.$store.state.layout.selectedVP.id ||
-          note.parent === this.$store.state.layout.selectedCS.id
-        ));
+        ordered = ordered.filter(((note) => {
+          let matched = false;
+          if (this.$store.state.layout.selectedVP) {
+            matched = note.parent === this.$store.state.layout.selectedVP.id;
+          }
+          if (!matched && this.$store.state.layout.selectedCS) {
+            matched = note.parent === this.$store.state.layout.selectedCS.id;
+          }
+          return matched;
+        }));
       }
 
       ordered.sort((a, b) => {
@@ -431,6 +462,9 @@ export default {
   position: absolute;
   bottom: -12px;
   right: -12px;
+  left: -12px;
+  z-index: 1;
+  display: flex;
 }
 
 .note.list-mode .icons {
@@ -472,5 +506,37 @@ export default {
 .note-transition-enter,
 .note-transition-leave-to {
   opacity: 0;
+}
+
+.note .calcvar-display {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  display: flex;
+
+}
+
+.note .calcvar-display > div {
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px;
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  padding: 4px;
+  font-family: 'Itim', cursive;
+  font-weight: bold;
+  margin: 0 4px;
+}
+
+.note .calcvar-display-r {
+  color: #D32F2F;
+  background-color: rgba(229, 115, 115, 0.7);
+}
+
+.note .calcvar-display-g {
+  color: #558B2F;
+  background-color: rgba(139, 195, 74, 0.7);
+}
+
+.note .calcvar-display-b {
+  color: #2196F3;
+  background-color: rgba(144, 202, 249, 0.7);
 }
 </style>

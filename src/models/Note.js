@@ -2,6 +2,7 @@ const uuidv4 = require('uuid/v4');
 
 export default class Note {
   constructor(args) {
+    args = args || {};
     this.id = args.id || uuidv4();
     this.left = args.left || 0;
     this.top = args.top || 0;
@@ -11,11 +12,17 @@ export default class Note {
     this.height = args.height || 5;
     this.type = args.type || '';
     this.text = args.text || '';
+    this.description = args.description || '';
     this.colors = args.colors && args.colors.length > 0 ? args.colors : [0];
     this.image = args.image || '';
     this.parent = args.parent;
     this.calcId = args.calcId || '';
     this.values = args.values || {};
+    this.calcDisplayR = args.calcDisplayR || null;
+    this.calcDisplayG = args.calcDisplayG || null;
+    this.calcDisplayB = args.calcDisplayB || null;
+    this.showLabel = args.showLabels || true;
+    this.showAsSticky = args.showAsSticky || true;
   }
 
   static changeColor(colorsSource, index, color) {

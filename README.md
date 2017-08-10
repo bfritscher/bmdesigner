@@ -29,11 +29,8 @@ npm test
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
-#calc
-store vuex
-update globally
-auto add id?
-display where?
+
+
 
 # BUGS
 -> font and note height also relative to canvas size?
@@ -44,25 +41,18 @@ display where?
 -> logo zone what else?
 -> where to put menus?
 
+-> title sync with active model
+
 # modes
 free-mixed
     text, pic, note
 -> image mode hide/show labels allow elements without text?
 
 ## TODO
--> title
-
+-> delete button? canvas / note?
 -> canvas selection menu / create new
--> delete button?
-
--> add custom props/values to note
-    -> integrate calc
-    -> calculation integrate with options and UI?
-    -> model slugs
-    -> image drop file popup
 
 
--> save menu state to localstorage and/or user's profile
 -> login
 -> backend
     -> duplicate canvas
@@ -70,7 +60,8 @@ free-mixed
     -> send new z-order
     -> vuexfire https://github.com/posva/vuexfire
 
--> credits
+-> save menu state to localstorage and/or user's profile
+
 -> invite collaborate / share
     -> remove collaborator
 
@@ -101,6 +92,17 @@ free-mixed
 
 
 # Future
+
+
+## Demo
+    -> calc
+        show vpc can be aggregated on bmc
+
+## calc
+    auto add id?
+    check uniquness of ids
+
+## other
 -> tour intro.js or hopscotch
 -> view/edit mode?
     -> embed?

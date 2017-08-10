@@ -3,6 +3,7 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import VueTimeago from 'vue-timeago';
+import humanFormat from 'human-format';
 /*
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue';
@@ -21,6 +22,8 @@ Vue.use(VueTimeago, {
     'en-US': require('vue-timeago/locales/en-US.json'),
   },
 });
+
+Vue.filter('humanformat', input => (isNaN(input) ? input : humanFormat(input)));
 /*
 Raven
   .config('https://a3e9d60494a249d4bba6e6244380e411@sentry.j42.org/15', {

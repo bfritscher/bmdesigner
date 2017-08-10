@@ -3,6 +3,7 @@ import 'es6-promise/auto';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Note from '@/models/Note';
+import solve from '@/utils/calc';
 import * as types from './mutation-types';
 
 Vue.use(Vuex);
@@ -26,6 +27,7 @@ export const VPC_CS_TYPES = [
 // initial state
 const initialState = {
   notes: [],
+  calcResults: {},
   layout: {
     selectedVP: null,
     selectedCS: null,
@@ -75,6 +77,9 @@ const actions = {
   NOTE_MOVE_TOP({ commit }, payload) {
     commit(types.NOTE_MOVE_TOP, payload);
   },
+  NOTE_UPDATE_CALC_VAR({ commit }, payload) {
+    commit(types.NOTE_UPDATE_CALC_VAR, payload);
+  },
 };
 
 // mutations
@@ -107,6 +112,10 @@ const mutations = {
       state.notes.splice(index, 1);
       state.notes.push(payload);
     }
+  },
+  [types.NOTE_UPDATE_CALC_VAR](state, payload) {
+    Vue.set(payload.note.values, payload.key, payload.value);
+    state.calcResults = solve(state.notes);
   },
   [types.LAYOUT_UPDATE](state, payload) {
     Object.keys(payload).forEach((key) => {

@@ -59,11 +59,6 @@ export default {
       },
     };
   },
-  watch: {
-    image() {
-      console.log('new image');
-    },
-  },
   methods: {
     handleClick(e) {
       if (this.allowClick) {
@@ -80,7 +75,7 @@ export default {
       this.lastEvent = e;
       if (files.length > 0 && this.checkFile(files[0])) {
         this.setSourceImg(files[0]);
-      } else {
+      } else if (e.dataTransfer) {
         const imageUrl = e.dataTransfer.getData('text/html');
         const extracSrc = /src="?([^"\s]+)"?\s*/;
         const url = extracSrc.exec(imageUrl);

@@ -22,20 +22,28 @@ function extractVar(node) {
 }
 
 function generateDeps(notes) {
-  let graph = [];
+  const graph = {
+    nodes: new Set(notes.reduce((list, note) => list.concat(Object.keys(note.values).map(k => `${note.calcId}.${k}`)), [])),
+    edges: [],
+  };
   notes.forEach((note) => {
     Object.keys(note.values).forEach((key) => {
       // extract dependencies
       try {
-        graph = graph.concat(extractVar(math.parse(note.values[key])).map((dep) => {
+        const vars = extractVar(math.parse(note.values[key]));
+        graph.edges = graph.edges.concat(vars.map((dep) => {
           if (dep.indexOf('.') === -1) {
             // eslint-disable-next-line
             dep = `${note.calcId}.${dep}`;
           }
-          return [`${note.calcId}.${key}`, dep];
+          const from = `${note.calcId}.${key}`;
+          graph.nodes.add(from);
+          graph.nodes.add(dep);
+          return [from, dep];
         }));
+      // eslint-disable-next-line
       } catch (e) {
-        console.log(e.message, graph);
+
       }
     });
   });
@@ -45,8 +53,8 @@ function generateDeps(notes) {
 export default function solve(notes) {
   let sortedDeps;
   try {
-    const nodes = notes.reduce((list, note) => list.concat(Object.keys(note.values).map(k => `${note.calcId}.${k}`)), []);
-    sortedDeps = toposort.array(nodes, generateDeps(notes));
+    const graph = generateDeps(notes);
+    sortedDeps = toposort.array([...graph.nodes], graph.edges);
   } catch (e) {
     const regex = /(.*): "(.*)"/;
     const m = regex.exec(e.message);

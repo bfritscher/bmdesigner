@@ -235,7 +235,23 @@ export default {
   computed: {
     ...mapGetters(['colorsUsedInCanvas']),
     title() {
-      const title = this.$route.meta.title;
+      let title = this.$route.meta && this.$route.meta.title ? this.$route.meta.title : '';
+      if (this.isModelEdit) {
+        title += 'Hilti | ';
+        if (this.$store.state.layout.showVPC) {
+          if (this.$store.state.layout.selectedVP) {
+            title += 'Value Proposition Zoom';
+          }
+          if (this.$store.state.layout.selectedVP && this.$store.state.layout.selectedCS) {
+            title += ' & ';
+          }
+          if (this.$store.state.layout.selectedCS) {
+            title += 'Customer Segment Zoom';
+          }
+        } else {
+          title += 'Business Model Canvas';
+        }
+      }
       document.title = `BM|Designer | ${title}`;
       return title;
     },

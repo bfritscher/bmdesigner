@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="credits caption" ><a href="https://strategyzer.com/canvas/business-model-canvas" target="_blank">The Business Model Canvas</a> by <a href="http://strategyzer.com" target="_blank">Strategyzer AG</a> is licensed under <a href="http://creativecommons.org/licenses/by-sa/3.0" target="_blank">CC BY-SA 3.0</a></div>
     <image-zone :allow-click="false" @image-drop="addNote" class="canvas" @click.native.prevent.stop="addNote($event)">
       <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
         <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 40%; height: 25%">
@@ -155,5 +156,15 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.credits {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+.credits a{
+  text-decoration: none;
 }
 </style>
