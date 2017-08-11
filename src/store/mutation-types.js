@@ -4,5 +4,7 @@ export const NOTE_MOVE = 'NOTE_MOVE';
 export const NOTE_UPDATE = 'NOTE_UPDATE';
 export const NOTE_MOVE_TOP = 'NOTE_MOVE_TOP';
 export const NOTE_UPDATE_CALC_VAR = 'NOTE_UPDATE_CALC_VAR';
+export const SOLVE_CALC = 'SOLVE_CALC';
 export const LAYOUT_UPDATE = 'LAYOUT_UPDATE';
 export const CANVAS_UPDATE = 'CANVAS_UPDATE';
+export const CURRENT_USER = 'CURRENT_USER';

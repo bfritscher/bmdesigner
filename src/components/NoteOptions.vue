@@ -17,7 +17,7 @@
             </v-flex>
           </v-layout>
 
-          <v-divider></v-divider>
+          <v-divider></v-divider>c
           <v-text-field :class="`color-${note.colors[0]}`" name="description" label="Description" :value="note.description" @input="updateNote('description', $event)" textarea></v-text-field>
           <v-divider></v-divider>
           <v-layout row align-center @click="showCalc = !showCalc">
@@ -32,6 +32,7 @@
           </v-layout>
           <v-slide-y-transition>
             <div v-if="showCalc" key="calc">
+              <v-alert error :value="results.err">{{results.err}}</v-alert>
               <v-layout row align-center>
                 <v-flex xs1>
                   <v-icon>vpn_key</v-icon>
@@ -255,17 +256,17 @@ export default {
 
 .btn--icon .icon.calcDisplayColorR,
 .icon.calcDisplayColorR {
-  color: #D32F2F;
+  color: #D32F2F !important;
 }
 
 .btn--icon .icon.calcDisplayColorG,
 .icon.calcDisplayColorG {
-  color: #558B2F;
+  color: #558B2F !important;
 }
 
 .btn--icon .icon.calcDisplayColorB,
 .icon.calcDisplayColorB {
-  color: #2196F3;
+  color: #2196F3 !important;
 }
 
 @media (min-width: 600px) {

@@ -21,7 +21,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile exact :to="{name: 'home'}" v-ripple>
+        <v-list-tile exact :to="{name: 'home'}" ripple>
           <v-list-tile-action>
             <v-icon light>home</v-icon>
           </v-list-tile-action>
@@ -32,7 +32,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile :to="{name: 'favorites'}" v-show="isModelList" v-ripple>
+        <v-list-tile :disabled="!currentUser" :to="{name: 'favorites'}" v-show="isModelList" ripple>
           <v-list-tile-action>
             <v-icon light>favorite</v-icon>
           </v-list-tile-action>
@@ -75,7 +75,7 @@
         </v-list-tile>
         <v-list-tile :to="{name: 'about'}" v-ripple>
           <v-list-tile-action>
-            <v-icon light>question_answer</v-icon>
+            <v-icon light>feedback</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
@@ -128,16 +128,30 @@
           <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
 
           <v-list>
-            <v-list-tile v-for="item in items2" :key="item.text" avatar v-ripple>
-              <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }">
-                <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
+            <v-list-tile v-for="(u, key) in $store.state.canvas.users" :key="key" avatar ripple>
+              <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }"
+                :class="[u.online ? 'green--after' : 'red--after']">
+                <img :src="u.avatar" :alt="u.name">
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title v-text="item.text"></v-list-tile-title>
+                <v-list-tile-title v-text="u.name"></v-list-tile-title>
               </v-list-tile-content>
-              <v-list-tile-action>
-                <v-icon v-bind:class="[item.active ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
+              <!-- <v-list-tile-action>
+                <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
               </v-list-tile-action>
+              -->
+            </v-list-tile>
+            <v-list-tile v-for="(u, key) in $store.state.canvas.invites_sent" :key="key">
+              <v-list-tile-action>
+                <v-icon light>mail_outline</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title v-text="u"></v-list-tile-title>
+              </v-list-tile-content>
+              <!-- <v-list-tile-action>
+                <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
+              </v-list-tile-action>
+              -->
             </v-list-tile>
           </v-list>
 
@@ -158,29 +172,29 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn class="black--text" flat @click.native="showDialogInvite = false">Cancel</v-btn>
-                <v-btn class="blue--text darken-1" flat @click.native="showDialogInvite = false">Send</v-btn>
+                <v-btn class="blue--text darken-1" flat @click.native="sendInviteEmail">Send</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
           <!--
-                <v-list-tile v-ripple>
-                  <v-list-tile-action>
-                    <v-icon class="grey--text text--darken-1">settings</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
-                </v-list-tile>
-      -->
+                    <v-list-tile v-ripple>
+                      <v-list-tile-action>
+                        <v-icon class="grey--text text--darken-1">settings</v-icon>
+                      </v-list-tile-action>
+                      <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
+                    </v-list-tile>
+          -->
         </div>
       </v-list>
     </v-navigation-drawer>
     <!--
-                    <v-navigation-drawer
-                        right
-                        temporary
-                        hide-overlay
-                        :value="$store.state.layout.focusedNote"
-                      ></v-navigation-drawer>
-                      -->
+                        <v-navigation-drawer
+                            right
+                            temporary
+                            hide-overlay
+                            :value="$store.state.layout.focusedNote"
+                          ></v-navigation-drawer>
+                          -->
     <v-toolbar fixed class="blue-grey darken-2" dark>
       <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
       <!-- <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field> -->
@@ -191,7 +205,7 @@
           <v-card>
             <v-card-text>
               <h3 class="headline">Name of project?</h3>
-              <v-text-field required light :value="$store.state.canvas.title" @input="localTitle=$event" :autofocus="true"></v-text-field>
+              <v-text-field required light :value="$store.state.canvas.info.name" @input="localTitle=$event" :autofocus="true"></v-text-field>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -200,15 +214,43 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-
       </transition>
       <v-spacer></v-spacer>
-      <v-btn primary>Sign in</v-btn>
-      <!--
-                      <v-btn icon>
-                        <v-icon>more_vert</v-icon>
-                      </v-btn>
-                      -->
+      <v-menu offset-y v-if="currentUser">
+        <v-list-tile-avatar slot="activator">
+          <img :src="currentUser.photoURL" />
+        </v-list-tile-avatar>
+        <v-list>
+          <v-list-tile avatar>
+            <v-list-tile-avatar>
+              <img v-if="currentUser.photoURL" :src="currentUser.photoURL" />
+              <avatar v-else :username="currentUser.displayName"></avatar>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>{{currentUser.displayName}}</v-list-tile-title>
+              <v-list-tile-sub-title>{{currentUser.email}}</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile @click.native="signOut">
+            <v-list-tile-action>
+              <v-icon>exit_to_app</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Sign out</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile exact :to="{name: 'about'}">
+            <v-list-tile-action>
+              <v-icon>feedback</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Send feedback</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+      <v-btn v-else exact :to="{name: 'login'}">Sign in</v-btn>
+
     </v-toolbar>
     <main>
       <v-container fluid style="position: relative">
@@ -216,16 +258,24 @@
       </v-container>
     </main>
     <note-options></note-options>
+    <v-dialog :value="$store.state.layout.showLoading" persistent>
+        <v-card>
+          <v-card-title class="headline">Working</v-card-title>
+          <v-card-text>{{$store.state.layout.showLoading}}</v-card-text>
+        </v-card>
+      </v-dialog>
   </v-app>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import { COLORS_MATERIAL } from '@/utils';
+// import Avatar from 'vue-avatar/dist/Avatar';
+// https://github.com/eliep/vue-avatar/pull/17/files
+import { auth, db } from '@/utils/firebase';
 
 import * as types from '@/store/mutation-types';
 import NoteOptions from '@/components/NoteOptions';
-
 
 export default {
   name: 'app',
@@ -249,10 +299,11 @@ export default {
   },
   computed: {
     ...mapGetters(['colorsUsedInCanvas']),
+    ...mapState(['currentUser']),
     title() {
       let title = this.$route.meta && this.$route.meta.title ? this.$route.meta.title : '';
       if (this.isModelEdit) {
-        title += `${this.$store.state.canvas.title} | `;
+        title += `${this.$store.state.canvas.info.name || 'Loading'} | `;
         if (this.$store.state.layout.showVPC) {
           if (this.$store.state.layout.selectedVP) {
             title += 'Value Proposition Zoom';
@@ -274,7 +325,7 @@ export default {
       return this.$store.state.layout.listMode ? { text: 'Switch to sticky notes', icon: 'widgets' } : { text: 'Switch to lists', icon: 'list' };
     },
     isModelList() {
-      return ['home', 'play', 'inspire', 'learn', 'favorites', 'about'].includes(this.$route.name);
+      return ['home', 'play', 'inspire', 'learn', 'favorites', 'about', 'login'].includes(this.$route.name);
     },
     isModelEdit() {
       // TODO: adapt
@@ -285,12 +336,21 @@ export default {
     },
   },
   methods: {
+    signOut() {
+      auth.signOut();
+      this.$router.push({ name: 'home' });
+    },
+    sendInviteEmail() {
+      db.child('projects').child(this.$store.state.canvas['.key']).child('invite_request').set(this.inviteEmail);
+      this.inviteEmail = '';
+      this.showDialogInvite = false;
+    },
     changeListMode() {
       this.$store.commit('LAYOUT_UPDATE', { listMode: !this.$store.state.layout.listMode });
     },
     saveNewTitle() {
       this.showDialogTitle = false;
-      this.$store.dispatch('canvasUpdate', { title: this.localTitle });
+      this.$store.dispatch('canvasInfoUpdate', { name: this.localTitle });
     },
     showColors() {
       if (this.mini) {
@@ -308,6 +368,7 @@ export default {
   },
   components: {
     NoteOptions,
+   // Avatar,
   },
 };
 </script>

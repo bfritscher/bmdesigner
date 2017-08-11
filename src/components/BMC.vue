@@ -3,6 +3,9 @@
     <div class="credits caption" ><a href="https://strategyzer.com/canvas/business-model-canvas" target="_blank">The Business Model Canvas</a> by <a href="http://strategyzer.com" target="_blank">Strategyzer AG</a> is licensed under <a href="http://creativecommons.org/licenses/by-sa/3.0" target="_blank">CC BY-SA 3.0</a></div>
     <image-zone :allow-click="false" @image-drop="addNote" class="canvas" @click.native.prevent.stop="addNote($event)">
       <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
+
+        <v-progress-linear transition="slide-y-transition" class="ma-0" v-if="isLoading" :indeterminate="true"></v-progress-linear>
+
         <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 40%; height: 25%">
           <v-icon light slot="icon">account_balance</v-icon>
         </zone>
@@ -31,7 +34,7 @@
           <v-icon light slot="icon">attach_money</v-icon>
         </zone>
         <div class="logo" light>
-          <image-zone :image="canvas.logoImage" @update:image="canvasUpdate({logoImage: $event})" :color="canvas.logoColor" @update:color="canvasUpdate({logoColor: $event})"></image-zone>
+          <image-zone :image="canvas.info.logoImage" @update:image="canvasInfoUpdate({logoImage: $event})" :color="canvas.info.logoColor" @update:color="canvasInfoUpdate({logoColor: $event})"></image-zone>
         </div>
         <transition-group name="note-transition" tag="div">
           <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc highlight" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
@@ -49,19 +52,26 @@ import Vpc from '@/components/VPC';
 import ImageZone from '@/components/ImageZone';
 import { mapGetters, mapState, mapActions } from 'vuex';
 import { totalOffset } from '@/utils';
+import { db } from '@/utils/firebase';
 
 export default {
   name: 'bmc',
   data() {
     return {
+      isLoading: false,
     };
   },
   mounted() {
+    this.isLoading = true;
+    this.setCanvasRef(db.child('projects').child(this.$route.params.id)).then(() => {
+      this.isLoading = false;
+    });
     window.addEventListener('resize', this.handleWindowResize);
     this.handleWindowResize();
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleWindowResize);
+    this.$store.dispatch('unbindCanvas');
   },
   computed: {
     ...mapGetters(['notesBMC']),
@@ -79,6 +89,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setCanvasRef', 'canvasInfoUpdate']),
     handleWindowResize() {
       this.$refs.paper.style.setProperty('--zoneLabelFontSize', `${this.$refs.paper.offsetHeight * 0.02}px`);
       this.$refs.paper.style.setProperty('--zoneLabelIconFontSize', `${this.$refs.paper.offsetHeight * 0.03}px`);
@@ -107,7 +118,6 @@ export default {
       }
       this.$store.dispatch('NOTE_CREATE', note);
     },
-    ...mapActions(['canvasUpdate']),
   },
   components: {
     Note,

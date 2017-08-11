@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import VueTimeago from 'vue-timeago';
 import humanFormat from 'human-format';
+import { auth, db } from '@/utils/firebase';
 /*
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue';
@@ -17,7 +18,6 @@ Vue.use(Vuetify);
 Vue.use(VueTimeago, {
   locale: 'en-US',
   locales: {
-    // you will need json-loader in webpack 1
     // eslint-disable-next-line
     'en-US': require('vue-timeago/locales/en-US.json'),
   },
@@ -43,6 +43,15 @@ Raven
 
 Vue.config.productionTip = false;
 
+
+const INVITE_TOKEN = 'inviteToken';
+
+router.afterEach((to) => {
+  if (to.name === 'login' && to.params.inviteCode) {
+    localStorage.setItem(INVITE_TOKEN, to.params.inviteCode);
+  }
+});
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -50,4 +59,39 @@ new Vue({
   store,
   template: '<App/>',
   components: { App },
+  // Our earliest lifecycle hook
+  beforeCreate() {
+    auth.onAuthStateChanged((user) => {
+      this.$store.commit('CURRENT_USER', user);
+      if (user) {
+        this.$store.dispatch('setUserRef', db.child('users').child(user.uid));
+        const inviteCode = localStorage.getItem(INVITE_TOKEN);
+        if (inviteCode) {
+          const [projectUid, token] = inviteCode.split(':');
+          const body = {
+            userUid: user.uid,
+            projectUid,
+            token,
+          };
+          fetch('https://us-central1-bmdesigner-50d6c.cloudfunctions.net/acceptInvite',
+            {
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+              method: 'POST',
+              body: JSON.stringify(body),
+            })
+            .then((res) => {
+              if (res.status === 200) {
+                this.$router.push({ name: 'bmc', params: { id: projectUid } });
+                localStorage.removeItem(INVITE_TOKEN);
+              }
+            });
+        } else if (this.$route.name === 'login') {
+          this.$router.push({ name: 'home' });
+        }
+      }
+    });
+  },
 });

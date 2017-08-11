@@ -4,17 +4,25 @@ import Home from '@/components/Home';
 import Learn from '@/components/Learn';
 import Play from '@/components/Play';
 import About from '@/components/About';
+import Login from '@/components/Login';
 import BMC from '@/components/BMC';
 
 Vue.use(Router);
 
 const router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
       name: 'home',
       component: Home,
       meta: { title: 'Home' },
+    },
+    {
+      path: '/login/:inviteCode?',
+      name: 'login',
+      component: Login,
+      meta: { title: 'Login' },
     },
     {
       path: '/favorites',
@@ -47,7 +55,7 @@ const router = new Router({
       meta: { title: 'Ideas & Feedback' },
     },
     {
-      path: '/bmc',
+      path: '/bmc/:id',
       name: 'bmc',
       component: BMC,
       meta: { title: '' },

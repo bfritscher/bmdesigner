@@ -33,35 +33,34 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 # BUGS
 -> box-shadow spacing in list mode
 -> recompute list layout on note height change
--> 1024px menu bar show
--> mini bar top margin
+-> z-index in firebase?
+-> calc on remote note values update
+-> stuck on login at first invite join
+-> width max height bug...
 
 ## TODO
 
-vuex canvas title, logo, image,
--> where to put menus?
+-> drop shadow on move
 -> delete button? canvas / note?
--> canvas selection menu / create new
 
-
--> login
 -> backend
     -> duplicate canvas
-    -> send data to
-    -> send new z-order
-    -> vuexfire https://github.com/posva/vuexfire
-
--> save menu state to localstorage and/or user's profile
-    listMode for models?
-    menu states
+    -> copy canvas info to users
+    -> copy user names to canvas?
 
 -> invite collaborate / share
     -> remove collaborator
+    -> custom message
 
 -> export/import from strategyzer
 -> migrate user/data? bmdesigner
 
 # Nice to have
+
+-> avatar  https://github.com/eliep/vue-avatar
+
+-> login message if is a invitation
+
 -> search / filter
     -> update data onChange
     -> algolia? search through notes?
@@ -69,8 +68,13 @@ vuex canvas title, logo, image,
         notes
         ...
             permissions
--> tags
+-> tags https://github.com/matiastucci/vue-input-tag
 -> list home sections? sort?
+
+-> save menu state to localstorage and/or user's profile
+    listMode for models?
+    menu states
+
 
 -> presentation mode
    - animation order

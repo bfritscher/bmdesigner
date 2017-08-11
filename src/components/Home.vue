@@ -1,30 +1,30 @@
 <template>
   <v-container fluid grid-list-lg>
     <v-layout row wrap>
-      <v-btn fab primary dark class="floating-action" @click.native="newModel">
+      <v-btn v-if="$store.state.currentUser" fab primary dark class="floating-action" @click.native="createNewCanvas">
         <v-icon>add</v-icon>
       </v-btn>
-      <v-flex sm6 md4 xl3 v-for="(m, i) in models" :key="i">
+      <v-flex sm6 md4 xl3 v-for="(m, key) in user.projects" :key="key">
         <v-card class="model">
-          <v-card-media :contain="!!m.logo" :class="{'default-background': !m.logo}" :style="{'background-color': m.color ? m.color : colorHash(m.title)}" :src="m.logo ? m.logo : require('@/assets/default_bmc_logo_background.jpg')" height="160px">
-            <div class="left-icons">
+          <v-card-media @click.native="$router.push({name:'bmc', params: {id: key}})" :contain="!!m.logoImage" :class="{'default-background': !m.logoImage}" :style="{'background-color': m.logoColor ? m.logoColor : colorHash(m.name)}" :src="m.logoImage ? m.logoImage : require('@/assets/default_bmc_logo_background.jpg')">
+            <div class="left-icons" v-if="m.updatedAt">
               <v-icon>
                 event_note
               </v-icon>
-              <timeago :since="m.date"></timeago>
+              <timeago :since="m.updatedAt"></timeago>
             </div>
             <div class="right-icons">
-              <v-icon v-badge="{value: m.nb, overlap: true, bottom: true}">
+              <v-icon v-badge="{value: m.itemsCount || 0, overlap: true, bottom: true}">
                 note
               </v-icon>
-              <v-icon v-badge="{value: m.users.length, overlap: true, bottom: true}">
+              <v-icon v-badge="{value: m.usersCount || 0, overlap: true, bottom: true}">
                 account_box
               </v-icon>
             </div>
             <v-container fill-height fluid>
               <v-layout fill-height>
                 <v-flex xs12 align-end flexbox>
-                  <span class="headline white--text">{{m.title}}</span>
+                  <span class="headline white--text">{{m.name}}</span>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -46,7 +46,7 @@
               <v-icon>content_copy</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn flat primary>Open</v-btn>
+            <v-btn flat primary :to="{name:'bmc', params: {id: key}}">Open</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -56,6 +56,7 @@
 
 <script>
 import ColorHash from 'color-hash';
+import { mapActions, mapState } from 'vuex';
 
 const colorHash = new ColorHash({
   saturation: [0.35, 0.4],
@@ -117,7 +118,13 @@ export default {
       ],
     };
   },
+  computed: {
+    ...mapState({
+      user: 'user',
+    }),
+  },
   methods: {
+    ...mapActions(['createNewCanvas']),
     colorHash(input) {
       return colorHash.hex(input);
     },
@@ -129,6 +136,11 @@ export default {
 </script>
 
 <style>
+
+.model .card__media {
+  height: 160px !important;
+}
+
 .model .card__media__background {
   opacity: 0.8;
 }

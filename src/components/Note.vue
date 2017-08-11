@@ -22,13 +22,13 @@
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :class="{'hide-label': !value.showLabel}" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
     </div>
     <div class="calcvar-display">
-      <div class="calcvar-display-b" v-if="value.calcDisplayB" v-tooltip:bottom="{ html: value.calcDisplayB }">
+      <div class="calcvar-display-b" v-if="calcResults[value.calcId] && value.calcDisplayB" v-tooltip:bottom="{ html: value.calcDisplayB }">
         {{this.calcResults[value.calcId][value.calcDisplayB] | humanformat}}
       </div>
-      <div class="calcvar-display-r" v-if="value.calcDisplayR" v-tooltip:bottom="{ html: value.calcDisplayR }">
+      <div class="calcvar-display-r" v-if="calcResults[value.calcId] && value.calcDisplayR" v-tooltip:bottom="{ html: value.calcDisplayR }">
         {{this.calcResults[value.calcId][value.calcDisplayR] | humanformat}}
       </div>
-      <div class="calcvar-display-g" v-if="value.calcDisplayG" v-tooltip:bottom="{ html: value.calcDisplayG }">
+      <div class="calcvar-display-g" v-if="calcResults[value.calcId] && value.calcDisplayG" v-tooltip:bottom="{ html: value.calcDisplayG }">
         {{this.calcResults[value.calcId][value.calcDisplayG] | humanformat}}
       </div>
     </div>
@@ -207,7 +207,8 @@ export default {
       return this.value.top > 70 ? 'top' : 'bottom';
     },
     isEdit() {
-      return this.$store.state.layout.focusedNote === this.value;
+      return this.$store.state.layout.focusedNote && this.value &&
+        this.$store.state.layout.focusedNote.id === this.value.id;
     },
     left() {
       return this.$store.state.layout.listMode ? this.value.listLeft : this.value.left;

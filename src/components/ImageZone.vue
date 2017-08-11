@@ -64,6 +64,7 @@ export default {
       if (this.allowClick) {
         e.preventDefault();
         e.stopPropagation();
+        this.reset();
         this.$refs.fileinput.click();
       }
       return true;
@@ -161,8 +162,8 @@ export default {
       this.hasError = false;
       this.errorMsg = '';
       this.lastEvent = null;
-      this.$emit('update:image', '');
-      this.$emit('update:color', '');
+      this.$emit('update:image', null);
+      this.$emit('update:color', null);
       if (typeof FormData !== 'function') {
         this.hasError = true;
         this.errorMsg = this.lang.error.notSupported;

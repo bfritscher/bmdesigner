@@ -15,7 +15,7 @@ export default class Note {
     this.description = args.description || '';
     this.colors = args.colors && args.colors.length > 0 ? args.colors : [0];
     this.image = args.image || '';
-    this.parent = args.parent;
+    this.parent = args.parent || '';
     this.calcId = args.calcId || '';
     this.values = args.values || {};
     this.calcDisplayR = args.calcDisplayR || null;

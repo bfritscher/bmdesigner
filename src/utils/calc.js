@@ -23,11 +23,11 @@ function extractVar(node) {
 
 function generateDeps(notes) {
   const graph = {
-    nodes: new Set(notes.reduce((list, note) => list.concat(Object.keys(note.values).map(k => `${note.calcId}.${k}`)), [])),
+    nodes: new Set(notes.reduce((list, note) => list.concat(Object.keys(note.values || {}).map(k => `${note.calcId}.${k}`)), [])),
     edges: [],
   };
   notes.forEach((note) => {
-    Object.keys(note.values).forEach((key) => {
+    Object.keys(note.values || {}).forEach((key) => {
       // extract dependencies
       try {
         const vars = extractVar(math.parse(note.values[key]));
@@ -58,16 +58,18 @@ export default function solve(notes) {
   } catch (e) {
     const regex = /(.*): "(.*)"/;
     const m = regex.exec(e.message);
-    return {
+    return m ? {
       [`err_${m[2]}`]: m[1],
-    };
+    } : { err: e.message };
   }
   sortedDeps.reverse();
   const parser = math.parser();
   const dict = notes.reduce((d, note) => {
     // eslint-disable-next-line
     d[note.calcId] = note;
-    parser.eval(`${note.calcId} = {}`);
+    if (note.calcId) {
+      parser.eval(`${note.calcId} = {}`);
+    }
     return d;
   }, {});
   sortedDeps.forEach((dep) => {
