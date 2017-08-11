@@ -75,7 +75,7 @@ export default {
           endOnly: true,
           elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
         },
-        autoScroll: false,
+        autoScroll: true,
         onstart: () => {
           this.dragStartType = this.value.type;
           this.dragging = true;
@@ -122,10 +122,10 @@ export default {
           };
           // TODO: refactor to make note note dependent almost same as in VPC
           // ignore tmp which is at position 0
-          if (VPC_VP_TYPES.indexOf(newtype) > 0) {
+          if (this.$store.state.layout.selectedVP && VPC_VP_TYPES.indexOf(newtype) > 0) {
             payload.changes.parent = this.$store.state.layout.selectedVP.id;
           }
-          if (VPC_CS_TYPES.indexOf(newtype) > 0) {
+          if (this.$store.state.layout.selectedCS && VPC_CS_TYPES.indexOf(newtype) > 0) {
             payload.changes.parent = this.$store.state.layout.selectedCS.id;
           }
           this.$store.dispatch('NOTE_UPDATE', payload);
@@ -159,13 +159,17 @@ export default {
             }
           }
         },
-      })
+      });
+      /*
       .gesturable({
         onmove: (event) => {
           // TODO: support angle?
+          const angle = this.value.angle || 0;
+          this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: angle + event.da });
           console.log('TODO support angle touch', event);
         },
       });
+      */
     Vue.nextTick(() => {
       this.calculateFontSizeAndHeight().then(() => {
         this.$refs.textarea.focus();
