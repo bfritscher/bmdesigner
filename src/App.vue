@@ -131,7 +131,8 @@
             <v-list-tile v-for="(u, key) in $store.state.canvas.users" :key="key" avatar ripple>
               <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }"
                 :class="[u.online ? 'green--after' : 'red--after']">
-                <img :src="u.avatar" :alt="u.name">
+                <img v-if="u.avatar" :src="u.avatar" :alt="u.name">
+                <avatar v-else :username="u.name" :size="38"></avatar>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title v-text="u.name"></v-list-tile-title>
@@ -218,7 +219,8 @@
       <v-spacer></v-spacer>
       <v-menu offset-y v-if="currentUser">
         <v-list-tile-avatar slot="activator">
-          <img :src="currentUser.photoURL" />
+          <img v-if="currentUser.photoURL" :src="currentUser.photoURL" />
+          <avatar v-else :username="currentUser.displayName"></avatar>
         </v-list-tile-avatar>
         <v-list>
           <v-list-tile avatar>
@@ -270,8 +272,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 import { COLORS_MATERIAL } from '@/utils';
-// import Avatar from 'vue-avatar/dist/Avatar';
-// https://github.com/eliep/vue-avatar/pull/17/files
+import Avatar from 'vue-avatar/dist/Avatar';
 import { auth, db } from '@/utils/firebase';
 
 import * as types from '@/store/mutation-types';
@@ -290,11 +291,6 @@ export default {
       inviteEmail: '',
       isColorsOpen: false,
       COLORS_MATERIAL,
-      items2: [
-        { picture: 28, text: 'Joseph' },
-        { picture: 38, text: 'Apple' },
-        { picture: 48, text: 'Xbox Ahoy' },
-      ],
     };
   },
   computed: {
@@ -368,7 +364,7 @@ export default {
   },
   components: {
     NoteOptions,
-   // Avatar,
+    Avatar,
   },
 };
 </script>
@@ -412,6 +408,11 @@ body {
   top: 28px;
   height: 16px;
   width: 16px;
+}
+
+.avatar:not(.list__tile__avatar){
+  justify-content: center;
+  min-width: 0;
 }
 
 .color-btn .btn {
