@@ -10,7 +10,7 @@
         <v-icon>description</v-icon>
       </v-btn>
       <v-spacer v-if="!$store.state.layout.listMode"></v-spacer>
-      <v-btn v-if="isEdit" flat icon primary small class="show-detail" light @click.native.prevent.stop="showNoteOptions">
+      <v-btn v-if="isEdit" flat icon primary small class="show-detail" light @click.native.prevent.stop="showNoteOptions()">
         <v-icon>mode_edit</v-icon>
       </v-btn>
       <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" flat icon primary small class="zoom" light @click.native="zoom()">
@@ -22,13 +22,13 @@
       <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :class="{'hide-label': !value.showLabel}" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
     </div>
     <div class="calcvar-display">
-      <div class="calcvar-display-b" v-if="calcResults[value.calcId] && value.calcDisplayB" v-tooltip:bottom="{ html: value.calcDisplayB }">
+      <div class="calcvar-display-b" @click.prevent.stop="showNoteOptions(true)" v-if="calcResults[value.calcId] && value.calcDisplayB" v-tooltip:bottom="{ html: value.calcDisplayB }">
         {{this.calcResults[value.calcId][value.calcDisplayB] | humanformat}}
       </div>
-      <div class="calcvar-display-r" v-if="calcResults[value.calcId] && value.calcDisplayR" v-tooltip:bottom="{ html: value.calcDisplayR }">
+      <div class="calcvar-display-r" @click.prevent.stop="showNoteOptions(true)" v-if="calcResults[value.calcId] && value.calcDisplayR" v-tooltip:bottom="{ html: value.calcDisplayR }">
         {{this.calcResults[value.calcId][value.calcDisplayR] | humanformat}}
       </div>
-      <div class="calcvar-display-g" v-if="calcResults[value.calcId] && value.calcDisplayG" v-tooltip:bottom="{ html: value.calcDisplayG }">
+      <div class="calcvar-display-g" @click.prevent.stop="showNoteOptions(true)" v-if="calcResults[value.calcId] && value.calcDisplayG" v-tooltip:bottom="{ html: value.calcDisplayG }">
         {{this.calcResults[value.calcId][value.calcDisplayG] | humanformat}}
       </div>
     </div>
@@ -273,8 +273,15 @@ export default {
         return shadows;
       }, []).join(',');
     },
-    showNoteOptions() {
-      this.$store.commit(types.LAYOUT_UPDATE, { showNoteOptions: true });
+    showNoteOptions(showNoteOptionsCalc) {
+      const payload = {
+        showNoteOptions: true,
+        focusedNote: this.value,
+      };
+      if (typeof showNoteOptionsCalc !== 'undefined') {
+        payload.showNoteOptionsCalc = showNoteOptionsCalc;
+      }
+      this.$store.commit(types.LAYOUT_UPDATE, payload);
     },
     handleKeyUp(e) {
       if ([35, 36, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {

@@ -56,6 +56,7 @@ const initialState = {
     focusedNote: null,
     showVPC: false,
     showNoteOptions: false,
+    showNoteOptionsCalc: false,
     showLoading: '',
     listMode: false,
     lastUsedColors: [0],

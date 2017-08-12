@@ -20,18 +20,18 @@
           <v-divider></v-divider>c
           <v-text-field :class="`color-${note.colors[0]}`" name="description" label="Description" :value="note.description" @input="updateNote('description', $event)" textarea></v-text-field>
           <v-divider></v-divider>
-          <v-layout row align-center @click="showCalc = !showCalc">
+          <v-layout row align-center @click="toggleShowCalc">
             <v-flex class="subheading">Calculations
               <span class="red--text" style="vertical-align: super;">beta</span>
             </v-flex>
             <v-spacer></v-spacer>
             <v-btn icon>
-              <v-icon class="icon-toggle" :class="{'rotate': showCalc}">keyboard_arrow_up</v-icon>
+              <v-icon class="icon-toggle" :class="{'rotate': showNoteOptionsCalc}">keyboard_arrow_up</v-icon>
             </v-btn>
             </v-flex>
           </v-layout>
           <v-slide-y-transition>
-            <div v-if="showCalc" key="calc">
+            <div v-if="showNoteOptionsCalc" key="calc">
               <v-alert error :value="results.err">{{results.err}}</v-alert>
               <v-layout row align-center>
                 <v-flex xs1>
@@ -99,7 +99,7 @@
 
 <script>
 import humanFormat from 'human-format';
-
+import { mapState } from 'vuex';
 import ImageZone from '@/components/ImageZone';
 import * as types from '@/store/mutation-types';
 import Note from '@/models/Note';
@@ -110,7 +110,6 @@ const patternVar = /^[a-zA-Z_][a-zA-Z\d_]*$/;
 export default {
   data() {
     return {
-      showCalc: false,
       newVariable: null,
       rules: {
         variable: value => patternVar.test(value) || 'Invalid name only use a-z, a-Z, 0-9, _',
@@ -119,17 +118,19 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      showNoteOptions: state => state.layout.showNoteOptions,
+      showNoteOptionsCalc: state => state.layout.showNoteOptionsCalc,
+      results: state => state.layout.calcResults || {},
+    }),
     note() {
       return this.$store.state.layout.focusedNote || new Note();
     },
-    showNoteOptions() {
-      return this.$store.state.layout.showNoteOptions;
-    },
-    results() {
-      return this.$store.state.calcResults;
-    },
   },
   methods: {
+    toggleShowCalc() {
+      this.$store.commit(types.LAYOUT_UPDATE, { showNoteOptionsCalc: !this.showNoteOptionsCalc });
+    },
     whichCalcDisplay(calcVar) {
       return ['B', 'R', 'G'].find(c => this.note[`calcDisplay${c}`] === calcVar);
     },
