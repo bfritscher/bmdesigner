@@ -28,6 +28,19 @@ export const VPC_CS_TYPES = [
   'vpc_tmp', 'pain_gain', 'job',
 ];
 
+
+const DEFAULT_CANVAS_SETTINGS = {
+  listMode: false,
+  lastUsedColors: [0],
+  colorsVisibility: [1, 1, 1, 1, 1, 1],
+  isColorsOpen: false,
+};
+
+const DEFAULT_USER_SETTINGS = {
+  mini: false,
+  drawer: true,
+};
+
 // initial state
 const initialState = {
   canvas: {
@@ -41,12 +54,14 @@ const initialState = {
       createdAt: '',
       updatedAt: '',
     },
+    settings: DEFAULT_CANVAS_SETTINGS,
     notes: {},
     users: {},
   },
   user: {
     projects: {},
     favorites: {},
+    settings: DEFAULT_USER_SETTINGS,
   },
   currentUser: {},
   calcResults: {},
@@ -58,12 +73,10 @@ const initialState = {
     showNoteOptions: false,
     showNoteOptionsCalc: false,
     showLoading: '',
-    listMode: false,
-    lastUsedColors: [0],
-    colorsVisibility: [1, 1, 1, 1, 1, 1],
     currentCanvasUsedColors: new Set(),
   },
 };
+
 
 function computeCurrentCanvasUsedColors(state) {
   const usedColors = new Set();
@@ -80,7 +93,7 @@ function computeCurrentCanvasUsedColors(state) {
 
 // getters
 const gettersDefinition = {
-  lastUsedColors: state => state.layout.lastUsedColors.slice(0),
+  lastUsedColors: (state, getters) => getters.canvasSettings.lastUsedColors.slice(0),
   getNotesByTypes: state => (filteredTypes) => {
     let list = filteredTypes;
     if (!Array.isArray(list)) {
@@ -99,6 +112,9 @@ const gettersDefinition = {
   notesVPC: (state, getters) => getters.getNotesByTypes(VPC_TYPES),
   notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
   notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
+  canvasSettings: state => (state.canvas && state.user && state.user.projects[state.canvas['.key']] && state.user.projects[state.canvas['.key']].settings ?
+    state.user.projects[state.canvas['.key']].settings : Object.assign({}, DEFAULT_CANVAS_SETTINGS)),
+  userSettings: state => state.user.settings || DEFAULT_USER_SETTINGS,
 };
 
 const refs = {};
@@ -143,10 +159,28 @@ const actions = {
     refs.canvas.child('info').update(payload);
     commit(types.CANVAS_UPDATE, payload);
   },
-  setUserRef: firebaseAction(({ bindFirebaseRef, unbindFirebaseRef }, { ref }) => {
+  canvasUserSettingsUpdate({ state, commit }, payload) {
+    commit(types.CANVAS_USER_SETTINGS_UPDATE, payload);
+    if (refs.user) {
+      refs.user.child('projects').child(state.canvas['.key']).child('settings').update(payload);
+    }
+  },
+  userSettingsUpdate({ commit }, payload) {
+    commit(types.USER_SETTINGS_UPDATE, payload);
+    if (refs.user) {
+      refs.user.child('settings').update(payload);
+    }
+  },
+  setUserRef: firebaseAction(({ state, bindFirebaseRef, unbindFirebaseRef }, { ref }) => {
     // this will unbind any previously bound ref
     refs.user = ref;
-    bindFirebaseRef('user', ref);
+    bindFirebaseRef('user', ref, {
+      readyCallback: () => {
+        if (!state.user.settings) {
+          refs.user.child('settings').set(DEFAULT_USER_SETTINGS);
+        }
+      },
+    });
   }),
   unbindCanvas: firebaseAction(({ unbindFirebaseRef }) => {
     unbindFirebaseRef('canvas');
@@ -253,6 +287,25 @@ const mutations = {
   },
   [types.CURRENT_USER](state, payload) {
     state.currentUser = payload;
+  },
+  [types.CANVAS_USER_SETTINGS_UPDATE](state, payload) {
+    if (!state.canvas) {
+      return;
+    }
+    if (!state.user.projects[state.canvas['.key']].settings) {
+      Vue.set(state.user.projects[state.canvas['.key']], 'settings', DEFAULT_CANVAS_SETTINGS);
+    }
+    Object.keys(payload).forEach((key) => {
+      Vue.set(state.user.projects[state.canvas['.key']].settings, key, payload[key]);
+    });
+  },
+  [types.USER_SETTINGS_UPDATE](state, payload) {
+    if (!state.user.settings) {
+      Vue.set(state.user, 'settings', DEFAULT_USER_SETTINGS);
+    }
+    Object.keys(payload).forEach((key) => {
+      Vue.set(state.user.settings, key, payload[key]);
+    });
   },
 };
 

@@ -80,13 +80,15 @@ export default {
     this.$store.dispatch('unbindCanvas');
   },
   computed: {
-    ...mapGetters(['notesBMC']),
+    ...mapGetters(['notesBMC', 'canvasSettings']),
     ...mapState({
       selectedVP: state => state.layout.selectedVP,
       selectedCS: state => state.layout.selectedCS,
-      listMode: state => state.layout.listMode,
       canvas: state => state.canvas,
     }),
+    listMode() {
+      return this.canvasSettings.listMode;
+    },
   },
   watch: {
     listMode() {
@@ -97,6 +99,9 @@ export default {
   methods: {
     ...mapActions(['setCanvasRef', 'canvasInfoUpdate']),
     handleWindowResize() {
+      if (!this.$refs.paper) {
+        return;
+      }
       this.$refs.paper.style.setProperty('--zoneLabelFontSize', `${this.$refs.paper.offsetHeight * 0.02}px`);
       this.$refs.paper.style.setProperty('--zoneLabelIconFontSize', `${this.$refs.paper.offsetHeight * 0.03}px`);
     },
@@ -115,7 +120,7 @@ export default {
         listLeft: x / (this.$refs.paper.offsetWidth / 100),
         listTop: y / (this.$refs.paper.offsetHeight / 100),
         type: 'bmc_tmp',
-        colors: this.$store.getters.lastUsedColors,
+        colors: this.$store.getters.canvasSettings.lastUsedColors,
         image: e.image,
       };
 

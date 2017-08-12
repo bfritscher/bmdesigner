@@ -1,17 +1,17 @@
 <template>
   <v-app toolbar>
-    <v-navigation-drawer ref="drawer" :mobile-break-point="1440" class="drawer" overflow :mini-variant="mini && !isMobile" persistent enable-resize-watcher v-model="drawer">
-      <v-toolbar flat class="blue-grey darken-2" dark v-show="!mini">
+    <v-navigation-drawer ref="drawer" :mobile-break-point="1440" class="drawer" overflow :mini-variant="userSettings.mini && !isMobile()" persistent enable-resize-watcher :value="userSettings.drawer" @input="userSettingsUpdate({drawer: $event})">
+      <v-toolbar flat class="blue-grey darken-2" dark v-show="!userSettings.mini">
         <v-toolbar-title>
           <router-link :to="{name: 'home'}" id="logo-title">BM|Designer</router-link>
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon @click.native.stop="mini = !mini" v-show="!isMobile">
+        <v-btn icon @click.native.stop="userSettingsUpdate({ mini: !userSettings.mini })" v-show="!isMobile()">
           <v-icon>chevron_left</v-icon>
         </v-btn>
       </v-toolbar>
       <v-list dense>
-        <v-list-tile v-show="mini && !isMobile" @click.native.stop="mini = !mini">
+        <v-list-tile v-show="userSettings.mini && !isMobile()" @click.native.stop="userSettingsUpdate({ mini: !userSettings.mini })">
           <v-list-tile-action>
             <v-icon light>chevron_right</v-icon>
           </v-list-tile-action>
@@ -87,7 +87,7 @@
 
           <v-divider class="my-2"></v-divider>
 
-          <v-list-group no-action v-model="isColorsOpen">
+          <v-list-group no-action :value="isColorsOpen" @input="canvasUserSettingsUpdate({ isColorsOpen: !canvasSettings.isColorsOpen })">
             <v-list-tile slot="item" @click.native="showColors">
               <v-list-tile-action>
                 <v-icon light>color_lens</v-icon>
@@ -197,7 +197,7 @@
                           ></v-navigation-drawer>
                           -->
     <v-toolbar fixed class="blue-grey darken-2" dark>
-      <v-toolbar-side-icon @click.native.stop.prevent="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click.native.stop.prevent="userSettingsUpdate({drawer: !userSettings.drawer})"></v-toolbar-side-icon>
       <!-- <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field> -->
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
@@ -270,7 +270,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { COLORS_MATERIAL } from '@/utils';
 import Avatar from 'vue-avatar/dist/Avatar';
 import { auth, db } from '@/utils/firebase';
@@ -282,14 +282,11 @@ export default {
   name: 'app',
   data() {
     return {
-      drawer: true,
-      mini: false,
       right: true,
       showDialogInvite: false,
       showDialogTitle: false,
       localTitle: '',
       inviteEmail: '',
-      isColorsOpen: false,
       COLORS_MATERIAL,
     };
   },
@@ -298,6 +295,10 @@ export default {
       currentUser: 'currentUser',
       currentCanvasUsedColors: state => state.layout.currentCanvasUsedColors,
     }),
+    ...mapGetters(['userSettings', 'canvasSettings']),
+    isColorsOpen() {
+      return this.canvasSettings.isColorsOpen;
+    },
     title() {
       let title = this.$route.meta && this.$route.meta.title ? this.$route.meta.title : '';
       if (this.isModelEdit) {
@@ -320,7 +321,7 @@ export default {
       return title;
     },
     listModeSwitch() {
-      return this.$store.state.layout.listMode ? { text: 'Switch to sticky notes', icon: 'widgets' } : { text: 'Switch to lists', icon: 'list' };
+      return this.canvasSettings.listMode ? { text: 'Switch to sticky notes', icon: 'widgets' } : { text: 'Switch to lists', icon: 'list' };
     },
     isModelList() {
       return ['home', 'play', 'inspire', 'learn', 'favorites', 'about', 'login'].includes(this.$route.name);
@@ -330,13 +331,14 @@ export default {
       return ['bmc'].includes(this.$route.name);
     },
     colorsVisibility() {
-      return this.$store.state.layout.colorsVisibility.map(opacity => opacity.toString());
-    },
-    isMobile() {
-      return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
+      return this.canvasSettings.colorsVisibility.map(opacity => opacity.toString());
     },
   },
   methods: {
+    ...mapActions(['canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate']),
+    isMobile() {
+      return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
+    },
     signOut() {
       auth.signOut();
       this.$router.push({ name: 'home' });
@@ -347,20 +349,20 @@ export default {
       this.showDialogInvite = false;
     },
     changeListMode() {
-      this.$store.commit('LAYOUT_UPDATE', { listMode: !this.$store.state.layout.listMode });
+      this.canvasUserSettingsUpdate({ listMode: !this.canvasSettings.listMode });
     },
     saveNewTitle() {
       this.showDialogTitle = false;
-      this.$store.dispatch('canvasInfoUpdate', { name: this.localTitle });
+      this.canvasInfoUpdate({ name: this.localTitle });
     },
     showColors() {
-      if (this.mini) {
-        this.mini = false;
-        this.isColorsOpen = true;
+      if (this.userSettings.mini) {
+        this.userSettingsUpdate({ mini: false });
+        this.canvasUserSettingsUpdate({ isColorsOpen: true });
       }
     },
     toggleColorVisibility(value, colorId) {
-      const newArray = this.$store.state.layout.colorsVisibility.slice(0);
+      const newArray = this.canvasSettings.colorsVisibility.slice(0);
       newArray[colorId] = parseFloat(value); // / 100.0;
       this.$store.commit(types.LAYOUT_UPDATE, {
         colorsVisibility: newArray,

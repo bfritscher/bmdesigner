@@ -141,7 +141,7 @@ export default {
         listLeft: x / (this.$refs.paper.offsetWidth / 100),
         listTop: y / (this.$refs.paper.offsetHeight / 100),
         type: 'vpc_tmp',
-        colors: this.$store.getters.lastUsedColors,
+        colors: this.$store.getters.canvasSettings.lastUsedColors,
         image: e.image,
       };
 

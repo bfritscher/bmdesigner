@@ -41,7 +41,7 @@ import debounce from 'lodash.debounce';
 import isEqual from 'lodash.isequal';
 import interact from 'interactjs';
 import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import ImageZone from '@/components/ImageZone';
 import Note from '@/models/Note';
 import ColorSelector from '@/components/ColorSelector';
@@ -190,11 +190,16 @@ export default {
     window.removeEventListener('resize', this.debouncedCalculateFontSizeAndHeight);
   },
   computed: {
+    ...mapGetters(['canvasSettings']),
     ...mapState({
-      colorsVisibility: state => state.layout.colorsVisibility,
-      listMode: state => state.layout.listMode,
       calcResults: 'calcResults',
     }),
+    colorsVisibility() {
+      return this.canvasSettings.colorsVisibility;
+    },
+    listMode() {
+      return this.canvasSettings.listMode;
+    },
     colors() {
       return this.value.colors;
     },
@@ -462,7 +467,7 @@ export default {
     setColor(position, colorId) {
       const colors = Note.changeColor(this.value.colors, position, colorId);
       this.$store.dispatch('NOTE_UPDATE', { changes: { colors }, note: this.value });
-      this.$store.commit(types.LAYOUT_UPDATE, { lastUsedColors: colors });
+      this.$store.dispatch('canvasUserSettingsUpdate', { lastUsedColors: colors });
     },
     zoom() {
       const payload = {};
