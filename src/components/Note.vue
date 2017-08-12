@@ -1,15 +1,15 @@
 <template>
-  <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': $store.state.layout.listMode, 'no-sticky': !value.showAsSticky}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, transform: `rotateZ(${angle}deg)`, 'box-shadow': boxShadow, opacity}">
-    <div class="colors" v-if="isEdit && !dragging">
+  <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': listMode, dragging: dragging, 'no-sticky': !value.showAsSticky}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, 'box-shadow': boxShadow, opacity, transform}">
+    <div class="colors" v-if="isEdit">
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
     <div class="icons">
-      <v-spacer v-if="$store.state.layout.listMode"></v-spacer>
+      <v-spacer v-if="listMode"></v-spacer>
       <v-btn @mouseover="moveToTop" v-tooltip:bottom="{ html: value.description }" v-if="value.description" flat icon primary small class="description" light @click.native.prevent.stop="showNoteOptions">
         <v-icon>description</v-icon>
       </v-btn>
-      <v-spacer v-if="!$store.state.layout.listMode"></v-spacer>
+      <v-spacer v-if="!listMode"></v-spacer>
       <v-btn v-if="isEdit" flat icon primary small class="show-detail" light @click.native.prevent.stop="showNoteOptions()">
         <v-icon>mode_edit</v-icon>
       </v-btn>
@@ -60,6 +60,7 @@ export default {
     return {
       x: 0,
       y: 0,
+      dx: 0,
       height: MAX_HEIGHT,
       dragging: false,
       dragStartType: '',
@@ -92,6 +93,7 @@ export default {
         onmove: (event) => {
           this.x += event.dx;
           this.y += event.dy;
+          this.dx = event.dx;
           const left = (parseFloat(this.x) / this.parent.offsetWidth) * 100;
           const top = (parseFloat(this.y) / this.parent.offsetHeight) * 100;
 
@@ -101,7 +103,7 @@ export default {
           } else {
             type = this.parent.getAttribute('data-none');
           }
-          if (this.$store.state.layout.listMode) {
+          if (this.listMode) {
             this.$store.dispatch('NOTE_MOVE', { note: this.value, listLeft: left, listTop: top, type });
           } else {
             this.$store.dispatch('NOTE_MOVE', { note: this.value, left, top, type });
@@ -144,7 +146,7 @@ export default {
           }
 
           // update free mode
-          if (this.$store.state.layout.listMode) {
+          if (this.listMode) {
             if (this.value.left === 0 && this.value.top === 0) {
               // never been positionned in free mode take list position
               this.$store.dispatch('NOTE_MOVE', { note: this.value, left: this.value.listLeft, top: this.value.listTop });
@@ -207,13 +209,19 @@ export default {
         this.$store.state.layout.focusedNote.id === this.value.id;
     },
     left() {
-      return this.$store.state.layout.listMode ? this.value.listLeft : this.value.left;
+      return this.listMode ? this.value.listLeft : this.value.left;
     },
     top() {
-      return this.$store.state.layout.listMode ? this.value.listTop : this.value.top;
+      return this.listMode ? this.value.listTop : this.value.top;
     },
     angle() {
-      return this.$store.state.layout.listMode ? 0 : this.value.angle;
+      return this.listMode ? 0 : this.value.angle;
+    },
+    transform() {
+      if (this.dragging) {
+        return `rotateZ(${this.angle - (this.dx > 0 ? Math.min(this.dx, 8) : Math.max(this.dx, -8))}deg)`;
+      }
+      return `rotateZ(${this.angle}deg)`;
     },
     showAsSticky() {
       return this.value.showAsSticky;
@@ -260,7 +268,7 @@ export default {
     },
     setBoxShadow() {
       this.boxShadow = this.value.colors.reduce((shadows, colorCode, i) => {
-        if (this.$store.state.layout.listMode || !this.value.showAsSticky) {
+        if (this.listMode || !this.value.showAsSticky) {
           const size = ((i + 1) * 5) + (i * 2);
           shadows.push(`-${size}px 0px ${COLORS_MATERIAL[colorCode]}`);
           shadows.push(`-${size + 2}px 0px ${this.dragging ? 'transparent' : '#fff'}`);
@@ -310,7 +318,7 @@ export default {
       this.moveToTop();
     },
     handleWheel(e) {
-      if (!this.$store.state.layout.listMode) {
+      if (!this.listMode) {
         const delta = (e.deltaY - (e.deltaY % 100)) / 50;
         this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: this.value.angle + delta });
       }
@@ -382,7 +390,7 @@ export default {
         }
 
         // only dispatch for notes not in the exclude list
-        if (!(options && options.exclude && options.exclude === note)) {
+        if (!(options && options.exclude && options.exclude.id === note.id)) {
           this.$store.dispatch('NOTE_UPDATE', {
             changes: {
               listTop: top,
@@ -433,10 +441,10 @@ export default {
           if (this.fontSize < MAX_FONT_SIZE) {
             this.fontSize += 1;
           } else {
-            if (this.value.image && this.height < 6.5 && this.$store.state.layout.listMode) {
+            if (this.value.image && this.height < 6.5 && this.listMode) {
               notMaxedOut = false;
             }
-            if (this.value.image && this.height < 15 && !this.$store.state.layout.listMode) {
+            if (this.value.image && this.height < 15 && !this.listMode) {
               notMaxedOut = false;
             }
             this.height -= 0.1;
@@ -487,6 +495,19 @@ export default {
   left: 0;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
   line-height: 1.1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.note.dragging {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.note.list-mode.dragging {
+  background-color: #fff !important;
+}
+
+.note.dragging .colors {
+  opacity: 0;
 }
 
 .note:not(.list-mode).no-sticky {
@@ -577,6 +598,8 @@ export default {
   left: -40px;
   display: flex;
   align-items: flex-start;
+  opacity: 1;
+  transition: opacity 0.1s ease;
 }
 
 .colors .btn {
@@ -588,19 +611,6 @@ export default {
   top: calc(50% - 9px);
 }
 
-.note-transition-enter-active {
-  transition: opacity 0.2s ease-in;
-}
-
-.note-transition-leave-active {
-  transition: opacity 0.2s ease-out;
-  ;
-}
-
-.note-transition-enter,
-.note-transition-leave-to {
-  opacity: 0;
-}
 
 .note .calcvar-display {
   position: absolute;

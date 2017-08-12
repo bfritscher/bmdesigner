@@ -67,9 +67,9 @@
             </zone>
           </v-card>
         </transition>
-        <transition-group name="note-transition" tag="div">
+        <div>
           <note v-for="n in notesVPC" :value="n" :key="n.id" class="note-vpc"  :class="{'vpc-both': cs && vp}" :parent="$refs.paper"></note>
-        </transition-group>
+        </div>
       </div>
     </image-zone>
   </transition>

@@ -18,7 +18,7 @@
         <zone dropzone-accept=".note-bmc" id="kr" label="Key Resources" style="left: 20%; top:37.5%; width: 20%; height: 37.5%">
           <v-icon light slot="icon">store</v-icon>
         </zone>
-        <zone dropzone-accept=".note-bmc" id="vp" class="highlight" :class="{'highlight-on': selectedCS && !selectedVP, 'elevation-10': selectedCS && !selectedVP}" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%">
+        <zone dropzone-accept=".note-bmc" id="vp" class="zone-highlight" :class="{'highlight-on': selectedCS && !selectedVP, 'elevation-10': selectedCS && !selectedVP}" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%">
           <v-icon light slot="icon">group_work</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="cr" label="Customer Relationships" style="left: 60%; top:0; width: 20%; height: 37.5%">
@@ -27,7 +27,7 @@
         <zone dropzone-accept=".note-bmc" id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%">
           <v-icon light slot="icon">local_shipping</v-icon>
         </zone>
-        <zone dropzone-accept=".note-bmc" id="cs" class="highlight" :class="{'highlight-on': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%">
+        <zone dropzone-accept=".note-bmc" id="cs" class="zone-highlight" :class="{'highlight-on': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%">
           <v-icon light slot="icon">people</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 60%; top: 75%; width: 40%; height: 25%">
@@ -36,9 +36,9 @@
         <div class="logo" light>
           <image-zone :image="canvas.info.logoImage" @update:image="canvasInfoUpdate({logoImage: $event})" :color="canvas.info.logoColor" @update:color="canvasInfoUpdate({logoColor: $event})"></image-zone>
         </div>
-        <transition-group name="note-transition" tag="div">
-          <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc highlight" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
-        </transition-group>
+        <div>
+          <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
+        </div>
       </div>
     </image-zone>
     <vpc></vpc>
@@ -161,7 +161,7 @@ export default {
   position: relative;
 }
 
-.highlight {
+.zone-highlight {
   z-index: 0;
   transition: z-index 0.5s step-end !important;
 }

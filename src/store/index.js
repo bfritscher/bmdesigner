@@ -66,11 +66,12 @@ const initialState = {
 };
 
 function computeCurrentCanvasUsedColors(state) {
-  console.log('computeColors');
   const usedColors = new Set();
   if (state.canvas.notes) {
     Object.values(state.canvas.notes).reduce((colors, note) => {
-      note.colors.forEach(c => colors.add(c));
+      if (note.colors) {
+        note.colors.forEach(c => colors.add(c));
+      }
       return colors;
     }, usedColors);
   }
