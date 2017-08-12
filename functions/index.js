@@ -46,7 +46,7 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
   };
   const node = admin.database().ref(`/${DB_ROOT}/projects`).push(project);
   admin.database()
-    .ref(`/${DB_ROOT}/users/${uid}/projects/${node.key}/`)
+    .ref(`/${DB_ROOT}/users/${uid}/projects/${node.key}/info`)
     .set(project.info).then(() => event.data.ref.remove());
 });
 
