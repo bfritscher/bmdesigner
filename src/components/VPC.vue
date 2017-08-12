@@ -112,11 +112,11 @@ export default {
     },
     notesCS() {
       const list = this.$store.getters.getNotesByTypes('cs');
-      return [this.cs].concat(list.filter(note => note !== this.cs));
+      return [this.cs].concat(list.filter(note => note.id !== this.cs.id));
     },
     notesVP() {
       const list = this.$store.getters.getNotesByTypes('vp');
-      return [this.vp].concat(list.filter(note => note !== this.vp));
+      return [this.vp].concat(list.filter(note => note.id !== this.vp.id));
     },
     ...mapState({
       vp: state => state.layout.selectedVP,
@@ -301,6 +301,10 @@ export default {
   position: absolute;
   left: calc(50% - 80px);
   top: calc(50% - 120px);
+}
+
+.menu {
+  max-width: 84%;
 }
 
 .vpc .menu .list {
