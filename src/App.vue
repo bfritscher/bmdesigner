@@ -1,17 +1,17 @@
 <template>
   <v-app toolbar>
-    <v-navigation-drawer :mobile-break-point="1440" class="drawer" overflow :mini-variant="mini" persistent enable-resize-watcher v-model="drawer">
+    <v-navigation-drawer ref="drawer" :mobile-break-point="1440" class="drawer" overflow :mini-variant="mini && !isMobile" persistent enable-resize-watcher v-model="drawer">
       <v-toolbar flat class="blue-grey darken-2" dark v-show="!mini">
         <v-toolbar-title>
           <router-link :to="{name: 'home'}" id="logo-title">BM|Designer</router-link>
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon @click.native.stop="mini = !mini">
+        <v-btn icon @click.native.stop="mini = !mini" v-show="!isMobile">
           <v-icon>chevron_left</v-icon>
         </v-btn>
       </v-toolbar>
       <v-list dense>
-        <v-list-tile v-show="mini" @click.native.stop="mini = !mini">
+        <v-list-tile v-show="mini && !isMobile" @click.native.stop="mini = !mini">
           <v-list-tile-action>
             <v-icon light>chevron_right</v-icon>
           </v-list-tile-action>
@@ -331,6 +331,9 @@ export default {
     },
     colorsVisibility() {
       return this.$store.state.layout.colorsVisibility.map(opacity => opacity.toString());
+    },
+    isMobile() {
+      return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
     },
   },
   methods: {
