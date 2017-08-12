@@ -89,6 +89,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
+          <v-btn error flat @click.native="deleteNote">Delete</v-btn>
           <v-spacer></v-spacer>
           <v-btn class="blue--text darken-1" flat @click.native="hideDialog">Close</v-btn>
         </v-card-actions>
@@ -136,6 +137,10 @@ export default {
     },
     hideDialog() {
       this.$store.commit(types.LAYOUT_UPDATE, { showNoteOptions: false });
+    },
+    deleteNote() {
+      this.hideDialog();
+      this.$store.dispatch('NOTE_DELETE', this.note);
     },
     updateNote(field, data) {
       this.$store.dispatch('NOTE_UPDATE', {
