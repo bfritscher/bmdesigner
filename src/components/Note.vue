@@ -53,8 +53,6 @@ import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
 const MAX_FONT_SIZE = 22;
 const MAX_HEIGHT = 20;
 
-let debouncedCalculateFontSizeAndHeight;
-
 export default {
   name: 'note',
   props: ['value', 'parent'],
@@ -73,8 +71,8 @@ export default {
     };
   },
   mounted() {
-    debouncedCalculateFontSizeAndHeight = debounce(this.calculateFontSizeAndHeight, 300);
-    window.addEventListener('resize', debouncedCalculateFontSizeAndHeight);
+    this.debouncedCalculateFontSizeAndHeight = this.createDebouncedCalculateFontSizeAndHeight();
+    window.addEventListener('resize', this.debouncedCalculateFontSizeAndHeight);
     interact(this.$el)
       .draggable({
         inertia: true,
@@ -187,9 +185,7 @@ export default {
     });
   },
   beforeDestroy() {
-    if (debouncedCalculateFontSizeAndHeight) {
-      window.removeEventListener('resize', debouncedCalculateFontSizeAndHeight);
-    }
+    window.removeEventListener('resize', this.debouncedCalculateFontSizeAndHeight);
   },
   computed: {
     ...mapState({
@@ -242,18 +238,18 @@ export default {
       }
     },
     showAsSticky(after, before) {
-      if (!isEqual(after, before)) {
+      if (after !== before) {
         this.setBoxShadow();
       }
     },
     listMode(after, before) {
-      if (!isEqual(after, before)) {
+      if (after !== before) {
         this.setBoxShadow();
       }
     },
   },
   methods: {
-    setOpacity: debounce(function debounceOpacity() {
+    setOpacity() {
       // calculate visibility based on colors
       this.opacity = this.colorsVisibility.reduce((totalOpacity, opacity, colorId) => {
         if (this.value.colors.includes(colorId)) {
@@ -261,8 +257,8 @@ export default {
         }
         return Math.min(totalOpacity, 1);
       }, 0);
-    }, 0),
-    setBoxShadow: debounce(function debouncedBoxShadow() {
+    },
+    setBoxShadow() {
       this.boxShadow = this.value.colors.reduce((shadows, colorCode, i) => {
         if (this.$store.state.layout.listMode || !this.value.showAsSticky) {
           const size = ((i + 1) * 5) + (i * 2);
@@ -276,7 +272,7 @@ export default {
         }
         return shadows;
       }, []).join(',');
-    }, 0),
+    },
     showNoteOptions() {
       this.$store.commit(types.LAYOUT_UPDATE, { showNoteOptions: true });
     },
@@ -297,7 +293,7 @@ export default {
           return;
         }
       }
-      debouncedCalculateFontSizeAndHeight();
+      this.debouncedCalculateFontSizeAndHeight();
     },
     moveToTop() {
       this.$store.dispatch('NOTE_MOVE_TOP', this.value);
@@ -391,6 +387,9 @@ export default {
         top += note.height + marginTop;
       });
     },
+    createDebouncedCalculateFontSizeAndHeight() {
+      return debounce(this.calculateFontSizeAndHeight, 300);
+    },
     async calculateFontSizeAndHeight() {
       if (!this.$refs.textarea) {
         return;
@@ -440,6 +439,9 @@ export default {
       Vue.nextTick(() => {
         this.fontSize -= 2; // should be 1 but 2 works better
         this.$store.dispatch('NOTE_MOVE', { note: this.value, height: this.height });
+        if (this.listMode) {
+          this.sortSortable(this.value.type);
+        }
       });
     },
     setColor(position, colorId) {
