@@ -145,6 +145,7 @@ export default {
   align-content: center;
   justify-content: center;
   flex-direction: column;
+  overflow: auto;
 }
 
 .paper {
@@ -197,5 +198,11 @@ export default {
 
 .credits a{
   text-decoration: none;
+}
+
+@media (max-width: 1024px) {
+  .highlight-on{
+    z-index: 0;
+  }
 }
 </style>

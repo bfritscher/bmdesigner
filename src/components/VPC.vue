@@ -310,4 +310,14 @@ export default {
 .vpc .menu .list {
   padding: 0;
 }
+
+@media (max-width: 1024px) {
+  .vpc-cs {
+    left: 0;
+    margin: auto;
+  }
+}
+
+
+
 </style>

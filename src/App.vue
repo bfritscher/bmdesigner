@@ -428,4 +428,8 @@ body {
   box-shadow: none;
 }
 
+.dialog__container {
+  overflow: hidden;
+}
+
 </style>
