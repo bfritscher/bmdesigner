@@ -60,8 +60,21 @@ const initialState = {
     listMode: false,
     lastUsedColors: [0],
     colorsVisibility: [1, 1, 1, 1, 1, 1],
+    currentCanvasUsedColors: new Set(),
   },
 };
+
+function computeCurrentCanvasUsedColors(state) {
+  console.log('computeColors');
+  const usedColors = new Set();
+  if (state.canvas.notes) {
+    Object.values(state.canvas.notes).reduce((colors, note) => {
+      note.colors.forEach(c => colors.add(c));
+      return colors;
+    }, usedColors);
+  }
+  Vue.set(state.layout, 'currentCanvasUsedColors', usedColors);
+}
 
 // getters
 const gettersDefinition = {
@@ -84,16 +97,6 @@ const gettersDefinition = {
   notesVPC: (state, getters) => getters.getNotesByTypes(VPC_TYPES),
   notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
   notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
-  colorsUsedInCanvas: (state) => {
-    const usedColors = new Set();
-    if (state.canvas.notes) {
-      Object.values(state.canvas.notes).reduce((colors, note) => {
-        note.colors.forEach(c => colors.add(c));
-        return colors;
-      }, usedColors);
-    }
-    return usedColors;
-  },
 };
 
 const refs = {};
@@ -113,7 +116,7 @@ const actions = {
       refs.notes.child(note['.key']).update(payload);
     }
   },
-  NOTE_UPDATE({ commit }, payload) {
+  NOTE_UPDATE({ state, commit }, payload) {
     commit(types.NOTE_UPDATE, payload);
     if (payload.note['.key']) {
       refs.notes.child(payload.note['.key']).update(payload.changes);
@@ -156,6 +159,7 @@ const actions = {
       bindFirebaseRef('canvas', ref, {
         readyCallback: () => {
           resolve();
+          computeCurrentCanvasUsedColors(state);
           // update userpic and name for this canvas
           refs.canvas.child('users').child(state.currentUser.uid).update({
             name: state.currentUser.displayName,
@@ -181,12 +185,12 @@ const actions = {
   }),
   createNewCanvas({ commit, state }) {
     commit(types.LAYOUT_UPDATE, { showLoading: 'Generating new workspace' });
-    const newListhandler = (snapshot) => {
+    const newProjectHandler = (snapshot) => {
       commit(types.LAYOUT_UPDATE, { showLoading: '' });
       router.push({ name: 'bmc', params: { id: snapshot.key } });
-      db.child('users').child(state.currentUser.uid).child('projects').off('child_added', newListhandler);
+      db.child('users').child(state.currentUser.uid).child('projects').off('child_added', newProjectHandler);
     };
-    db.child('users').child(state.currentUser.uid).child('projects').on('child_added', newListhandler);
+    db.child('users').child(state.currentUser.uid).child('projects').on('child_added', newProjectHandler);
     db.child('users').child(state.currentUser.uid).child('create_project').set('New Project');
   },
 };
@@ -210,10 +214,13 @@ const mutations = {
     Object.keys(payload.changes).forEach((key) => {
       Vue.set(payload.note, key, payload.changes[key]);
     });
+    if (payload.changes.colors) {
+      computeCurrentCanvasUsedColors(state);
+    }
   },
   [types.NOTE_DELETE](state, payload) {
-    delete state.canvas.notes[payload.note.id];
-    delete state.canvas.notes[payload.note['.id']];
+    delete state.canvas.notes[payload.id];
+    delete state.canvas.notes[payload['.id']];
   },
   [types.NOTE_MOVE_TOP](state, payload) {
     console.log('TODO: fix z-index', payload);

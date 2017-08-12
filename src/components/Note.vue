@@ -37,8 +37,11 @@
 </template>
 
 <script>
+import debounce from 'lodash.debounce';
+import isEqual from 'lodash.isequal';
 import interact from 'interactjs';
 import Vue from 'vue';
+import { mapState } from 'vuex';
 import ImageZone from '@/components/ImageZone';
 import Note from '@/models/Note';
 import ColorSelector from '@/components/ColorSelector';
@@ -46,8 +49,11 @@ import * as types from '@/store/mutation-types';
 import { VPC_VP_TYPES, VPC_CS_TYPES, VPC_TYPES } from '@/store';
 import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
 
-const MAX_FONT_SIZE = 22; // /2 if pic mode
+
+const MAX_FONT_SIZE = 22;
 const MAX_HEIGHT = 20;
+
+let debouncedCalculateFontSizeAndHeight;
 
 export default {
   name: 'note',
@@ -56,17 +62,19 @@ export default {
     return {
       x: 0,
       y: 0,
-      total: 1100000,
       height: MAX_HEIGHT,
       dragging: false,
       dragStartType: '',
       fontSize: MAX_FONT_SIZE,
       colorList: COLORS_MATERIAL_DARK,
       colorsBG: COLORS_MATERIAL,
+      opacity: 1,
+      boxShadow: '',
     };
   },
   mounted() {
-    window.addEventListener('resize', this.calculateFontSizeAndHeight);
+    debouncedCalculateFontSizeAndHeight = debounce(this.calculateFontSizeAndHeight, 300);
+    window.addEventListener('resize', debouncedCalculateFontSizeAndHeight);
     interact(this.$el)
       .draggable({
         inertia: true,
@@ -160,52 +168,40 @@ export default {
           }
         },
       });
-      /*
-      .gesturable({
-        onmove: (event) => {
-          // TODO: support angle?
-          const angle = this.value.angle || 0;
-          this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: angle + event.da });
-          console.log('TODO support angle touch', event);
-        },
-      });
-      */
+    /*
+    .gesturable({
+      onmove: (event) => {
+        // TODO: support angle?
+        const angle = this.value.angle || 0;
+        this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: angle + event.da });
+        console.log('TODO support angle touch', event);
+      },
+    });
+    */
     Vue.nextTick(() => {
       this.calculateFontSizeAndHeight().then(() => {
         this.$refs.textarea.focus();
       });
+      this.setBoxShadow();
+      this.setOpacity();
     });
   },
+  beforeDestroy() {
+    if (debouncedCalculateFontSizeAndHeight) {
+      window.removeEventListener('resize', debouncedCalculateFontSizeAndHeight);
+    }
+  },
   computed: {
+    ...mapState({
+      colorsVisibility: state => state.layout.colorsVisibility,
+      listMode: state => state.layout.listMode,
+      calcResults: 'calcResults',
+    }),
+    colors() {
+      return this.value.colors;
+    },
     color() {
       return this.value.colors[0];
-    },
-    calcResults() {
-      return this.$store.state.calcResults;
-    },
-    opacity() {
-      // calculate visibility based on colors
-      return this.$store.state.layout.colorsVisibility.reduce((totalOpacity, opacity, colorId) => {
-        if (this.value.colors.includes(colorId)) {
-          totalOpacity += opacity;
-        }
-        return Math.min(totalOpacity, 1);
-      }, 0);
-    },
-    boxShadow() {
-      return this.value.colors.reduce((shadows, colorCode, i) => {
-        if (this.$store.state.layout.listMode || !this.value.showAsSticky) {
-          const size = ((i + 1) * 5) + (i * 2);
-          shadows.push(`-${size}px 0px ${COLORS_MATERIAL[colorCode]}`);
-          shadows.push(`-${size + 2}px 0px ${this.dragging ? 'transparent' : '#fff'}`);
-        } else if (i === 0) {
-          shadows.push('0px 1px 2px rgba(0, 0, 0, 0.3)');
-        } else {
-          const size = (i * 5) + 1;
-          shadows.push(`-${size}px -${size}px ${COLORS_MATERIAL[colorCode]}`);
-        }
-        return shadows;
-      }, []).join(',');
     },
     direction() {
       return this.value.top > 70 ? 'top' : 'bottom';
@@ -223,6 +219,9 @@ export default {
     angle() {
       return this.$store.state.layout.listMode ? 0 : this.value.angle;
     },
+    showAsSticky() {
+      return this.value.showAsSticky;
+    },
   },
   watch: {
     isEdit(val) {
@@ -231,8 +230,53 @@ export default {
         this.sortSortable(this.value.type);
       }
     },
+    colors(after, before) {
+      if (!isEqual(after, before)) {
+        this.setOpacity();
+        this.setBoxShadow();
+      }
+    },
+    colorsVisibility(after, before) {
+      if (!isEqual(after, before)) {
+        this.setOpacity();
+      }
+    },
+    showAsSticky(after, before) {
+      if (!isEqual(after, before)) {
+        this.setBoxShadow();
+      }
+    },
+    listMode(after, before) {
+      if (!isEqual(after, before)) {
+        this.setBoxShadow();
+      }
+    },
   },
   methods: {
+    setOpacity: debounce(function debounceOpacity() {
+      // calculate visibility based on colors
+      this.opacity = this.colorsVisibility.reduce((totalOpacity, opacity, colorId) => {
+        if (this.value.colors.includes(colorId)) {
+          totalOpacity += opacity;
+        }
+        return Math.min(totalOpacity, 1);
+      }, 0);
+    }, 0),
+    setBoxShadow: debounce(function debouncedBoxShadow() {
+      this.boxShadow = this.value.colors.reduce((shadows, colorCode, i) => {
+        if (this.$store.state.layout.listMode || !this.value.showAsSticky) {
+          const size = ((i + 1) * 5) + (i * 2);
+          shadows.push(`-${size}px 0px ${COLORS_MATERIAL[colorCode]}`);
+          shadows.push(`-${size + 2}px 0px ${this.dragging ? 'transparent' : '#fff'}`);
+        } else if (i === 0) {
+          shadows.push('0px 1px 2px rgba(0, 0, 0, 0.3)');
+        } else {
+          const size = (i * 5) + 1;
+          shadows.push(`-${size}px -${size}px ${COLORS_MATERIAL[colorCode]}`);
+        }
+        return shadows;
+      }, []).join(',');
+    }, 0),
     showNoteOptions() {
       this.$store.commit(types.LAYOUT_UPDATE, { showNoteOptions: true });
     },
@@ -253,7 +297,7 @@ export default {
           return;
         }
       }
-      this.calculateFontSizeAndHeight();
+      debouncedCalculateFontSizeAndHeight();
     },
     moveToTop() {
       this.$store.dispatch('NOTE_MOVE_TOP', this.value);

@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import debounce from 'lodash.debounce';
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
 import Vpc from '@/components/VPC';
@@ -53,6 +54,8 @@ import ImageZone from '@/components/ImageZone';
 import { mapGetters, mapState, mapActions } from 'vuex';
 import { totalOffset } from '@/utils';
 import { db } from '@/utils/firebase';
+
+let resizeHandler;
 
 export default {
   name: 'bmc',
@@ -66,11 +69,14 @@ export default {
     this.setCanvasRef(db.child('projects').child(this.$route.params.id)).then(() => {
       this.isLoading = false;
     });
-    window.addEventListener('resize', this.handleWindowResize);
+    resizeHandler = debounce(this.handleWindowResize, 300);
+    window.addEventListener('resize', resizeHandler);
     this.handleWindowResize();
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.handleWindowResize);
+    if (resizeHandler) {
+      window.removeEventListener('resize', resizeHandler);
+    }
     this.$store.dispatch('unbindCanvas');
   },
   computed: {

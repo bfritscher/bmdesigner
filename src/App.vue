@@ -99,12 +99,12 @@
                 <v-icon light>keyboard_arrow_down</v-icon>
               </v-list-tile-action>
             </v-list-tile>
-            <v-list-tile v-if="colorsUsedInCanvas.size === 0">
+            <v-list-tile v-if="currentCanvasUsedColors.size === 0">
               <v-list-tile-content>
                 No used colors
               </v-list-tile-content>
             </v-list-tile>
-            <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL" :key="colorId" v-show="colorsUsedInCanvas.has(colorId)">
+            <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL" :key="colorId" v-show="currentCanvasUsedColors.has(colorId)">
 
               <v-btn-toggle class="color-btn" :style="{'background-color': colorCode}" :class="colorCode" :items="[{text: 'off', value: '0'}, {text: '1/4', value: '0.25'}, {text: '1/2', value: '0.5'},  {text: '3/4', value: '0.75'}, {text: 'on', value: '1'},]" mandatory :input-value="colorsVisibility[colorId]" @change="toggleColorVisibility($event, colorId)"> </v-btn-toggle>
 
@@ -132,7 +132,7 @@
               <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }"
                 :class="[u.online ? 'green--after' : 'red--after']">
                 <img v-if="u.avatar" :src="u.avatar" :alt="u.name">
-                <avatar v-else :username="u.name" :size="38"></avatar>
+                <avatar v-if="u.name && !u.avatar" :username="u.name" :size="38"></avatar>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title v-text="u.name"></v-list-tile-title>
@@ -220,13 +220,13 @@
       <v-menu offset-y v-if="currentUser">
         <v-list-tile-avatar slot="activator">
           <img v-if="currentUser.photoURL" :src="currentUser.photoURL" />
-          <avatar v-else :username="currentUser.displayName"></avatar>
+          <avatar v-if="currentUser.displayName && !currentUser.photoURL" :username="currentUser.displayName" :size="38"></avatar>
         </v-list-tile-avatar>
         <v-list>
           <v-list-tile avatar>
             <v-list-tile-avatar>
               <img v-if="currentUser.photoURL" :src="currentUser.photoURL" />
-              <avatar v-else :username="currentUser.displayName"></avatar>
+              <avatar v-if="currentUser.displayName && !currentUser.photoURL" :username="currentUser.displayName" :size="38"></avatar>
             </v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title>{{currentUser.displayName}}</v-list-tile-title>
@@ -270,7 +270,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapState } from 'vuex';
 import { COLORS_MATERIAL } from '@/utils';
 import Avatar from 'vue-avatar/dist/Avatar';
 import { auth, db } from '@/utils/firebase';
@@ -294,8 +294,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['colorsUsedInCanvas']),
-    ...mapState(['currentUser']),
+    ...mapState({
+      currentUser: 'currentUser',
+      currentCanvasUsedColors: state => state.layout.currentCanvasUsedColors,
+    }),
     title() {
       let title = this.$route.meta && this.$route.meta.title ? this.$route.meta.title : '';
       if (this.isModelEdit) {

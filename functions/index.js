@@ -46,8 +46,8 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
   };
   const node = admin.database().ref(`/${DB_ROOT}/projects`).push(project);
   admin.database()
-    .ref(`/${DB_ROOT}/users/${uid}/projects/${node.key}/name`)
-    .set(project.name).then(() => event.data.ref.remove());
+    .ref(`/${DB_ROOT}/users/${uid}/projects/${node.key}/`)
+    .set(project.info).then(() => event.data.ref.remove());
 });
 
 // TRIGER to update copy projects canvas.info to users projects...
