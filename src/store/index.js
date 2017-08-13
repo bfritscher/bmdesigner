@@ -204,6 +204,12 @@ const actions = {
       refs.user.child('settings').update(payload);
     }
   },
+  removeUser(context, key) {
+    refs.canvas.child('users').child(key).remove();
+  },
+  removeInvitation(context, key) {
+    refs.canvas.child('invites_sent').child(key).remove();
+  },
   setUserRef: firebaseAction(({ state, bindFirebaseRef, unbindFirebaseRef }, { ref }) => {
     // this will unbind any previously bound ref
     refs.user = ref;

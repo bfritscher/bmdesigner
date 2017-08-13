@@ -78,6 +78,12 @@ exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{uid}/updateIn
   });
 });
 
+exports.onRemoveUserFromProject = functions.database.ref(`/${DB_ROOT}/projects/{pid}/users/{uid}`).onDelete((event) => {
+  const uid = event.params.uid;
+  const pid = event.params.pid;
+  admin.database().ref(`/${DB_ROOT}/users/${uid}/projects/${pid}`).remove();
+});
+
 exports.inviteToken = functions.database.ref(`/${DB_ROOT}/projects/{uid}/invite_request`).onWrite((event) => {
   const uid = event.params.uid;
   if (!event.data.val()) {

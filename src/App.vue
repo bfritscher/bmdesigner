@@ -149,10 +149,22 @@
                 <v-list-tile-content>
                   <v-list-tile-title v-text="u.name"></v-list-tile-title>
                 </v-list-tile-content>
-                <!-- <v-list-tile-action>
-                  <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
+                <v-list-tile-action>
+                  <v-dialog v-model="showConfirmRemoveUser" persistent>
+                    <v-btn icon ripple slot="activator">
+                      <v-icon class="grey--text text--lighten-1">clear</v-icon>
+                    </v-btn>
+                    <v-card>
+                      <v-card-title class="headline">Remove user?</v-card-title>
+                      <v-card-text>{{u.name}} will no longer be able to edit this project.</v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn class="black--text" flat @click.native="showConfirmRemoveUser = false">Cancel</v-btn>
+                        <v-btn class="blue--text darken-1" flat @click.native="removeUser(key)">Remove</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
                 </v-list-tile-action>
-                -->
               </v-list-tile>
               <v-list-tile v-for="(u, key) in $store.state.canvas.invites_sent" :key="key">
                 <v-list-tile-action class="invite">
@@ -161,10 +173,22 @@
                 <v-list-tile-content>
                   <v-list-tile-title v-text="u"></v-list-tile-title>
                 </v-list-tile-content>
-                <!-- <v-list-tile-action>
-                  <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
+                <v-list-tile-action>
+                  <v-dialog v-model="showConfirmDeleteInvitation" persistent>
+                    <v-btn icon ripple slot="activator">
+                      <v-icon class="grey--text text--lighten-1">clear</v-icon>
+                    </v-btn>
+                    <v-card>
+                      <v-card-title class="headline">Disable invitation token?</v-card-title>
+                      <v-card-text>The sent share link will no longer be usable to join this project.</v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn class="black--text" flat @click.native="showConfirmDeleteInvitation = false">Cancel</v-btn>
+                        <v-btn class="blue--text darken-1" flat @click.native="removeInvitation(key)">Remove</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
                 </v-list-tile-action>
-                -->
               </v-list-tile>
 
               <v-list-tile v-if="$store.state.canvas.invite_request">
@@ -174,10 +198,6 @@
                 <v-list-tile-content>
                   <v-list-tile-title>{{$store.state.canvas.invite_request}}</v-list-tile-title>
                 </v-list-tile-content>
-                <!-- <v-list-tile-action>
-                  <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
-                </v-list-tile-action>
-                -->
               </v-list-tile>
 
             </v-list>
@@ -205,24 +225,24 @@
 
           </div>
           <!--
-                      <v-list-tile v-ripple>
-                        <v-list-tile-action>
-                          <v-icon class="grey--text text--darken-1">settings</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
-                      </v-list-tile>
-            -->
+                          <v-list-tile v-ripple>
+                            <v-list-tile-action>
+                              <v-icon class="grey--text text--darken-1">settings</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
+                          </v-list-tile>
+                -->
         </div>
       </v-list>
     </v-navigation-drawer>
     <!--
-                          <v-navigation-drawer
-                              right
-                              temporary
-                              hide-overlay
-                              :value="$store.state.layout.focusedNote"
-                            ></v-navigation-drawer>
-                            -->
+                              <v-navigation-drawer
+                                  right
+                                  temporary
+                                  hide-overlay
+                                  :value="$store.state.layout.focusedNote"
+                                ></v-navigation-drawer>
+                                -->
     <v-toolbar fixed class="blue-grey darken-2" dark>
       <v-toolbar-side-icon @click.native.stop.prevent="userSettingsUpdate({drawer: !userSettings.drawer})"></v-toolbar-side-icon>
       <!-- <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field> -->
@@ -315,6 +335,8 @@ export default {
       right: true,
       showDialogInvite: false,
       showDialogTitle: false,
+      showConfirmDeleteInvitation: false,
+      showConfirmRemoveUser: false,
       localTitle: '',
       inviteEmail: '',
       COLORS_MATERIAL,
@@ -375,6 +397,14 @@ export default {
     signOut() {
       auth.signOut();
       this.$router.push({ name: 'home' });
+    },
+    removeInvitation(key) {
+      this.showConfirmDeleteInvitation = false;
+      this.$store.dispatch('removeInvitation', key);
+    },
+    removeUser(key) {
+      this.showConfirmRemoveUser = false;
+      this.$store.dispatch('removeUser', key);
     },
     sendInviteEmail() {
       db.child('projects').child(this.$store.state.canvas['.key']).child('invite_request').set(this.inviteEmail);
