@@ -34,6 +34,7 @@ const DEFAULT_USER_CANVAS_SETTINGS = {
   lastUsedColors: [0],
   colorsVisibility: [1, 1, 1, 1, 1, 1],
   isColorsOpen: false,
+  fav: false,
 };
 
 const DEFAULT_USER_SETTINGS = {
@@ -59,8 +60,10 @@ const initialState = {
     users: {},
   },
   user: {
-    projects: {},
-    favorites: {},
+    projects: { // by project keys
+      info: {}, // duplicated from canvas
+      settings: DEFAULT_USER_CANVAS_SETTINGS,
+    },
     settings: DEFAULT_USER_SETTINGS,
   },
   currentUser: {},
@@ -175,7 +178,8 @@ const actions = {
   canvasUserSettingsUpdate({ state, commit }, payload) {
     commit(types.CANVAS_USER_SETTINGS_UPDATE, payload);
     if (refs.user) {
-      refs.user.child('projects').child(state.canvas['.key']).child('settings').update(payload);
+      const key = payload.canvasKey || state.canvas['.key'];
+      refs.user.child('projects').child(key).child('settings').update(payload);
     }
   },
   userSettingsUpdate({ commit }, payload) {
@@ -302,11 +306,12 @@ const mutations = {
     if (!state.canvas) {
       return;
     }
-    if (!state.user.projects[state.canvas['.key']].settings) {
-      Vue.set(state.user.projects[state.canvas['.key']], 'settings', DEFAULT_USER_CANVAS_SETTINGS);
+    const canvasKey = payload.canvasKey || state.canvas['.key'];
+    if (!state.user.projects[canvasKey].settings) {
+      Vue.set(state.user.projects[canvasKey], 'settings', DEFAULT_USER_CANVAS_SETTINGS);
     }
     Object.keys(payload).forEach((key) => {
-      Vue.set(state.user.projects[state.canvas['.key']].settings, key, payload[key]);
+      Vue.set(state.user.projects[canvasKey].settings, key, payload[key]);
     });
   },
   [types.USER_SETTINGS_UPDATE](state, payload) {

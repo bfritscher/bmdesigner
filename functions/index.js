@@ -55,6 +55,7 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
         lastUsedColors: [0],
         colorsVisibility: [1, 1, 1, 1, 1, 1],
         isColorsOpen: false,
+        fav: false,
       },
     }).then(() => event.data.ref.remove());
 });
