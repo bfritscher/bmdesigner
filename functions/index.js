@@ -96,12 +96,11 @@ function acceptInvite(req, res) {
   return projectRef.once('value', (snapshot) => {
     const project = snapshot.val();
     if (project && project.invites_sent && project.invites_sent[token]) {
-      // TODO: get user name from userUid in auth? and add to list
       return Promise.all([
         // add user to list
         projectRef.child(`users/${userUid}`).set(true),
         // add list to user
-        admin.database().ref(`/${DB_ROOT}/users/${userUid}/projects/${projectUid}/name`).set(project.name)])
+        admin.database().ref(`/${DB_ROOT}/users/${userUid}/projects/${projectUid}/info`).set(project.info)])
         .then(() => {
           projectRef.child(`invites_sent/${token}`).remove();
           res.sendStatus(200);
