@@ -303,6 +303,24 @@ const actions = {
       valHasBeenSent = true;
     });
   },
+  duplicateCanvas({ commit, state }) {
+    commit(types.LAYOUT_UPDATE, { showLoading: 'Copying content...' });
+    const canvas = Object.assign({}, state.canvas);
+    canvas.info = Object.assign({}, state.canvas.info);
+    canvas.info.name += ' copy';
+    canvas.source = 'bmdesigner';
+    fetch(' https://us-central1-bmdesigner-50d6c.cloudfunctions.net/importJSONProject', {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify(canvas),
+    })
+    .then(res => res.text()).then((url) => {
+      window.location = url;
+    });
+  },
 };
 
 // mutations

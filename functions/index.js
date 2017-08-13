@@ -73,8 +73,8 @@ exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{uid}/updateIn
     project.info.stickyCount = Object.keys(project.notes || {}).length;
     project.info.updatedAt = new Date().toISOString();
     Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${uid}/info`).update(project.info),
-      ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${uid}/info`).update(project.info))])
-    .then(() => event.data.ref.remove());
+    ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${uid}/info`).update(project.info))])
+      .then(() => event.data.ref.remove());
   });
 });
 
@@ -137,3 +137,61 @@ function acceptInvite(req, res) {
 exports.acceptInvite = functions.https.onRequest((req, res) =>
   cors()(req, res,
     () => acceptInvite(req, res)));
+
+function makeFirebaseCompatible(value) {
+  if (typeof value === 'object') {
+    Object.keys(value).forEach((key) => {
+      if (typeof value[key] === 'undefined') {
+        delete value[key];
+        return;
+      }
+      if (key === '.key') {
+        delete value[key];
+        return;
+      }
+      const compatibleKey = makeFirebaseCompatible(key);
+      if (compatibleKey !== key) {
+        value[compatibleKey] = value[key];
+        delete value[key];
+      }
+      makeFirebaseCompatible(value[compatibleKey]);
+    });
+    return value;
+  }
+  if (typeof value === 'string') {
+    return value.replace(/\./g, '*');
+  }
+}
+
+function importJSONProject(req, res) {
+  const project = req.body;
+  // verify/clean json
+  if (project['.key']) {
+    project.parent = project['.key'];
+  }
+  // remove users
+  delete project.users;
+  // replace createDate
+  if (!project.info) {
+    project.info = {
+      name: 'No Name',
+      logoImage: '',
+      logoColor: '',
+      stickyCount: 0,
+      usersCount: 0,
+      public: false,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  project.info.createdAt = new Date().toISOString();
+  // TODO: validate notes min properties
+  // create new project
+  const pid = admin.database().ref(`/${DB_ROOT}/projects`).push(makeFirebaseCompatible(project)).key;
+  // generate invite token
+  const token = admin.database().ref(`/${DB_ROOT}/projects/${pid}/invites_sent`).push('import').key;
+  res.send(`https://bmdesigner.com/login/${pid}:${token}`);
+}
+
+exports.importJSONProject = functions.https.onRequest((req, res) =>
+  cors()(req, res,
+    () => importJSONProject(req, res)));

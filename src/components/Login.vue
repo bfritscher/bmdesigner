@@ -15,6 +15,7 @@
 
 <script>
 import { startLoginUI } from '@/utils/firebase';
+import { types } from '@/store/mutation-types';
 
 export default {
   name: 'login',
@@ -25,7 +26,15 @@ export default {
   },
   mounted() {
     this.hasInviteToken = localStorage.getItem('inviteToken');
+    if (this.hasInviteToken && this.$store.state.currentUser) {
+      this.$store.commit(types.LAYOUT_UPDATE, { showLoading: 'Importing canvas into your workspace...' });
+    }
     startLoginUI();
+  },
+  beforeDestroy() {
+    if (this.$store.state.layout.showLoading) {
+      this.$store.commit(types.LAYOUT_UPDATE, { showLoading: '' });
+    }
   },
 };
 </script>

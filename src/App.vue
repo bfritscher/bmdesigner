@@ -224,25 +224,34 @@
             </v-dialog>
 
           </div>
+
+          <v-list-tile ripple @click.native="duplicateCanvas">
+            <v-list-tile-action>
+              <v-icon>content_copy</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Duplicate canvas</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
           <!--
-                          <v-list-tile v-ripple>
-                            <v-list-tile-action>
-                              <v-icon class="grey--text text--darken-1">settings</v-icon>
-                            </v-list-tile-action>
-                            <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
-                          </v-list-tile>
-                -->
+                            <v-list-tile v-ripple>
+                              <v-list-tile-action>
+                                <v-icon class="grey--text text--darken-1">settings</v-icon>
+                              </v-list-tile-action>
+                              <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
+                            </v-list-tile>
+                  -->
         </div>
       </v-list>
     </v-navigation-drawer>
     <!--
-                              <v-navigation-drawer
-                                  right
-                                  temporary
-                                  hide-overlay
-                                  :value="$store.state.layout.focusedNote"
-                                ></v-navigation-drawer>
-                                -->
+                                <v-navigation-drawer
+                                    right
+                                    temporary
+                                    hide-overlay
+                                    :value="$store.state.layout.focusedNote"
+                                  ></v-navigation-drawer>
+                                  -->
     <v-toolbar fixed class="blue-grey darken-2" dark>
       <v-toolbar-side-icon @click.native.stop.prevent="userSettingsUpdate({drawer: !userSettings.drawer})"></v-toolbar-side-icon>
       <!-- <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field> -->
@@ -392,7 +401,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate']),
+    ...mapActions(['canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate', 'duplicateCanvas']),
     isMobile() {
       return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
     },

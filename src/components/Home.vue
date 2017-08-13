@@ -36,9 +36,6 @@
             <v-btn icon light @click.native="toggleFav(key, !settings.fav)">
               <v-icon :primary="settings.fav">favorite</v-icon>
             </v-btn>
-            <v-btn icon light>
-              <v-icon>content_copy</v-icon>
-            </v-btn>
             <v-spacer></v-spacer>
             <v-btn flat primary :to="{name:'bmc', params: {id: key}}">Open</v-btn>
           </v-card-actions>
