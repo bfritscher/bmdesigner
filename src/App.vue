@@ -312,7 +312,9 @@
         <v-card-title class="headline">Working</v-card-title>
         <v-card-text>
           <p>{{$store.state.layout.showLoading}}</p>
-          <v-progress-circular indeterminate v-bind:size="100" v-bind:width="7" class="primary--text"></v-progress-circular>
+          <p style="text-align:center;">
+            <v-progress-circular indeterminate v-bind:size="100" v-bind:width="7" class="primary--text"></v-progress-circular>
+          </p>
         </v-card-text>
       </v-card>
     </v-dialog>

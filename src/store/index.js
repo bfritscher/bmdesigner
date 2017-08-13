@@ -5,7 +5,6 @@ import Vuex from 'vuex';
 import { firebaseMutations, firebaseAction } from 'vuexfire';
 import Note from '@/models/Note';
 import solve from '@/utils/calc';
-import { db } from '@/utils/firebase';
 import router from '@/router';
 import * as types from './mutation-types';
 
@@ -289,15 +288,20 @@ const actions = {
       });
     });
   }),
-  createNewCanvas({ commit, state }) {
+  createNewCanvas({ commit }) {
     commit(types.LAYOUT_UPDATE, { showLoading: 'Generating new workspace...' });
+    let valHasBeenSent = false;
     const newProjectHandler = (snapshot) => {
-      commit(types.LAYOUT_UPDATE, { showLoading: '' });
-      router.push({ name: 'bmc', params: { id: snapshot.key } });
-      db.child('users').child(state.currentUser.uid).child('projects').off('child_added', newProjectHandler);
+      if (valHasBeenSent) {
+        commit(types.LAYOUT_UPDATE, { showLoading: '' });
+        router.push({ name: 'bmc', params: { id: snapshot.key } });
+        refs.user.child('projects').off('child_added', newProjectHandler);
+      }
     };
-    db.child('users').child(state.currentUser.uid).child('projects').on('child_added', newProjectHandler);
-    db.child('users').child(state.currentUser.uid).child('create_project').set('New Project');
+    refs.user.child('projects').on('child_added', newProjectHandler);
+    refs.user.child('create_project').set('New Project').then(() => {
+      valHasBeenSent = true;
+    });
   },
 };
 
