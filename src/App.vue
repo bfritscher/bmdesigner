@@ -204,7 +204,6 @@
             </v-dialog>
 
           </div>
-          <v-btn @click.native="screenshot">export</v-btn>
           <!--
                       <v-list-tile v-ripple>
                         <v-list-tile-action>
@@ -299,7 +298,6 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import html2canvas from 'html2canvas';
 import { COLORS_MATERIAL } from '@/utils';
 import Avatar from 'vue-avatar/dist/Avatar';
 import { auth, db } from '@/utils/firebase';
@@ -401,11 +399,6 @@ export default {
       newArray[colorId] = parseFloat(value); // / 100.0;
       this.$store.commit(types.LAYOUT_UPDATE, {
         colorsVisibility: newArray,
-      });
-    },
-    screenshot() {
-      html2canvas(document.body).then((canvas) => {
-        document.body.appendChild(canvas);
       });
     },
   },

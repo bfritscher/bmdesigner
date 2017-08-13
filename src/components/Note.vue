@@ -563,7 +563,7 @@ export default {
   border: none;
   outline: none;
   background-color: transparent;
-  font-family: 'Itim', cursive;
+  font-family: 'Itim', cursive, sans-serif;
   color: #333;
 }
 
