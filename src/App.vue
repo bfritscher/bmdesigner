@@ -123,93 +123,107 @@
             </v-list-tile-content>
           </v-list-tile>
 
-<div v-if="$store.state.layout.isEditable">
+          <div v-if="$store.state.layout.isEditable">
 
-          <v-list-tile v-ripple @click.native="changeAccessType">
-            <v-list-tile-action>
-              <v-icon>{{accessTypeSwitch.icon}}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
-                {{accessTypeSwitch.text}}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-divider class="my-2"></v-divider>
-
-          <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
-
-          <v-list>
-            <v-list-tile v-for="(u, key) in $store.state.canvas.users" :key="key" avatar ripple>
-              <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }"
-                :class="[u.online ? 'green--after' : 'red--after']">
-                <img v-if="u.avatar" :src="u.avatar" :alt="u.name">
-                <avatar v-if="u.name && !u.avatar" :username="u.name" :size="38"></avatar>
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title v-text="u.name"></v-list-tile-title>
-              </v-list-tile-content>
-              <!-- <v-list-tile-action>
-                <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
-              </v-list-tile-action>
-              -->
-            </v-list-tile>
-            <v-list-tile v-for="(u, key) in $store.state.canvas.invites_sent" :key="key">
+            <v-list-tile v-ripple @click.native="changeAccessType">
               <v-list-tile-action>
-                <v-icon light>mail_outline</v-icon>
+                <v-icon>{{accessTypeSwitch.icon}}</v-icon>
               </v-list-tile-action>
               <v-list-tile-content>
-                <v-list-tile-title v-text="u"></v-list-tile-title>
+                <v-list-tile-title>
+                  {{accessTypeSwitch.text}}
+                </v-list-tile-title>
               </v-list-tile-content>
-              <!-- <v-list-tile-action>
-                <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
-              </v-list-tile-action>
-              -->
             </v-list-tile>
-          </v-list>
-          <v-divider class="my-2"></v-divider>
 
-          <v-dialog v-model="showDialogInvite" persistent style="display:block">
-            <v-list-tile class="mt-2" v-ripple slot="activator">
-              <v-list-tile-action>
-                <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-title class="grey--text text--darken-1">Invite a person</v-list-tile-title>
-            </v-list-tile>
-            <v-card>
-              <v-card-text>
-                <h3 class="headline">Send invitation to?</h3>
-                <v-text-field label="Email" required type="email" light v-model="inviteEmail" :autofocus="true"></v-text-field>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn class="black--text" flat @click.native="showDialogInvite = false">Cancel</v-btn>
-                <v-btn class="blue--text darken-1" flat @click.native="sendInviteEmail">Send</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+            <v-divider class="my-2"></v-divider>
 
-</div>
+            <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
+
+            <v-list>
+              <v-list-tile v-for="(u, key) in $store.state.canvas.users" :key="key" avatar ripple>
+                <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }" :class="[u.online ? 'green--after' : 'red--after']">
+                  <img v-if="u.avatar" :src="u.avatar" :alt="u.name">
+                  <avatar v-if="u.name && !u.avatar" :username="u.name" :size="38"></avatar>
+                </v-list-tile-avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title v-text="u.name"></v-list-tile-title>
+                </v-list-tile-content>
+                <!-- <v-list-tile-action>
+                  <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
+                </v-list-tile-action>
+                -->
+              </v-list-tile>
+              <v-list-tile v-for="(u, key) in $store.state.canvas.invites_sent" :key="key">
+                <v-list-tile-action class="invite">
+                  <v-icon medium>mail_outline</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title v-text="u"></v-list-tile-title>
+                </v-list-tile-content>
+                <!-- <v-list-tile-action>
+                  <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
+                </v-list-tile-action>
+                -->
+              </v-list-tile>
+
+              <v-list-tile v-if="$store.state.canvas.invite_request">
+                <v-list-tile-action>
+                  <v-progress-circular indeterminate class="primary--text"></v-progress-circular>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{$store.state.canvas.invite_request}}</v-list-tile-title>
+                </v-list-tile-content>
+                <!-- <v-list-tile-action>
+                  <v-icon v-bind:class="[u.online ? 'teal--text' : 'grey--text']">chat_bubble</v-icon>
+                </v-list-tile-action>
+                -->
+              </v-list-tile>
+
+            </v-list>
+            <v-divider class="my-2"></v-divider>
+
+            <v-dialog v-model="showDialogInvite" persistent style="display:block">
+              <v-list-tile class="mt-2" v-ripple slot="activator">
+                <v-list-tile-action>
+                  <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-title class="grey--text text--darken-1">Invite a person</v-list-tile-title>
+              </v-list-tile>
+              <v-card>
+                <v-card-text>
+                  <h3 class="headline">Send invitation to?</h3>
+                  <v-text-field label="Email" required type="email" light v-model="inviteEmail" :autofocus="true"></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn class="black--text" flat @click.native="showDialogInvite = false">Cancel</v-btn>
+                  <v-btn class="blue--text darken-1" flat @click.native="sendInviteEmail">Send</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+
+          </div>
+          <v-btn @click.native="screenshot">export</v-btn>
           <!--
-                    <v-list-tile v-ripple>
-                      <v-list-tile-action>
-                        <v-icon class="grey--text text--darken-1">settings</v-icon>
-                      </v-list-tile-action>
-                      <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
-                    </v-list-tile>
-          -->
+                      <v-list-tile v-ripple>
+                        <v-list-tile-action>
+                          <v-icon class="grey--text text--darken-1">settings</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
+                      </v-list-tile>
+            -->
         </div>
       </v-list>
     </v-navigation-drawer>
     <!--
-                        <v-navigation-drawer
-                            right
-                            temporary
-                            hide-overlay
-                            :value="$store.state.layout.focusedNote"
-                          ></v-navigation-drawer>
-                          -->
+                          <v-navigation-drawer
+                              right
+                              temporary
+                              hide-overlay
+                              :value="$store.state.layout.focusedNote"
+                            ></v-navigation-drawer>
+                            -->
     <v-toolbar fixed class="blue-grey darken-2" dark>
       <v-toolbar-side-icon @click.native.stop.prevent="userSettingsUpdate({drawer: !userSettings.drawer})"></v-toolbar-side-icon>
       <!-- <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field> -->
@@ -275,16 +289,17 @@
     </main>
     <note-options></note-options>
     <v-dialog :value="$store.state.layout.showLoading" persistent>
-        <v-card>
-          <v-card-title class="headline">Working</v-card-title>
-          <v-card-text>{{$store.state.layout.showLoading}}</v-card-text>
-        </v-card>
-      </v-dialog>
+      <v-card>
+        <v-card-title class="headline">Working</v-card-title>
+        <v-card-text>{{$store.state.layout.showLoading}}</v-card-text>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
+import html2canvas from 'html2canvas';
 import { COLORS_MATERIAL } from '@/utils';
 import Avatar from 'vue-avatar/dist/Avatar';
 import { auth, db } from '@/utils/firebase';
@@ -388,6 +403,11 @@ export default {
         colorsVisibility: newArray,
       });
     },
+    screenshot() {
+      html2canvas(document.body).then((canvas) => {
+        document.body.appendChild(canvas);
+      });
+    },
   },
   components: {
     NoteOptions,
@@ -440,6 +460,10 @@ body {
 .avatar:not(.list__tile__avatar){
   justify-content: center;
   min-width: 0;
+}
+
+.invite {
+  justify-content: center;
 }
 
 .color-btn .btn {
