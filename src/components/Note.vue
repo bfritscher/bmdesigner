@@ -316,7 +316,7 @@ export default {
       this.debouncedCalculateFontSizeAndHeight();
     },
     moveToTop() {
-      this.$store.dispatch('NOTE_MOVE_TOP', this.value);
+      this.$store.dispatch('NOTE_MOVE_TOP', this.value['.key']);
     },
     handleFocus() {
       this.$store.commit(types.LAYOUT_UPDATE, { focusedNote: this.value });

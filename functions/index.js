@@ -37,6 +37,7 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
+    notesOrder: [],
     users: {},
     notes: [],
   };

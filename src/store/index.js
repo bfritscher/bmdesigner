@@ -29,7 +29,7 @@ export const VPC_CS_TYPES = [
 ];
 
 
-const DEFAULT_CANVAS_SETTINGS = {
+const DEFAULT_USER_CANVAS_SETTINGS = {
   listMode: false,
   lastUsedColors: [0],
   colorsVisibility: [1, 1, 1, 1, 1, 1],
@@ -54,7 +54,7 @@ const initialState = {
       createdAt: '',
       updatedAt: '',
     },
-    settings: DEFAULT_CANVAS_SETTINGS,
+    notesOrder: [],
     notes: {},
     users: {},
   },
@@ -100,11 +100,25 @@ const gettersDefinition = {
       list = [list];
     }
     if (state.canvas.notes) {
-      return Object.keys(state.canvas.notes).map((key) => {
-        const n = state.canvas.notes[key];
-        n['.key'] = key;
-        return n;
-      }).filter(note => list.indexOf(note.type) > -1);
+      if (!state.canvas.notesOrder) {
+        Vue.set(state.canvas, 'notesOrder', []);
+      }
+      const keys = Object.keys(state.canvas.notes);
+      return keys.reduce((notes, key) => {
+        const note = state.canvas.notes[key];
+        note['.key'] = key;
+        // filter for only the requested types
+        if (list.indexOf(note.type) > -1) {
+          // if we know the position add it there, else put it at end
+          const pos = state.canvas.notesOrder.indexOf(note['.key']);
+          if (pos > -1) {
+            notes[pos] = note;
+          } else {
+            notes.push(note);
+          }
+        }
+        return notes;
+      }, new Array(state.canvas.notesOrder.length)).filter(note => note);
     }
     return [];
   },
@@ -113,7 +127,7 @@ const gettersDefinition = {
   notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
   notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
   canvasSettings: state => (state.canvas && state.user && state.user.projects[state.canvas['.key']] && state.user.projects[state.canvas['.key']].settings ?
-    state.user.projects[state.canvas['.key']].settings : Object.assign({}, DEFAULT_CANVAS_SETTINGS)),
+    state.user.projects[state.canvas['.key']].settings : Object.assign({}, DEFAULT_USER_CANVAS_SETTINGS)),
   userSettings: state => state.user.settings || DEFAULT_USER_SETTINGS,
 };
 
@@ -144,9 +158,8 @@ const actions = {
     refs.notes.child(payload['.key']).remove();
     commit(types.NOTE_DELETE, payload);
   },
-  NOTE_MOVE_TOP({ commit }, payload) {
-    // TODO: z-index in firebase?
-    commit(types.NOTE_MOVE_TOP, payload);
+  NOTE_MOVE_TOP({ commit }, key) {
+    commit(types.NOTE_MOVE_TOP, key);
   },
   NOTE_UPDATE_CALC_VAR({ state, commit }, payload) {
     commit(types.NOTE_UPDATE_CALC_VAR, payload);
@@ -258,16 +271,13 @@ const mutations = {
     delete state.canvas.notes[payload.id];
     delete state.canvas.notes[payload['.id']];
   },
-  [types.NOTE_MOVE_TOP](state, payload) {
-    console.log('TODO: fix z-index', payload);
-    /*
-    TODO: fix
-    const index = state.notes.indexOf(payload);
+  [types.NOTE_MOVE_TOP](state, key) {
+    const index = state.canvas.notesOrder.indexOf(key);
     if (index > -1) {
-      state.notes.splice(index, 1);
-      state.notes.push(payload);
+      state.canvas.notesOrder.splice(index, 1);
     }
-    */
+    state.canvas.notesOrder.push(key);
+    refs.canvas.child('notesOrder').set(state.canvas.notesOrder);
   },
   [types.NOTE_UPDATE_CALC_VAR](state, payload) {
     Vue.set(payload.note.values, payload.key, payload.value);
@@ -293,7 +303,7 @@ const mutations = {
       return;
     }
     if (!state.user.projects[state.canvas['.key']].settings) {
-      Vue.set(state.user.projects[state.canvas['.key']], 'settings', DEFAULT_CANVAS_SETTINGS);
+      Vue.set(state.user.projects[state.canvas['.key']], 'settings', DEFAULT_USER_CANVAS_SETTINGS);
     }
     Object.keys(payload).forEach((key) => {
       Vue.set(state.user.projects[state.canvas['.key']].settings, key, payload[key]);
