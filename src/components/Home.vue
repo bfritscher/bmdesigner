@@ -4,7 +4,7 @@
       <v-btn v-if="$store.state.currentUser" fab primary dark class="floating-action" @click.native="createNewCanvas">
         <v-icon>add</v-icon>
       </v-btn>
-      <v-flex sm6 md4 xl3 v-for="({info, settings}, key) in user.projects" :key="key" v-if="isShown(info, settings)">
+      <v-flex sm6 md4 xl3 v-for="({info, settings={}}, key) in user.projects" :key="key" v-if="isShown(info, settings)">
         <v-card class="model">
           <v-card-media @click.native="$router.push({name:'bmc', params: {id: key}})" :contain="!!info.logoImage" :class="{'default-background': !info.logoImage}" :style="{'background-color': info.logoColor ? info.logoColor : colorHash(info.name)}" :src="info.logoImage ? info.logoImage : require('@/assets/default_bmc_logo_background.jpg')">
             <div class="left-icons" v-if="info.updatedAt">
@@ -14,7 +14,7 @@
               <timeago :since="info.updatedAt"></timeago>
             </div>
             <div class="right-icons">
-              <v-icon v-badge="{value: info.itemsCount || 0, overlap: true, bottom: true}">
+              <v-icon v-badge="{value: info.stickyCount || 0, overlap: true, bottom: true}">
                 note
               </v-icon>
               <v-icon v-badge="{value: info.usersCount || 1, overlap: true, bottom: true}">
@@ -75,10 +75,10 @@ export default {
       }
       return true;
     },
-    toggleFav(key, fav) {
+    toggleFav(canvasKey, fav) {
       this.canvasUserSettingsUpdate({
         fav,
-        key,
+        canvasKey,
       });
     },
   },

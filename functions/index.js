@@ -61,6 +61,22 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
 });
 
 // TRIGER to update copy projects canvas.info to users projects...
+exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{uid}/updateInfo`).onWrite((event) => {
+  const uid = event.params.uid;
+  if (!event.data.val()) {
+    return;
+  }
+  const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${uid}`);
+  projectRef.once('value', (snapshot) => {
+    const project = snapshot.val();
+    project.info.usersCount = Object.keys(project.users || {}).length;
+    project.info.stickyCount = Object.keys(project.notes || {}).length;
+    project.info.updatedAt = new Date().toISOString();
+    Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${uid}/info`).update(project.info),
+      ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${uid}/info`).update(project.info))])
+    .then(() => event.data.ref.remove());
+  });
+});
 
 exports.inviteToken = functions.database.ref(`/${DB_ROOT}/projects/{uid}/invite_request`).onWrite((event) => {
   const uid = event.params.uid;

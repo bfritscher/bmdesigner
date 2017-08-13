@@ -31,7 +31,7 @@ export default {
 </script>
 
 <style>
-.mdl-card.mdl-shadow--2dp.firebaseui-container.firebaseui-id-page-sign-in {
+.mdl-card.mdl-shadow--2dp.firebaseui-container {
   box-shadow: none;
 }
 </style>

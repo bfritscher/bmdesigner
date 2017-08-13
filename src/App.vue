@@ -233,7 +233,7 @@
           <v-card>
             <v-card-text>
               <h3 class="headline">Name of project?</h3>
-              <v-text-field required light :value="$store.state.canvas.info.name" @input="localTitle=$event" :autofocus="true"></v-text-field>
+              <v-text-field required light :value="$store.state.canvas.info.name" @input="localTitle=$event" @keyup.enter="saveNewTitle" :autofocus="true"></v-text-field>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>

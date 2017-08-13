@@ -180,9 +180,9 @@ const actions = {
     commit(types.NOTE_UPDATE_CALC_VAR, payload);
     if (state.layout.isEditable) {
       refs.notes.child(payload.note['.key']).child('values').child(payload.key).set(payload.value)
-      .then(() => {
-        commit(types.SOLVE_CALC);
-      });
+        .then(() => {
+          commit(types.SOLVE_CALC);
+        });
     } else {
       commit(types.SOLVE_CALC);
     }
@@ -215,10 +215,35 @@ const actions = {
       },
     });
   }),
-  unbindCanvas: firebaseAction(({ unbindFirebaseRef }) => {
-    unbindFirebaseRef('canvas');
-    refs.notes = null;
-    refs.canvas = null;
+  unbindCanvas: firebaseAction(({ state, unbindFirebaseRef }) => {
+    if (refs.canvas) {
+      // fake immediat feedback
+      state.user.projects[state.canvas['.key']].info = state.canvas.info;
+      refs.canvas.child('users').child(state.currentUser.uid).update({
+        online: false,
+      }).then(() => {
+        refs.canvas.child('updateInfo').set(true).then(() => {
+          unbindFirebaseRef('canvas');
+          refs.notes = null;
+          refs.canvas = null;
+          state.canvas = {
+            info: { // content copied to users list
+              name: '',
+              logoImage: '',
+              logoColor: '',
+              stickyCount: 0,
+              usersCount: 0,
+              public: false,
+              createdAt: '',
+              updatedAt: '',
+            },
+            notesOrder: [],
+            notes: {},
+            users: {},
+          };
+        });
+      });
+    }
   }),
   setCanvasRef: firebaseAction(({ state, commit, bindFirebaseRef, unbindFirebaseRef }, { ref }) => {
     // this will unbind any previously bound ref
@@ -318,7 +343,9 @@ const mutations = {
     Vue.set(payload.note.values, payload.key, payload.value);
   },
   [types.SOLVE_CALC](state) {
-    Vue.set(state, 'calcResults', solve(Object.values(state.canvas.notes)));
+    if (state.canvas.notes) {
+      Vue.set(state, 'calcResults', solve(Object.values(state.canvas.notes)));
+    }
   },
   [types.LAYOUT_UPDATE](state, payload) {
     Object.keys(payload).forEach((key) => {
