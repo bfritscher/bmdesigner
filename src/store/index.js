@@ -61,8 +61,10 @@ const initialState = {
   },
   user: {
     projects: { // by project keys
+      /*
       info: {}, // duplicated from canvas
       settings: DEFAULT_USER_CANVAS_SETTINGS,
+      */
     },
     settings: DEFAULT_USER_SETTINGS,
   },
@@ -77,6 +79,7 @@ const initialState = {
     showNoteOptionsCalc: false,
     showLoading: '',
     currentCanvasUsedColors: new Set(),
+    isEditable: false,
   },
 };
 
@@ -138,24 +141,33 @@ const refs = {};
 
 // actions
 const actions = {
-  NOTE_CREATE({ commit }, payload) {
-    refs.notes.push(new Note(payload));
+  NOTE_CREATE({ state, commit }, payload) {
+    if (state.layout.isEditable) {
+      refs.notes.push(new Note(payload));
+    }
     // commit(types.NOTE_CREATE, payload);
     // TODO: allow create but then we have to cache note updates until really created
   },
-  NOTE_MOVE({ commit }, payload) {
-    commit(types.NOTE_MOVE, payload);
-    if (payload.note['.key']) {
-      const note = payload.note;
-      delete payload.note;
-      refs.notes.child(note['.key']).update(payload);
+  NOTE_MOVE({ state, commit }, payload) {
+    if (state.layout.isEditable) {
+      commit(types.NOTE_MOVE, payload);
+      if (payload.note['.key']) {
+        const note = payload.note;
+        delete payload.note;
+        refs.notes.child(note['.key']).update(payload);
+      }
+    } else {
+      commit(types.NOTE_MOVE_LOCAL, payload);
     }
   },
   NOTE_UPDATE({ state, commit }, payload) {
     commit(types.NOTE_UPDATE, payload);
-    if (payload.note['.key']) {
+    if (payload.note['.key'] && state.layout.isEditable) {
       refs.notes.child(payload.note['.key']).update(payload.changes);
     }
+  },
+  NOTE_MOVE_LOCAL({ state, commit }, payload) {
+    commit(types.NOTE_MOVE_LOCAL, payload);
   },
   NOTE_DELETE({ state, commit }, payload) {
     refs.notes.child(payload['.key']).remove();
@@ -166,10 +178,14 @@ const actions = {
   },
   NOTE_UPDATE_CALC_VAR({ state, commit }, payload) {
     commit(types.NOTE_UPDATE_CALC_VAR, payload);
-    refs.notes.child(payload.note['.key']).child('values').child(payload.key).set(payload.value)
+    if (state.layout.isEditable) {
+      refs.notes.child(payload.note['.key']).child('values').child(payload.key).set(payload.value)
       .then(() => {
         commit(types.SOLVE_CALC);
       });
+    } else {
+      commit(types.SOLVE_CALC);
+    }
   },
   canvasInfoUpdate({ commit }, payload) {
     refs.canvas.child('info').update(payload);
@@ -213,17 +229,23 @@ const actions = {
         readyCallback: () => {
           resolve();
           computeCurrentCanvasUsedColors(state);
-          // update userpic and name for this canvas
-          refs.canvas.child('users').child(state.currentUser.uid).update({
-            name: state.currentUser.displayName,
-            avatar: state.currentUser.photoURL,
-            online: true,
-          });
           commit(types.SOLVE_CALC);
-          refs.canvas.child('users').child(state.currentUser.uid)
-            .onDisconnect().update({
-              online: false,
+
+          if (state.currentUser && state.currentUser.uid
+            && state.currentUser.uid in state.canvas.users) {
+            commit(types.LAYOUT_UPDATE, { isEditable: true });
+            // update userpic and name for this canvas
+            refs.canvas.child('users').child(state.currentUser.uid).update({
+              name: state.currentUser.displayName,
+              avatar: state.currentUser.photoURL,
+              online: true,
             });
+
+            refs.canvas.child('users').child(state.currentUser.uid)
+              .onDisconnect().update({
+                online: false,
+              });
+          }
         },
         cancelCallback: (error) => {
           if (error.code === 'PERMISSION_DENIED') {
@@ -237,7 +259,7 @@ const actions = {
     });
   }),
   createNewCanvas({ commit, state }) {
-    commit(types.LAYOUT_UPDATE, { showLoading: 'Generating new workspace' });
+    commit(types.LAYOUT_UPDATE, { showLoading: 'Generating new workspace...' });
     const newProjectHandler = (snapshot) => {
       commit(types.LAYOUT_UPDATE, { showLoading: '' });
       router.push({ name: 'bmc', params: { id: snapshot.key } });
@@ -263,6 +285,13 @@ const mutations = {
       }
     });
   },
+  [types.NOTE_MOVE_LOCAL](state, payload) {
+    ['left', 'top', 'listLeft', 'listTop', 'type', 'angle', 'height'].forEach((key) => {
+      if (key in payload) {
+        payload.note[key] = payload[key];
+      }
+    });
+  },
   [types.NOTE_UPDATE](state, payload) {
     Object.keys(payload.changes).forEach((key) => {
       Vue.set(payload.note, key, payload.changes[key]);
@@ -281,13 +310,15 @@ const mutations = {
       state.canvas.notesOrder.splice(index, 1);
     }
     state.canvas.notesOrder.push(key);
-    refs.canvas.child('notesOrder').set(state.canvas.notesOrder);
+    if (state.layout.isEditable) {
+      refs.canvas.child('notesOrder').set(state.canvas.notesOrder);
+    }
   },
   [types.NOTE_UPDATE_CALC_VAR](state, payload) {
     Vue.set(payload.note.values, payload.key, payload.value);
   },
   [types.SOLVE_CALC](state) {
-    state.calcResults = solve(Object.values(state.canvas.notes));
+    Vue.set(state, 'calcResults', solve(Object.values(state.canvas.notes)));
   },
   [types.LAYOUT_UPDATE](state, payload) {
     Object.keys(payload).forEach((key) => {
@@ -307,6 +338,9 @@ const mutations = {
       return;
     }
     const canvasKey = payload.canvasKey || state.canvas['.key'];
+    if (!state.user.projects[canvasKey]) {
+      Vue.set(state.user.projects, canvasKey, {});
+    }
     if (!state.user.projects[canvasKey].settings) {
       Vue.set(state.user.projects[canvasKey], 'settings', DEFAULT_USER_CANVAS_SETTINGS);
     }

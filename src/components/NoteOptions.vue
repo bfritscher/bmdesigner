@@ -7,7 +7,7 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text style="max-height: calc(80vh - 104px);">
-          <v-layout row wrap>
+          <v-layout row wrap v-if="$store.state.layout.isEditable">
             <v-flex xs12 md6>
               <image-zone v-ripple class="image-zone" :max-width="200" :max-height="100" :image="note.image" @update:image="updateNote('image', $event)"></image-zone>
             </v-flex>
@@ -17,7 +17,7 @@
             </v-flex>
           </v-layout>
 
-          <v-divider></v-divider>c
+          <v-divider v-if="$store.state.layout.isEditable"></v-divider>
           <v-text-field :class="`color-${note.colors[0]}`" name="description" label="Description" :value="note.description" @input="updateNote('description', $event)" textarea></v-text-field>
           <v-divider></v-divider>
           <v-layout row align-center @click="toggleShowCalc">
@@ -89,7 +89,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn error flat @click.native="deleteNote">Delete</v-btn>
+          <v-btn error flat @click.native="deleteNote"  v-if="$store.state.layout.isEditable">Delete</v-btn>
           <v-spacer></v-spacer>
           <v-btn class="blue--text darken-1" flat @click.native="hideDialog">Close</v-btn>
         </v-card-actions>
@@ -122,7 +122,7 @@ export default {
     ...mapState({
       showNoteOptions: state => state.layout.showNoteOptions,
       showNoteOptionsCalc: state => state.layout.showNoteOptionsCalc,
-      results: state => state.layout.calcResults || {},
+      results: state => state.calcResults || {},
     }),
     note() {
       return this.$store.state.layout.focusedNote || new Note();

@@ -123,6 +123,19 @@
             </v-list-tile-content>
           </v-list-tile>
 
+<div v-if="$store.state.layout.isEditable">
+
+          <v-list-tile v-ripple @click.native="changeAccessType">
+            <v-list-tile-action>
+              <v-icon>{{accessTypeSwitch.icon}}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{accessTypeSwitch.text}}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
           <v-divider class="my-2"></v-divider>
 
           <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
@@ -155,7 +168,6 @@
               -->
             </v-list-tile>
           </v-list>
-
           <v-divider class="my-2"></v-divider>
 
           <v-dialog v-model="showDialogInvite" persistent style="display:block">
@@ -177,6 +189,8 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+
+</div>
           <!--
                     <v-list-tile v-ripple>
                       <v-list-tile-action>
@@ -201,7 +215,7 @@
       <!-- <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field> -->
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
-        <v-dialog v-model="showDialogTitle" persistent :disabled="!isModelEdit">
+        <v-dialog v-model="showDialogTitle" persistent :disabled="!$store.state.layout.isEditable || !isModelEdit">
           <v-toolbar-title :key="title" slot="activator">{{title}}</v-toolbar-title>
           <v-card>
             <v-card-text>
@@ -323,6 +337,9 @@ export default {
     listModeSwitch() {
       return this.canvasSettings.listMode ? { text: 'Switch to sticky notes', icon: 'widgets' } : { text: 'Switch to lists', icon: 'list' };
     },
+    accessTypeSwitch() {
+      return this.$store.state.canvas.info.public ? { text: 'Switch to private', icon: 'public' } : { text: 'Switch to public', icon: 'lock' };
+    },
     isModelList() {
       return ['home', 'play', 'inspire', 'learn', 'favorites', 'about', 'login'].includes(this.$route.name);
     },
@@ -350,6 +367,9 @@ export default {
     },
     changeListMode() {
       this.canvasUserSettingsUpdate({ listMode: !this.canvasSettings.listMode });
+    },
+    changeAccessType() {
+      this.canvasInfoUpdate({ public: !this.$store.state.canvas.info.public });
     },
     saveNewTitle() {
       this.showDialogTitle = false;

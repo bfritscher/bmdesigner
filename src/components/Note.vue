@@ -1,6 +1,6 @@
 <template>
   <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': listMode, dragging: dragging, 'no-sticky': !value.showAsSticky}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, 'box-shadow': boxShadow, opacity, transform}">
-    <div class="colors" v-if="isEdit">
+    <div class="colors" v-if="isEdit && $store.state.isEditable">
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
@@ -396,11 +396,9 @@ export default {
 
         // only dispatch for notes not in the exclude list
         if (!(options && options.exclude && options.exclude.id === note.id)) {
-          this.$store.dispatch('NOTE_UPDATE', {
-            changes: {
-              listTop: top,
-              listLeft: left,
-            },
+          this.$store.dispatch('NOTE_MOVE', {
+            listTop: top,
+            listLeft: left,
             note,
           });
         }
@@ -458,7 +456,7 @@ export default {
       }
       Vue.nextTick(() => {
         this.fontSize -= 2; // should be 1 but 2 works better
-        this.$store.dispatch('NOTE_MOVE', { note: this.value, height: this.height });
+        this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, height: this.height });
         if (this.listMode) {
           this.sortSortable(this.value.type);
         }

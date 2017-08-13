@@ -1,19 +1,19 @@
 {
-    "rules": {
-      "app": {
-        "users": {
-          "$uid": {
-            // grants write access to the owner of this user account whose uid must exactly match the key ($uid)
-          	".write": "auth !== null && auth.uid === $uid",
-          	".read": "auth !== null && auth.uid === $uid"
-          }
-        },
-        "projects": {
-          "$uid": {
-           	".write": "auth !== null && data.child('users').hasChild(auth.uid)",
-        		".read": "auth !== null && data.child('users').hasChild(auth.uid)"
-          }
+  "rules": {
+    "app": {
+      "users": {
+        "$uid": {
+          // grants write access to the owner of this user account whose uid must exactly match the key ($uid)
+          ".write": "auth !== null && auth.uid === $uid",
+          ".read": "auth !== null && auth.uid === $uid"
+        }
+      },
+      "projects": {
+        "$uid": {
+           ".write": "auth !== null && data.child('users').hasChild(auth.uid)",
+          ".read": "(auth !== null && data.child('users').hasChild(auth.uid)) || data.child('info/public').val() === true"
         }
       }
     }
+  }
 }

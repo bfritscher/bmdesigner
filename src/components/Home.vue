@@ -20,6 +20,9 @@
               <v-icon v-badge="{value: info.usersCount || 1, overlap: true, bottom: true}">
                 account_box
               </v-icon>
+              <v-spacer></v-spacer>
+              <v-icon v-if="info.public" title="public">public</v-icon>
+              <v-icon v-if="!info.public" title="private">lock</v-icon>
             </div>
             <v-container fill-height fluid>
               <v-layout fill-height>
@@ -32,15 +35,6 @@
           <v-card-actions class="white">
             <v-btn icon light @click.native="toggleFav(key, !settings.fav)">
               <v-icon :primary="settings.fav">favorite</v-icon>
-            </v-btn>
-            <v-btn icon light>
-              <v-icon>share</v-icon>
-            </v-btn>
-            <v-btn icon light v-if="info.public">
-              <v-icon primary>public</v-icon>
-            </v-btn>
-            <v-btn icon light v-if="!info.public">
-              <v-icon>lock</v-icon>
             </v-btn>
             <v-btn icon light>
               <v-icon>content_copy</v-icon>
@@ -71,7 +65,7 @@ export default {
     }),
   },
   methods: {
-    ...mapActions(['createNewCanvas', 'canvasUserSettingsUpdate']),
+    ...mapActions(['createNewCanvas', 'canvasInfoUpdate', 'canvasUserSettingsUpdate']),
     colorHash(input) {
       return colorHash.hex(input);
     },
@@ -116,6 +110,7 @@ export default {
   position: absolute;
   top: 0px;
   right: 15px;
+  bottom: 4px;
   display: flex;
   flex-direction: column;
 }

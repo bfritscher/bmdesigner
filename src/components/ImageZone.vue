@@ -5,7 +5,7 @@
     </v-alert>
     <slot>
       <div class="image-display" :style="{'background-color': color, 'background-image': `url(${image})`}">
-        <div v-show="!image"><v-icon light>file_upload</v-icon>{{ lang.hint }}</div>
+        <div v-show="!image && allowClick"><v-icon light>file_upload</v-icon>{{ lang.hint }}</div>
       </div>
     </slot>
     <input style="display:none" type="file" @click.stop @change="handleChange" ref="fileinput">

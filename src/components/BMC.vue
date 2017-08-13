@@ -34,7 +34,7 @@
           <v-icon light slot="icon">attach_money</v-icon>
         </zone>
         <div class="logo" light>
-          <image-zone :image="canvas.info.logoImage" @update:image="canvasInfoUpdate({logoImage: $event})" :color="canvas.info.logoColor" @update:color="canvasInfoUpdate({logoColor: $event})"></image-zone>
+          <image-zone :allow-click="$store.state.layout.isEditable" :image="canvas.info.logoImage" @update:image="canvasInfoUpdate({logoImage: $event})" :color="canvas.info.logoColor" @update:color="canvasInfoUpdate({logoColor: $event})"></image-zone>
         </div>
         <div>
           <note v-for="(note, i) in notesBMC" :value="note" :key="note.id" class="note-bmc" :class="{'highlight-on': (selectedCS && !selectedVP && note.type==='vp') || (!selectedCS && selectedVP && note.type==='cs')}" :parent="$refs.paper"></note>
