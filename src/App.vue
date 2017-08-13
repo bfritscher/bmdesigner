@@ -193,7 +193,7 @@
               <v-card>
                 <v-card-text>
                   <h3 class="headline">Send invitation to?</h3>
-                  <v-text-field label="Email" required type="email" light v-model="inviteEmail" :autofocus="true"></v-text-field>
+                  <v-text-field label="Email" required type="email" light v-model="inviteEmail" @keyup.enter="sendInviteEmail" :autofocus="true"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
@@ -290,7 +290,10 @@
     <v-dialog :value="$store.state.layout.showLoading" persistent>
       <v-card>
         <v-card-title class="headline">Working</v-card-title>
-        <v-card-text>{{$store.state.layout.showLoading}}</v-card-text>
+        <v-card-text>
+          <p>{{$store.state.layout.showLoading}}</p>
+          <v-progress-circular indeterminate v-bind:size="100" v-bind:width="7" class="primary--text"></v-progress-circular>
+        </v-card-text>
       </v-card>
     </v-dialog>
   </v-app>
