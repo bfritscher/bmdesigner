@@ -20,6 +20,16 @@ const options = {
 
 const mailer = nodemailer.createTransport(sgTransport(options));
 
+function UserProjectSettings() {
+  return {
+    listMode: false,
+    lastUsedColors: [0],
+    colorsVisibility: [1, 1, 1, 1, 1, 1],
+    isColorsOpen: false,
+    fav: false,
+  };
+}
+
 /* FIREBASE DATABASE TRIGGERS */
 exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_project`).onWrite((event) => {
   const uid = event.params.uid;
@@ -50,13 +60,7 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
     .ref(`/${DB_ROOT}/users/${uid}/projects/${node.key}`)
     .set({
       info: project.info,
-      settings: {
-        listMode: false,
-        lastUsedColors: [0],
-        colorsVisibility: [1, 1, 1, 1, 1, 1],
-        isColorsOpen: false,
-        fav: false,
-      },
+      settings: UserProjectSettings(),
     }).then(() => event.data.ref.remove());
 });
 
@@ -73,7 +77,7 @@ exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{uid}/updateIn
     project.info.stickyCount = Object.keys(project.notes || {}).length;
     project.info.updatedAt = new Date().toISOString();
     Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${uid}/info`).update(project.info),
-    ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${uid}/info`).update(project.info))])
+      ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${uid}/info`).update(project.info))])
       .then(() => event.data.ref.remove());
   });
 });
@@ -122,7 +126,10 @@ function acceptInvite(req, res) {
         // add user to list
         projectRef.child(`users/${userUid}`).set(true),
         // add list to user
-        admin.database().ref(`/${DB_ROOT}/users/${userUid}/projects/${projectUid}/info`).set(project.info)])
+        admin.database().ref(`/${DB_ROOT}/users/${userUid}/projects/${projectUid}`).set({
+          info: project.info,
+          settings: UserProjectSettings(),
+        })])
         .then(() => {
           projectRef.child(`invites_sent/${token}`).remove();
           res.sendStatus(200);
@@ -141,7 +148,7 @@ exports.acceptInvite = functions.https.onRequest((req, res) =>
 function makeFirebaseCompatible(value) {
   if (typeof value === 'object') {
     Object.keys(value).forEach((key) => {
-      if (typeof value[key] === 'undefined') {
+      if (typeof value[key] === 'undefined' || value[key] === null) {
         delete value[key];
         return;
       }
@@ -161,6 +168,25 @@ function makeFirebaseCompatible(value) {
   if (typeof value === 'string') {
     return value.replace(/\./g, '*');
   }
+  return value;
+}
+
+const uuidv4 = require('uuid/v4');
+
+function Note(args) {
+  const note = {
+    id: uuidv4(),
+    left: 0,
+    top: 0,
+    listLeft: 0,
+    listTop: 0,
+    angle: 0,
+    height: 5,
+    colors: [0],
+    showLabel: true,
+    showAsSticky: true,
+  };
+  return Object.assign(note, args);
 }
 
 function importJSONProject(req, res) {
@@ -172,19 +198,29 @@ function importJSONProject(req, res) {
   // remove users
   delete project.users;
   // replace createDate
-  if (!project.info) {
-    project.info = {
-      name: 'No Name',
-      logoImage: '',
-      logoColor: '',
-      stickyCount: 0,
-      usersCount: 0,
-      public: false,
-      updatedAt: new Date().toISOString(),
-    };
-  }
+  const info = {
+    name: 'No Name',
+    logoImage: '',
+    logoColor: '',
+    stickyCount: 0,
+    usersCount: 0,
+    public: false,
+    updatedAt: new Date().toISOString(),
+  };
+  Object.assign(info, project.info || {});
+  project.info = info;
   project.info.createdAt = new Date().toISOString();
-  // TODO: validate notes min properties
+
+  if (project.notes) {
+    if (Array.isArray(project.notes)) {
+      project.notes = project.notes.map(n => Note(n));
+    } else {
+      Object.keys(project.notes).forEach((k) => {
+        project.notes[k] = Note(project.notes[k]);
+      });
+    }
+  }
+
   // create new project
   const pid = admin.database().ref(`/${DB_ROOT}/projects`).push(makeFirebaseCompatible(project)).key;
   // generate invite token

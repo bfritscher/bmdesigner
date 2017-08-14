@@ -21,7 +21,7 @@ export default class Note {
     this.calcDisplayR = args.calcDisplayR || null;
     this.calcDisplayG = args.calcDisplayG || null;
     this.calcDisplayB = args.calcDisplayB || null;
-    this.showLabel = args.showLabels || true;
+    this.showLabel = args.showLabel || true;
     this.showAsSticky = args.showAsSticky || true;
   }
 

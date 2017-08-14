@@ -86,6 +86,8 @@ new Vue({
               if (res.status === 200) {
                 this.$router.push({ name: 'bmc', params: { id: projectUid } });
                 localStorage.removeItem(INVITE_TOKEN);
+              } else {
+                this.$router.push({ name: 'home' });
               }
             });
         } else if (this.$route.name === 'login') {

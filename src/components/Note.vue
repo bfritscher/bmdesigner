@@ -167,17 +167,14 @@ export default {
             }
           }
         },
-      });
-    /*
+      })
     .gesturable({
       onmove: (event) => {
-        // TODO: support angle?
         const angle = this.value.angle || 0;
         this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: angle + event.da });
-        console.log('TODO support angle touch', event);
       },
     });
-    */
+
     Vue.nextTick(() => {
       this.calculateFontSizeAndHeight().then(() => {
         this.$refs.textarea.focus();

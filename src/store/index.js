@@ -257,6 +257,9 @@ const actions = {
     return new Promise((resolve) => {
       bindFirebaseRef('canvas', ref, {
         readyCallback: () => {
+          if (!state.user.projects[state.canvas['.key'].settings]) {
+            refs.user.child('projects').child(state.canvas['.key']).child('settings').set(DEFAULT_USER_CANVAS_SETTINGS);
+          }
           resolve();
           computeCurrentCanvasUsedColors(state);
           commit(types.SOLVE_CALC);
@@ -280,8 +283,6 @@ const actions = {
         cancelCallback: (error) => {
           if (error.code === 'PERMISSION_DENIED') {
             router.push({ name: 'home' });
-          } else {
-            console.log(error);
           }
         },
 

@@ -1,67 +1,132 @@
 /* global App */
-'use strict';
-var elements = [];
-var lookupBlock = {'partner_network':'pn', 'key_activities':'ka', 'key_resources':'kr',
-    'cost_structure':'c', 'value_proposition':'vp','customer_segments':'cs',
-    'customer_relationship':'cr','channels':'dc','revenue_streams':'r'
-    };
+function exportCanvas() {
+  const overlay = document.createElement('div');
+  document.body.appendChild(overlay);
+  overlay.outerHTML = '<div style="position: fixed;top: 0;bottom: 0;left: 0;right: 0;display: none;border: 0;z-index: 10000;background: rgba(27,32,37,0.95);overflow-y: auto;overflow-x: hidden;"></div>';
 
-var lookupColor = ['yellow', 'green', 'blue', 'purple', 'red', 'orange'];
-App.appView.currentView.currentView.model.postIts().models.sort(function(a, b){return a.attributes.top - b.attributes.top;}).forEach(function(p){
-  /*jshint camelcase: false */
-  //order by z-index?
-  var e = {};
-  e.id = p.attributes.guid;
-  e.name = p.attributes.name;
-  e.colors = [p.attributes.colour_class];
-  e.type = lookupBlock[p.attributes.block];
-//type.ValueMap "CustomerProfile"
-  e.vpCanvas.attributes.post_its.models*.attributes
-    .block = 'gain_creators' "products_and_services" "pain_relievers" "gains" "jobs" "pains"
-    .guid
-    .type: 'value-prop' | 'business-model'
-    same props as other post-it
+  const model = App.appView.currentView.currentView.model;
+  const notes = [];
+  const project = {
+    info: {
+      name: model.attributes.name,
+      description: model.attributes.note,
+    },
+    source: 'strategyzer',
+    notes,
+  };
 
+  const lookupBlock = {
+    partner_network: 'pn',
+    key_activities: 'ka',
+    key_resources: 'kr',
+    cost_structure: 'c',
+    value_proposition: 'vp',
+    customer_segments: 'cs',
+    customer_relationship: 'cr',
+    channels: 'dc',
+    revenue_streams: 'r',
+  };
 
-// potential attributes, notes, market_size, comments (array), hypotheses (array)
-/*
-vpCanvasPostIts()
+  const lookupColor = ['yellow', 'green', 'blue', 'purple', 'red', 'orange'];
 
-comments.models*attributes.body|user_id|updated_at
-hypotheses*statement|test_summary_status(In progress)|state|id
+  App.appView.currentView.currentView.model.postIts().models
+    .sort((a, b) => a.attributes.z_index - b.attributes.z_index).forEach((p) => {
+      let left = p.attributes.left * 20;
+      let top = p.attributes.top * (p.attributes.block === 'partner_network' ||
+        p.attributes.block === 'value_proposition' || p.attributes.block === 'customer_segments' ? 75 : 37.5);
 
-comments() to get canvas comment
-notes() = canvas note
+      if (p.attributes.block === 'key_resources' || p.attributes.block === 'channels') {
+        top += 37.5;
+      }
+      if (p.attributes.block === 'revenue_streams' || p.attributes.block === 'cost_structure') {
+        left = p.attributes.left * 50;
+        top = (p.attributes.top * 25) + 75;
+      }
+      if (p.attributes.block === 'revenue_streams') {
+        left += 50;
+      }
+      if (p.attributes.block === 'key_resources' || p.attributes.block === 'key_activities') {
+        left += 20;
+      }
 
-blockNames() key {human: =name}
+      if (p.attributes.block === 'value_proposition') {
+        left += 40;
+      }
 
-calculations()
-cost_type|unit_cost|cost_structure-ref
-calculations.models*.attributes.fields, customer_segement, cost
-revenue
-revenue_streamstime_period
-stream_type
+      if (p.attributes.block === 'customer_relationship' || p.attributes.block === 'channels') {
+        left += 60;
+      }
 
-App.user.attributes
+      if (p.attributes.block === 'customer_segments') {
+        left += 80;
+      }
 
-*/
-  // TODO: relative to canvas
-  e.left =  p.attributes.left * (p.attributes.block === 'revenue_streams'|| p.attributes.block === 'cost_structure' ? 640 : 256);
-  e.top =  p.attributes.top * (p.attributes.block === 'revenue_streams'||
-    p.attributes.block === 'cost_structure' ? 225 : ( p.attributes.block === 'partner_network' ||
-    p.attributes.block === 'value_proposition' || p.attributes.block === 'customer_segments' ? 675 : 337));
-  // TODO:
-  // notes
-  elements.push(e);
-});
+      const e = {
+        id: p.attributes.guid,
+        text: p.attributes.name,
+        colors: [lookupColor.indexOf(p.attributes.colour_class)],
+        type: lookupBlock[p.attributes.block],
+        description: p.attributes.note,
+        left: left - 2,
+        top,
+      };
 
-var text = document.createElement('textarea');
-text.value = JSON.stringify(elements);
-text.style.top = 0;
-text.style.left = 0;
-text.style.width = '100%';
-text.style.height = '50%';
-text.style.position = 'absolute';
-text.style.zIndex  = 9999;
-text.ondblclick = function(){ this.parentNode.removeChild(this); };
-document.getElementsByTagName('body')[0].appendChild(text);
+      notes.push(e);
+    });
+
+  fetch(' https://us-central1-bmdesigner-50d6c.cloudfunctions.net/importJSONProject', {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(project),
+  })
+    .then(res => res.text()).then((url) => {
+      window.open(url, '_blank');
+    });
+}
+
+let button = document.getElementById('bmdesigner_export');
+if (!button) {
+  button = document.createElement('div');
+  button.id = 'bmdesigner_export';
+  const menu = document.getElementsByClassName('canvas-menu-bar');
+  if (menu && menu.length > 0) {
+    menu[0].appendChild(button);
+    button.innerHTML = '<div style="box-shadow: rgb(245, 151, 142) 0px 1px 0px 0px inset; background: linear-gradient(rgb(242, 69, 55) 5%, rgb(198, 45, 31) 100%) rgb(242, 69, 55); border-radius: 6px; border: 1px solid rgb(208, 39, 24); cursor: pointer; color: rgb(255, 255, 255); font-family: Arial; font-size: 15px; font-weight: bold; padding: 6px 24px; text-decoration: none; text-shadow: rgb(129, 14, 5) 0px 1px 0px;margin: 16px; text-align: center">EXPORT<br/>TO<br/>BM|Designer</div>';
+    button.addEventListener('click', exportCanvas);
+  }
+}
+
+      // type.ValueMap "CustomerProfile"
+      /*
+        e.vpCanvas.attributes.post_its.models*.attributes
+          .block = 'gain_creators' "products_and_services" "pain_relievers" "gains" "jobs" "pains"
+          .guid
+          .type: 'value-prop' | 'business-model'
+          same props as other post-it
+      */
+
+      // potential attributes, notes, market_size, comments (array), hypotheses (array)
+      /*
+      vpCanvasPostIts()
+
+      comments.models*attributes.body|user_id|updated_at
+      hypotheses*statement|test_summary_status(In progress)|state|id
+
+      comments() to get canvas comment
+      notes() = canvas note
+
+      blockNames() key {human: =name}
+
+      calculations()
+      cost_type|unit_cost|cost_structure-ref
+      calculations.models*.attributes.fields, customer_segement, cost
+      revenue
+      revenue_streamstime_period
+      stream_type
+
+      App.user.attributes
+
+      */

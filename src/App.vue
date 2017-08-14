@@ -393,7 +393,6 @@ export default {
       return ['home', 'play', 'inspire', 'learn', 'favorites', 'about', 'login'].includes(this.$route.name);
     },
     isModelEdit() {
-      // TODO: adapt
       return ['bmc'].includes(this.$route.name);
     },
     colorsVisibility() {
