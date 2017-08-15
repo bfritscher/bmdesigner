@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import debounce from 'lodash.debounce';
+// import debounce from 'lodash.debounce';
 import isEqual from 'lodash.isequal';
 import interact from 'interactjs';
 import Vue from 'vue';
@@ -316,8 +316,10 @@ export default {
       this.$store.dispatch('NOTE_MOVE_TOP', this.value['.key']);
     },
     handleFocus() {
+      /*
       this.$store.commit(types.LAYOUT_UPDATE, { focusedNote: this.value });
       this.moveToTop();
+      */
     },
     handleWheel(e) {
       if (!this.listMode) {
@@ -403,61 +405,78 @@ export default {
       });
     },
     createDebouncedCalculateFontSizeAndHeight() {
-      return debounce(this.calculateFontSizeAndHeight, 300);
+      return this.calculateFontSizeAndHeight; // debounce(this.calculateFontSizeAndHeight, 300);
     },
-    async calculateFontSizeAndHeight() {
+    calculateFontSizeAndHeight(previous) {
       if (!this.$refs.textarea) {
         return;
       }
-      let notMaxedOut = true;
-      this.height = MAX_HEIGHT;
       // if scrollWidth > width > && font-size limit not reached shrink
-      while ((this.$refs.textarea.scrollWidth > this.$refs.textarea.offsetWidth)
+      if ((this.$refs.textarea.scrollWidth > this.$refs.textarea.offsetWidth)
         && this.fontSize > 10) {
         // eslint-disable-next-line
-        await Vue.nextTick(() => {
-          this.fontSize -= 1;
-        });
+        //await Vue.nextTick(() => {
+        this.fontSize -= 1;
+        // });
       }
       // if scrollHeight > height && font-size limit not reached shrink
-      while ((this.$refs.textarea.scrollHeight > this.$refs.textarea.offsetHeight) && notMaxedOut) {
+      if ((this.$refs.textarea.scrollHeight > this.$refs.textarea.offsetHeight)) {
         // eslint-disable-next-line
-        await Vue.nextTick(() => {
-          if (this.height < 15) {
-            this.height += 0.1;
-          } else if (this.fontSize > 10) {
-            this.fontSize -= 1;
-          } else {
-            notMaxedOut = false;
-          }
-        });
-      }
-      // expand
-      notMaxedOut = true;
-      while (this.$refs.textarea.scrollWidth === this.$refs.textarea.offsetWidth
-        && this.$refs.textarea.scrollHeight === this.$refs.textarea.offsetHeight && notMaxedOut) {
-        // eslint-disable-next-line
-        await Vue.nextTick(() => {
-          if (this.fontSize < MAX_FONT_SIZE) {
-            this.fontSize += 1;
-          } else {
-            if (this.value.image && this.height < 6.5 && this.listMode) {
-              notMaxedOut = false;
-            }
-            if (this.value.image && this.height < 15 && !this.listMode) {
-              notMaxedOut = false;
-            }
-            this.height -= 0.1;
-          }
-        });
-      }
-      Vue.nextTick(() => {
-        this.fontSize -= 2; // should be 1 but 2 works better
-        this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, height: this.height });
-        if (this.listMode) {
-          this.sortSortable(this.value.type);
+        //await Vue.nextTick(() => {
+        if (this.height < MAX_HEIGHT && (!previous || previous.height - 0.5 !== this.height)) {
+          console.log('height+', previous, this.height);
+          this.height += 0.5;
+        } else if (this.fontSize > 10) {
+          this.fontSize -= 1;
         }
-      });
+        // });
+      }
+      let maxedOutFont = false;
+      let maxedOutHeight = false;
+      // expand
+      if (this.$refs.textarea.scrollWidth === this.$refs.textarea.offsetWidth
+        && this.$refs.textarea.scrollHeight === this.$refs.textarea.offsetHeight) {
+        // eslint-disable-next-line
+        // await Vue.nextTick(() => {
+        if (this.fontSize <= MAX_FONT_SIZE) {
+          maxedOutHeight = true;
+          if (previous && previous.fontSize === this.fontSize) {
+            maxedOutFont = true;
+          } else {
+            console.log('font', previous, this.fontSize);
+            this.fontSize += 1;
+          }
+        } else {
+          maxedOutFont = true;
+          // different min heights
+          if (this.value.image && this.height <= 6.5 && this.listMode) {
+            maxedOutHeight = true;
+          }
+          if (this.value.image && this.height <= 15 && !this.listMode) {
+            maxedOutHeight = true;
+          }
+          if (!this.value.image && this.height <= 5) {
+            maxedOutHeight = true;
+          } else {
+            console.log('height', previous, this.height);
+            this.height -= 0.5;
+          }
+        }
+        // });
+      }
+      this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, height: this.height });
+      if (!(maxedOutHeight && maxedOutFont)) {
+        console.log('loop', this.height, this.fontSize);
+        Vue.nextTick(() => {
+          // this.fontSize -= 2; // should be 1 but 2 works better
+          this.calculateFontSizeAndHeight({ height, fontSize });
+        });
+      }
+      // if stable
+      if (this.listMode) {
+        this.sortSortable(this.value.type);
+      }
+      // });
     },
     setColor(position, colorId) {
       const colors = Note.changeColor(this.value.colors, position, colorId);
