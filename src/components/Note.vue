@@ -1,6 +1,6 @@
 <template>
   <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': listMode, dragging: dragging, 'no-sticky': !value.showAsSticky}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, 'box-shadow': boxShadow, opacity, transform}">
-    <div class="colors" v-if="isEdit && $store.state.isEditable">
+    <div class="colors" v-if="isEdit && $store.state.layout.isEditable">
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
@@ -57,7 +57,7 @@ const MAX_HEIGHT = 20;
 
 export default {
   name: 'note',
-  props: ['value', 'parent'],
+  props: ['value', 'parent', 'focus'],
   data() {
     return {
       x: 0,
@@ -178,9 +178,7 @@ export default {
       });
 
     Vue.nextTick(() => {
-      this.calculateFontSizeAndHeight().then(() => {
-        this.$refs.textarea.focus();
-      });
+      this.calculateFontSizeAndHeight();
       this.setBoxShadow();
       this.setOpacity();
     });
@@ -209,8 +207,14 @@ export default {
       return this.value.top > 70 ? 'top' : 'bottom';
     },
     isEdit() {
-      return this.$store.state.layout.focusedNote && this.value &&
-        this.$store.state.layout.focusedNote.id === this.value.id;
+      if (this.$store.state.layout.focusedNote && this.value &&
+        this.$store.state.layout.focusedNote.id === this.value.id) {
+        Vue.nextTick(() => {
+          this.$refs.textarea.focus();
+        });
+        return true;
+      }
+      return false;
     },
     left() {
       return this.listMode ? this.value.listLeft : this.value.left;

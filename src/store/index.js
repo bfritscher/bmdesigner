@@ -142,7 +142,9 @@ const refs = {};
 const actions = {
   NOTE_CREATE({ state, commit }, payload) {
     if (state.layout.isEditable) {
-      refs.notes.push(new Note(payload));
+      const note = new Note(payload);
+      refs.notes.push(note);
+      commit(types.LAYOUT_UPDATE, { focusedNote: note });
     }
     // commit(types.NOTE_CREATE, payload);
     // TODO: allow create but then we have to cache note updates until really created
