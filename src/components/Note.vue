@@ -37,7 +37,7 @@
 </template>
 
 <script>
-// import debounce from 'lodash.debounce';
+import debounce from 'lodash.debounce';
 import isEqual from 'lodash.isequal';
 import interact from 'interactjs';
 import Vue from 'vue';
@@ -49,9 +49,11 @@ import * as types from '@/store/mutation-types';
 import { VPC_VP_TYPES, VPC_CS_TYPES, VPC_TYPES } from '@/store';
 import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
 
-
+const MIN_FONT_SIZE = 8;
 const MAX_FONT_SIZE = 22;
+const MIN_HEIGHT = 5;
 const MAX_HEIGHT = 20;
+
 
 export default {
   name: 'note',
@@ -168,12 +170,12 @@ export default {
           }
         },
       })
-    .gesturable({
-      onmove: (event) => {
-        const angle = this.value.angle || 0;
-        this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: angle + event.da });
-      },
-    });
+      .gesturable({
+        onmove: (event) => {
+          const angle = this.value.angle || 0;
+          this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: angle + event.da });
+        },
+      });
 
     Vue.nextTick(() => {
       this.calculateFontSizeAndHeight().then(() => {
@@ -316,10 +318,8 @@ export default {
       this.$store.dispatch('NOTE_MOVE_TOP', this.value['.key']);
     },
     handleFocus() {
-      /*
       this.$store.commit(types.LAYOUT_UPDATE, { focusedNote: this.value });
       this.moveToTop();
-      */
     },
     handleWheel(e) {
       if (!this.listMode) {
@@ -405,78 +405,100 @@ export default {
       });
     },
     createDebouncedCalculateFontSizeAndHeight() {
-      return this.calculateFontSizeAndHeight; // debounce(this.calculateFontSizeAndHeight, 300);
+      return debounce(this.calculateFontSizeAndHeight, 300, {
+        leading: true,
+      });
     },
-    calculateFontSizeAndHeight(previous) {
+    calculateFontSizeAndHeight(previous = []) {
       if (!this.$refs.textarea) {
         return;
       }
-      // if scrollWidth > width > && font-size limit not reached shrink
-      if ((this.$refs.textarea.scrollWidth > this.$refs.textarea.offsetWidth)
-        && this.fontSize > 10) {
-        // eslint-disable-next-line
-        //await Vue.nextTick(() => {
-        this.fontSize -= 1;
-        // });
-      }
-      // if scrollHeight > height && font-size limit not reached shrink
-      if ((this.$refs.textarea.scrollHeight > this.$refs.textarea.offsetHeight)) {
-        // eslint-disable-next-line
-        //await Vue.nextTick(() => {
-        if (this.height < MAX_HEIGHT && (!previous || previous.height - 0.5 !== this.height)) {
-          console.log('height+', previous, this.height);
-          this.height += 0.5;
-        } else if (this.fontSize > 10) {
-          this.fontSize -= 1;
-        }
-        // });
-      }
+      previous.unshift({
+        height: this.height,
+        fontSize: this.fontSize,
+      });
+
+
+      let minedOutFont = false;
       let maxedOutFont = false;
+      let minedOutHeight = false;
       let maxedOutHeight = false;
-      // expand
-      if (this.$refs.textarea.scrollWidth === this.$refs.textarea.offsetWidth
-        && this.$refs.textarea.scrollHeight === this.$refs.textarea.offsetHeight) {
-        // eslint-disable-next-line
-        // await Vue.nextTick(() => {
-        if (this.fontSize <= MAX_FONT_SIZE) {
+      let fontChanged = false;
+
+      if ((this.$refs.textarea.scrollWidth > this.$refs.textarea.offsetWidth)) {
+        if (this.fontSize > MIN_FONT_SIZE) {
+          this.fontSize -= 1;
+          fontChanged = true;
+        } else {
+          minedOutFont = true;
+        }
+      }
+
+      if (this.$refs.textarea.scrollHeight > this.$refs.textarea.offsetHeight) {
+        if (this.height < MAX_HEIGHT) {
+          this.height += 0.5;
+        } else {
           maxedOutHeight = true;
-          if (previous && previous.fontSize === this.fontSize) {
-            maxedOutFont = true;
-          } else {
-            console.log('font', previous, this.fontSize);
-            this.fontSize += 1;
+          if (!fontChanged) {
+            if (this.fontSize > MIN_FONT_SIZE) {
+              this.fontSize -= 1;
+              fontChanged = true;
+            } else {
+              minedOutFont = true;
+            }
           }
+        }
+      }
+
+      if (this.$refs.textarea.scrollWidth <= this.$refs.textarea.offsetWidth && !fontChanged) {
+        if (this.fontSize < MAX_FONT_SIZE) {
+          this.fontSize += 1;
+          fontChanged = true;
         } else {
           maxedOutFont = true;
-          // different min heights
-          if (this.value.image && this.height <= 6.5 && this.listMode) {
-            maxedOutHeight = true;
-          }
-          if (this.value.image && this.height <= 15 && !this.listMode) {
-            maxedOutHeight = true;
-          }
-          if (!this.value.image && this.height <= 5) {
-            maxedOutHeight = true;
-          } else {
-            console.log('height', previous, this.height);
+        }
+      }
+
+      if (this.$refs.textarea.scrollHeight <= this.$refs.textarea.offsetHeight && !fontChanged) {
+        if (this.fontSize < MAX_FONT_SIZE) {
+          this.fontSize += 1;
+        } else {
+          maxedOutFont = true;
+          if (this.height > MIN_HEIGHT) {
             this.height -= 0.5;
+          } else {
+            minedOutHeight = true;
           }
         }
-        // });
       }
+      // store height to compute list mode positions
       this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, height: this.height });
-      if (!(maxedOutHeight && maxedOutFont)) {
-        console.log('loop', this.height, this.fontSize);
-        Vue.nextTick(() => {
-          // this.fontSize -= 2; // should be 1 but 2 works better
-          this.calculateFontSizeAndHeight({ height, fontSize });
-        });
+      // loop if not min/maxed or in stable state.
+      let twoAgo;
+      if (previous.length > 1) {
+        twoAgo = previous.pop();
       }
-      // if stable
-      if (this.listMode) {
+      if (!((maxedOutHeight && minedOutFont) || (minedOutHeight && maxedOutFont))
+        && (!twoAgo ||
+          !(twoAgo.height === this.height && twoAgo.fontSize === this.fontSize))) {
+        Vue.nextTick(() => {
+          this.calculateFontSizeAndHeight(previous);
+        });
+      } else if (this.listMode) {
         this.sortSortable(this.value.type);
       }
-      // });
+      /*
+
+                  if (this.value.image && this.height <= 6.5 && this.listMode) {
+                    maxedOutHeight = true;
+                  }
+                  if (this.value.image && this.height <= 15 && !this.listMode) {
+                    maxedOutHeight = true;
+                  }
+                  if (!this.value.image && this.height <= 5) {
+                    maxedOutHeight = true;
+                  }
+                  */
     },
     setColor(position, colorId) {
       const colors = Note.changeColor(this.value.colors, position, colorId);
