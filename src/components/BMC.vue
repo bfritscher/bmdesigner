@@ -102,8 +102,8 @@ export default {
       if (!this.$refs.paper) {
         return;
       }
-      this.$refs.paper.style.setProperty('--zoneLabelFontSize', `${this.$refs.paper.offsetHeight * 0.02}px`);
-      this.$refs.paper.style.setProperty('--zoneLabelIconFontSize', `${this.$refs.paper.offsetHeight * 0.03}px`);
+      this.$el.style.setProperty('--zoneLabelFontSize', `${this.$refs.paper.offsetHeight * 0.02}px`);
+      this.$el.style.setProperty('--zoneLabelIconFontSize', `${this.$refs.paper.offsetHeight * 0.03}px`);
     },
     addNote(e) {
       const offset = totalOffset(this.$refs.paper);
