@@ -25,6 +25,12 @@ function exportCanvas() {
     customer_relationship: 'cr',
     channels: 'dc',
     revenue_streams: 'r',
+    products_and_services: 'features',
+    gain_creators: 'solution',
+    pain_relievers: 'solution',
+    jobs: 'job',
+    gains: 'pain_gain',
+    pains: 'pain_gain',
   };
 
   const lookupColor = ['yellow', 'green', 'blue', 'purple', 'red', 'orange'];
@@ -72,6 +78,28 @@ function exportCanvas() {
       };
 
       notes.push(e);
+      if (p.attributes.vpCanvas) {
+        p.attributes.vpCanvas.attributes.post_its.models
+        .sort((a, b) => a.attributes.z_index - b.attributes.z_index)
+        .forEach((vpcP) => {
+          let vpcLeft = vpcP.attributes.left * 40;
+          if (['jobs', 'gains', 'pains'].indexOf(vpcP.attributes.block) > -1) {
+            vpcLeft += 60;
+          }
+
+          const e2 = {
+            id: vpcP.attributes.guid,
+            text: vpcP.attributes.name,
+            colors: [lookupColor.indexOf(vpcP.attributes.colour_class)],
+            type: lookupBlock[vpcP.attributes.block],
+            description: vpcP.attributes.note,
+            left: vpcLeft - 2,
+            top: vpcP.attributes.top * 100,
+            parent: p.attributes.guid,
+          };
+          notes.push(e2);
+        });
+      }
     });
 
   fetch(' https://us-central1-bmdesigner-50d6c.cloudfunctions.net/importJSONProject', {
