@@ -127,6 +127,11 @@ export default {
       if (e.target.classList.contains('zone')) {
         note.type = e.target.getAttribute('id');
       }
+      // TODO: keep previous setting?
+      if (e.image) {
+        note.showAsSticky = false;
+      }
+
       this.$store.dispatch('NOTE_CREATE', note);
     },
   },

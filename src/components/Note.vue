@@ -547,16 +547,17 @@ export default {
   box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
-.note.list-mode.dragging {
-  background-color: #fff !important;
-}
-
 .note.dragging .colors {
   opacity: 0;
 }
 
 .note:not(.list-mode).no-sticky {
   background-color: transparent !important;
+}
+
+.note.list-mode.dragging,
+.note:not(.list-mode).no-sticky.dragging {
+  background-color: #fff !important;
 }
 
 .note.list-mode {

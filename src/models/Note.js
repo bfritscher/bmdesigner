@@ -21,8 +21,8 @@ export default class Note {
     this.calcDisplayR = args.calcDisplayR || null;
     this.calcDisplayG = args.calcDisplayG || null;
     this.calcDisplayB = args.calcDisplayB || null;
-    this.showLabel = args.showLabel || true;
-    this.showAsSticky = args.showAsSticky || true;
+    this.showLabel = 'showLabel' in args ? args.showLabel : true;
+    this.showAsSticky = 'showAsSticky' in args ? args.showAsSticky : true;
   }
 
   static changeColor(colorsSource, index, color) {
