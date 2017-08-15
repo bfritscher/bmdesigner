@@ -21,7 +21,10 @@ module.exports = merge(baseWebpackConfig, {
   devtool: 'source-map',
   plugins: [
     new webpack.DefinePlugin({
-      'process.env': config.dev.env
+      'process.env': config.dev.env,
+      COMMIT_HASH: JSON.stringify(require('child_process')
+      .execSync('git rev-parse HEAD')
+      .toString().trim())
     }),
     // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
     new webpack.HotModuleReplacementPlugin(),
