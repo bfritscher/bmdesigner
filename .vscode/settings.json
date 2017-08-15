@@ -4,5 +4,10 @@
         "**/bower_components": true,
         "**/dist": true,
         "**/coverage": true
-    }
+    },
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "vue"
+    ]
 }
