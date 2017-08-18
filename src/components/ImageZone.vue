@@ -8,6 +8,9 @@
         <div v-show="!image && allowClick"><v-icon light>file_upload</v-icon>{{ lang.hint }}</div>
       </div>
     </slot>
+    <v-btn icon @click.prevent.stop="reset" v-if="image && allowClick" class="delete white--text">
+      <v-icon>delete_forever</v-icon>
+    </v-btn>
     <input style="display:none" type="file" @click.stop @change="handleChange" ref="fileinput">
     <canvas style="display:none" :width="width" :height="height" ref="canvas"></canvas>
   </div>
@@ -64,7 +67,6 @@ export default {
       if (this.allowClick) {
         e.preventDefault();
         e.stopPropagation();
-        this.reset();
         this.$refs.fileinput.click();
       }
       return true;
@@ -185,6 +187,23 @@ export default {
   width: 100%;
   height: 100%;
 }
+
+.image-zone {
+  position: relative;
+}
+
+.image-zone > .delete {
+  position: absolute;
+  display: none;
+  bottom: 0;
+  right: 0;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.86);
+}
+
+.image-zone:hover > .delete {
+  display: block;
+}
+
 
 .drop-target {
   background-color: #dcedc8 !important;
