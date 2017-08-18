@@ -71,6 +71,7 @@ export default {
       colorsBG: COLORS_MATERIAL,
       opacity: 1,
       boxShadow: '',
+      focused: false,
     };
   },
   mounted() {
@@ -209,11 +210,15 @@ export default {
     isEdit() {
       if (this.$store.state.layout.focusedNote && this.value &&
         this.$store.state.layout.focusedNote.id === this.value.id) {
-        Vue.nextTick(() => {
-          this.$refs.textarea.focus();
-        });
+        if (!this.focused) {
+          Vue.nextTick(() => {
+            this.$refs.textarea.focus();
+            this.focused = true;
+          });
+        }
         return true;
       }
+      this.focused = false;
       return false;
     },
     left() {
