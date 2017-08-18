@@ -180,12 +180,7 @@ const actions = {
   NOTE_UPDATE_CALC_VAR({ state, commit }, payload) {
     commit(types.NOTE_UPDATE_CALC_VAR, payload);
     if (state.layout.isEditable) {
-      refs.notes.child(payload.note['.key']).child('values').child(payload.key).set(payload.value)
-        .then(() => {
-          commit(types.SOLVE_CALC);
-        });
-    } else {
-      commit(types.SOLVE_CALC);
+      refs.notes.child(payload.note['.key']).child('values').child(payload.key).set(payload.value);
     }
   },
   canvasInfoUpdate({ commit }, payload) {
@@ -264,7 +259,6 @@ const actions = {
           }
           resolve();
           computeCurrentCanvasUsedColors(state);
-          commit(types.SOLVE_CALC);
 
           if (state.currentUser && state.currentUser.uid
             && state.currentUser.uid in state.canvas.users) {
@@ -416,10 +410,22 @@ const mutations = {
   },
 };
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   state: initialState,
   actions,
   getters: gettersDefinition,
   mutations,
   strict: false,
 });
+
+store.watch((state) => {
+  if (state.canvas && state.canvas.notes) {
+    const values = Object.values(state.canvas.notes).map(n => JSON.stringify(n.values)).join();
+    return values;
+  }
+  return '';
+}, () => {
+  store.commit(types.SOLVE_CALC);
+});
+
+export default store;
