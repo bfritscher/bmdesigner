@@ -38,7 +38,7 @@
                   <v-icon>vpn_key</v-icon>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field label="id" :value="note.calcId" @input="updateNote('calcId', $event)" hint="Name used as reference in calculations for this item." required :rules="[rules.variable,]"></v-text-field>
+                  <v-text-field label="id" :value="note.calcId" @input="updateNote('calcId', $event)" hint="Name used as reference in calculations for this item." required :rules="[rules.variable, rules.unique]"></v-text-field>
                 </v-flex>
               </v-layout>
 
@@ -114,6 +114,12 @@ export default {
       newVariable: null,
       rules: {
         variable: value => patternVar.test(value) || 'Invalid name only use a-z, a-Z, 0-9, _',
+        unique: (value) => {
+          const calcIds = this.$store.getters.calcIds;
+          const firstIndex = calcIds.indexOf(value) + 1;
+          // check if there is a 2nd element in the array (1st time is self)
+          return calcIds.indexOf(value, firstIndex) === -1 || 'Name already used, ID must be unique!';
+        },
       },
       COLORS_MATERIAL_DARK,
     };

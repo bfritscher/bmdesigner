@@ -134,6 +134,8 @@ const gettersDefinition = {
   canvasSettings: state => (state.canvas && state.user && state.user.projects[state.canvas['.key']] && state.user.projects[state.canvas['.key']].settings ?
     state.user.projects[state.canvas['.key']].settings : Object.assign({}, DEFAULT_USER_CANVAS_SETTINGS)),
   userSettings: state => state.user.settings || DEFAULT_USER_SETTINGS,
+  calcIds: state => Object.values(state.canvas.notes)
+    .filter(n => n.calcId).map(n => n.calcId),
 };
 
 const refs = {};
