@@ -4,20 +4,24 @@
       {{ errorMsg}}
     </v-alert>
     <slot>
-      <div class="image-display" :style="{'background-color': color, 'background-image': `url(${image})`}">
+      <div class="image-display" :style="{'background-color': this.showCanvas ? previewColor : color, 'background-image': this.showCanvas ? 'none' : `url(${image})`}">
         <div v-show="!image && allowClick"><v-icon light>file_upload</v-icon>{{ lang.hint }}</div>
       </div>
     </slot>
+    <v-btn icon @click.prevent.stop="displayColorPicker" v-if="image && allowClick" class="color white--text">
+      <v-icon>color_lens</v-icon>
+    </v-btn>
     <v-btn icon @click.prevent.stop="reset" v-if="image && allowClick" class="delete white--text">
       <v-icon>delete_forever</v-icon>
     </v-btn>
     <input style="display:none" type="file" @click.stop @change="handleChange" ref="fileinput">
-    <canvas style="display:none" :width="width" :height="height" ref="canvas"></canvas>
+    <canvas v-show="showCanvas" @mousemove.prevent.stop="pickColor($event, false)" @click.prevent.stop="pickColor($event, true)" :style="{top, left}" :width="width" :height="height" ref="canvas"></canvas>
   </div>
 </template>
 
 <script>
 import Vue from 'vue';
+import { totalOffset } from '@/utils';
 
 export default {
   name: 'image-zone',
@@ -51,7 +55,11 @@ export default {
       maxSize: 10240,
       width: 0,
       height: 0,
+      left: '',
+      top: '',
+      previewColor: 'transparent',
       lastEvent: null,
+      showCanvas: false,
       lang: {
         hint: 'Drop image here or click to upload.',
         error: {
@@ -125,6 +133,38 @@ export default {
         }
       };
       img.src = src;
+    },
+    displayColorPicker() {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        this.width = img.naturalWidth;
+        this.height = img.naturalHeight;
+        Vue.nextTick(() => {
+          const canvas = this.$refs.canvas;
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, this.width, this.height);
+          ctx.drawImage(img, 0, 0, this.width, this.height);
+          this.showCanvas = true;
+          this.left = `calc(50% - ${this.width / 2}px)`;
+          this.top = `calc(50% - ${this.height / 2}px)`;
+        });
+      };
+      img.src = this.image;
+    },
+    pickColor(e, save) {
+      // getting user coordinates
+      const offset = totalOffset(this.$refs.canvas);
+      const x = e.pageX - offset.left;
+      const y = e.pageY - offset.top;
+      // getting image data and RGB values
+      const [r, g, b] = this.$refs.canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+      const rgb = `rgb(${r}, ${g}, ${b})`;
+      this.previewColor = rgb;
+      if (save) {
+        this.$emit('update:color', rgb);
+        this.showCanvas = false;
+      }
     },
     resize(img) {
       const maxRatio = this.maxWidth / this.maxHeight;
@@ -200,9 +240,24 @@ export default {
   text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.86);
 }
 
-.image-zone:hover > .delete {
+.image-zone > .color {
+  position: absolute;
+  display: none;
+  bottom: 0;
+  left: 0;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.86);
+}
+
+.image-zone:hover > .delete,
+.image-zone:hover > .color {
   display: block;
 }
+
+
+.image-zone > canvas {
+  position: absolute;
+}
+
 
 
 .drop-target {
