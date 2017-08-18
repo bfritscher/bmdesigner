@@ -422,7 +422,7 @@ export default {
       if (!this.$refs.textarea) {
         return;
       }
-      if (!previous) {
+      if (!Array.isArray(previous)) {
         previous = [];
       }
       previous.unshift({
