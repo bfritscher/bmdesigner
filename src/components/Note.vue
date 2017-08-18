@@ -418,9 +418,12 @@ export default {
         leading: true,
       });
     },
-    calculateFontSizeAndHeight(previous = []) {
+    calculateFontSizeAndHeight(previous) {
       if (!this.$refs.textarea) {
         return;
+      }
+      if (!previous) {
+        previous = [];
       }
       previous.unshift({
         height: this.height,
