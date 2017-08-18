@@ -491,18 +491,6 @@ export default {
       } else if (this.listMode) {
         this.sortSortable(this.value.type);
       }
-      /*
-
-                  if (this.value.image && this.height <= 6.5 && this.listMode) {
-                    maxedOutHeight = true;
-                  }
-                  if (this.value.image && this.height <= 15 && !this.listMode) {
-                    maxedOutHeight = true;
-                  }
-                  if (!this.value.image && this.height <= 5) {
-                    maxedOutHeight = true;
-                  }
-                  */
     },
     setColor(position, colorId) {
       const colors = Note.changeColor(this.value.colors, position, colorId);
