@@ -68,7 +68,11 @@ export default function solve(notes) {
     // eslint-disable-next-line
     d[note.calcId] = note;
     if (note.calcId) {
-      parser.eval(`${note.calcId} = {}`);
+      try {
+        parser.eval(`${note.calcId} = {}`);
+      } catch (e) {
+        return { err: 'Unsupported ID' };
+      }
     }
     return d;
   }, {});

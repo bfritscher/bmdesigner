@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import humanFormat from 'human-format';
 import { mapState } from 'vuex';
 import ImageZone from '@/components/ImageZone';
@@ -131,7 +132,21 @@ export default {
       results: state => state.calcResults || {},
     }),
     note() {
-      return this.$store.state.layout.focusedNote || new Note();
+      const note = this.$store.state.layout.focusedNote;
+      // auto generate id if not defined at first use
+      if (this.showNoteOptionsCalc && note && !note.calcId) {
+        const calcId = note.text.replace(/[^a-zA-Z\d_]/g, '_');
+        Vue.nextTick(() => {
+          this.$store.dispatch('NOTE_UPDATE', {
+            note,
+            changes: {
+              calcId,
+            },
+          });
+        });
+        return note;
+      }
+      return note || new Note();
     },
   },
   methods: {
