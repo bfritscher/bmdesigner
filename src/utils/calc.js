@@ -65,9 +65,16 @@ export default function solve(notes) {
   sortedDeps.reverse();
   const parser = math.parser();
   const dict = notes.reduce((d, note) => {
-    // eslint-disable-next-line
-    d[note.calcId] = note;
     if (note.calcId) {
+      d[note.calcId] = Object.keys(note.values).reduce((v, key) => {
+        let transformedValue = note.values[key];
+        Object.keys(note.values).forEach((varKey) => {
+          transformedValue = transformedValue.replace(new RegExp(`[^\\.a-zA-Z](${varKey})[^\\.a-zA-Z]|^(${varKey})[^\\.a-zA-Z]|[^\\.a-zA-Z](${varKey})$`, 'gm'), `${note.calcId}.${varKey}`);
+        });
+        v[key] = transformedValue;
+        console.log(v[key]);
+        return v;
+      }, {});
       try {
         parser.eval(`${note.calcId} = {}`);
       } catch (e) {
@@ -79,7 +86,7 @@ export default function solve(notes) {
   sortedDeps.forEach((dep) => {
     const [calcId, key] = dep.split('.');
     try {
-      parser.eval(`${dep} = ${dict[calcId].values[key]}`);
+      parser.eval(`${dep} = ${dict[calcId][key]}`);
     } catch (e) {
       parser.set(`err_${dep}`, e.message);
     }
