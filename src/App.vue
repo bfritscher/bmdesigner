@@ -346,8 +346,6 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import { COLORS_MATERIAL } from '@/utils';
 import Avatar from 'vue-avatar/dist/Avatar';
 import { db } from '@/utils/firebase';
-
-import * as types from '@/store/mutation-types';
 import NoteOptions from '@/components/NoteOptions';
 
 export default {
@@ -451,10 +449,8 @@ export default {
     },
     toggleColorVisibility(value, colorId) {
       const newArray = this.canvasSettings.colorsVisibility.slice(0);
-      newArray[colorId] = parseFloat(value); // / 100.0;
-      this.$store.commit(types.LAYOUT_UPDATE, {
-        colorsVisibility: newArray,
-      });
+      newArray[colorId] = parseFloat(value);
+      this.canvasUserSettingsUpdate({ colorsVisibility: newArray });
     },
   },
   components: {
