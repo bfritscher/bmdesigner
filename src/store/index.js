@@ -6,6 +6,7 @@ import { firebaseMutations, firebaseAction } from 'vuexfire';
 import Note from '@/models/Note';
 import solve from '@/utils/calc';
 import router from '@/router';
+import { auth } from '@/utils/firebase';
 import * as types from './mutation-types';
 
 
@@ -40,6 +41,8 @@ const DEFAULT_USER_SETTINGS = {
   drawer: true,
 };
 
+const LOCALSTORAGE_USER_HOME = 'user_home_cache';
+
 // initial state
 const initialState = {
   canvas: {
@@ -57,15 +60,6 @@ const initialState = {
     notes: {},
     users: {},
   },
-  user: {
-    projects: { // by project keys
-      /*
-      info: {}, // duplicated from canvas
-      settings: DEFAULT_USER_CANVAS_SETTINGS,
-      */
-    },
-    settings: DEFAULT_USER_SETTINGS,
-  },
   currentUser: {},
   calcResults: {},
   layout: {
@@ -81,6 +75,18 @@ const initialState = {
   },
 };
 
+// try to load local cache
+const cache = localStorage.getItem(LOCALSTORAGE_USER_HOME) || JSON.stringify({
+  projects: { // by project keys
+    /*
+    info: {}, // duplicated from canvas
+    settings: DEFAULT_USER_CANVAS_SETTINGS,
+    */
+  },
+  settings: DEFAULT_USER_SETTINGS,
+});
+
+initialState.user = JSON.parse(cache);
 
 function computeCurrentCanvasUsedColors(state) {
   const usedColors = new Set();
@@ -217,6 +223,11 @@ const actions = {
     // eslint-disable-next-line
     store.dispatch('removeUser', state.currentUser.uid);
     delete state.user.projects[state.canvas['.key']];
+    router.push({ name: 'home' });
+  },
+  signOut() {
+    auth.signOut();
+    localStorage.removeItem(LOCALSTORAGE_USER_HOME);
     router.push({ name: 'home' });
   },
   setUserRef: firebaseAction(({ state, bindFirebaseRef, unbindFirebaseRef }, { ref }) => {
@@ -439,6 +450,10 @@ store.watch((state) => {
   return '';
 }, () => {
   store.commit(types.SOLVE_CALC);
+});
+
+store.watch(state => JSON.stringify(state.user), (data) => {
+  localStorage.setItem(LOCALSTORAGE_USER_HOME, data);
 });
 
 export default store;

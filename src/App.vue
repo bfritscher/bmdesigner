@@ -345,7 +345,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { COLORS_MATERIAL } from '@/utils';
 import Avatar from 'vue-avatar/dist/Avatar';
-import { auth, db } from '@/utils/firebase';
+import { db } from '@/utils/firebase';
 
 import * as types from '@/store/mutation-types';
 import NoteOptions from '@/components/NoteOptions';
@@ -412,13 +412,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate', 'duplicateCanvas']),
+    ...mapActions(['signOut', 'canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate', 'duplicateCanvas']),
     isMobile() {
       return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
-    },
-    signOut() {
-      auth.signOut();
-      this.$router.push({ name: 'home' });
     },
     removeInvitation(key) {
       this.showConfirmDeleteInvitation = false;
