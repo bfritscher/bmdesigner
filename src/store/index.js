@@ -27,7 +27,6 @@ export const VPC_CS_TYPES = [
   'vpc_tmp', 'pain_gain', 'job',
 ];
 
-
 const DEFAULT_USER_CANVAS_SETTINGS = {
   listMode: false,
   lastUsedColors: [0],
@@ -207,6 +206,18 @@ const actions = {
   },
   removeInvitation(context, key) {
     refs.canvas.child('invites_sent').child(key).remove();
+  },
+  deleteCanvas({ state }) {
+    Object.keys(state.canvas.users).forEach((key) => {
+      if (key !== state.currentUser.uid) {
+        // eslint-disable-next-line
+        store.dispatch('removeUser', key);
+      }
+    });
+    // eslint-disable-next-line
+    store.dispatch('removeUser', state.currentUser.uid);
+    delete state.user.projects[state.canvas['.key']];
+    router.push({ name: 'home' });
   },
   setUserRef: firebaseAction(({ state, bindFirebaseRef, unbindFirebaseRef }, { ref }) => {
     // this will unbind any previously bound ref

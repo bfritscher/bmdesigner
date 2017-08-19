@@ -138,7 +138,7 @@
 
             <v-divider class="my-2"></v-divider>
 
-            <v-subheader class="mt-2 grey--text text--darken-1">COLLABORATORS</v-subheader>
+            <v-subheader class="mt-2">COLLABORATORS</v-subheader>
 
             <v-list>
               <v-list-tile v-for="(u, key) in $store.state.canvas.users" :key="key" avatar ripple>
@@ -206,9 +206,9 @@
             <v-dialog v-model="showDialogInvite" persistent style="display:block">
               <v-list-tile class="mt-2" v-ripple slot="activator">
                 <v-list-tile-action>
-                  <v-icon class="grey--text text--darken-1">add_circle_outline</v-icon>
+                  <v-icon>add_circle_outline</v-icon>
                 </v-list-tile-action>
-                <v-list-tile-title class="grey--text text--darken-1">Invite a person</v-list-tile-title>
+                <v-list-tile-title>Invite a person</v-list-tile-title>
               </v-list-tile>
               <v-card>
                 <v-card-text>
@@ -233,14 +233,25 @@
               <v-list-tile-title>Duplicate canvas</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-          <!--
-                            <v-list-tile v-ripple>
-                              <v-list-tile-action>
-                                <v-icon class="grey--text text--darken-1">settings</v-icon>
-                              </v-list-tile-action>
-                              <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
-                            </v-list-tile>
-                  -->
+
+          <v-dialog v-model="showDialogSettings" persistent style="display:block"  v-if="$store.state.layout.isEditable">
+            <v-list-tile class="mt-2" v-ripple slot="activator">
+              <v-list-tile-action>
+                <v-icon>settings</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-title>Settings</v-list-tile-title>
+            </v-list-tile>
+            <v-card>
+              <v-card-text>
+                <h3 class="headline">Canvas settings</h3>
+                <v-btn error flat @click.native="deleteCanvas">Delete</v-btn>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="blue--text darken-1" flat @click.native="showDialogSettings = false">Done</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </div>
       </v-list>
     </v-navigation-drawer>
@@ -348,6 +359,7 @@ export default {
       showDialogTitle: false,
       showConfirmDeleteInvitation: false,
       showConfirmRemoveUser: false,
+      showDialogSettings: false,
       localTitle: '',
       inviteEmail: '',
       COLORS_MATERIAL,
@@ -415,6 +427,10 @@ export default {
     removeUser(key) {
       this.showConfirmRemoveUser = false;
       this.$store.dispatch('removeUser', key);
+    },
+    deleteCanvas() {
+      this.showDialogSettings = false;
+      this.$store.dispatch('deleteCanvas');
     },
     sendInviteEmail() {
       db.child('projects').child(this.$store.state.canvas['.key']).child('invite_request').set(this.inviteEmail);

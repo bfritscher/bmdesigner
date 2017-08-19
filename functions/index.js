@@ -65,19 +65,19 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
 });
 
 // TRIGER to update copy projects canvas.info to users projects...
-exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{uid}/updateInfo`).onWrite((event) => {
-  const uid = event.params.uid;
+exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateInfo`).onWrite((event) => {
+  const pid = event.params.pid;
   if (!event.data.val()) {
     return;
   }
-  const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${uid}`);
+  const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${pid}`);
   projectRef.once('value', (snapshot) => {
     const project = snapshot.val();
     project.info.usersCount = Object.keys(project.users || {}).length;
     project.info.stickyCount = Object.keys(project.notes || {}).length;
     project.info.updatedAt = new Date().toISOString();
-    Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${uid}/info`).update(project.info),
-      ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${uid}/info`).update(project.info))])
+    Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${pid}/info`).update(project.info),
+      ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${pid}/info`).update(project.info))])
       .then(() => event.data.ref.remove());
   });
 });
@@ -86,24 +86,32 @@ exports.onRemoveUserFromProject = functions.database.ref(`/${DB_ROOT}/projects/{
   const uid = event.params.uid;
   const pid = event.params.pid;
   admin.database().ref(`/${DB_ROOT}/users/${uid}/projects/${pid}`).remove();
+  const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${pid}`);
+  projectRef.once('value', (snapshot) => {
+    const project = snapshot.val();
+    const usersCount = Object.keys(project.users || {}).length;
+    if (usersCount === 0) {
+      projectRef.remove();
+    }
+  });
 });
 
-exports.inviteToken = functions.database.ref(`/${DB_ROOT}/projects/{uid}/invite_request`).onWrite((event) => {
-  const uid = event.params.uid;
+exports.inviteToken = functions.database.ref(`/${DB_ROOT}/projects/{pid}/invite_request`).onWrite((event) => {
+  const pid = event.params.pid;
   if (!event.data.val()) {
     return;
   }
   // FEATURE: check is valid email?
   // FEATURE: user can add custom message?
   const email = event.data.val();
-  const token = admin.database().ref(`/${DB_ROOT}/projects/${uid}/invites_sent`).push(email).key;
+  const token = admin.database().ref(`/${DB_ROOT}/projects/${pid}/invites_sent`).push(email).key;
   event.data.ref.remove();
 
   const mailOptions = {
     from: `"${event.auth.variable.name}" <${event.auth.variable.email}>`,
     to: email,
     subject: `${event.auth.variable.name} invited you to his Business Model Canvas`,
-    text: `Connect to https://bmdesigner.com/login/${uid}:${token} , to see the shared project.\n\nRegards,\nBM|Designer.com`,
+    text: `Connect to https://bmdesigner.com/login/${pid}:${token} , to see the shared project.\n\nRegards,\nBM|Designer.com`,
   };
   mailer.sendMail(mailOptions);
 });
