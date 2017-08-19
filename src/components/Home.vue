@@ -84,6 +84,10 @@ export default {
 
 <style>
 
+.model .headline {
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.60);
+}
+
 .model .card__media {
   height: 160px !important;
 }
