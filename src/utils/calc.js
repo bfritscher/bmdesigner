@@ -72,7 +72,6 @@ export default function solve(notes) {
           transformedValue = transformedValue.replace(new RegExp(`[^\\.a-zA-Z](${varKey})[^\\.a-zA-Z]|^(${varKey})[^\\.a-zA-Z]|[^\\.a-zA-Z](${varKey})$`, 'gm'), `${note.calcId}.${varKey}`);
         });
         v[key] = transformedValue;
-        console.log(v[key]);
         return v;
       }, {});
       try {
