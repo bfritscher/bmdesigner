@@ -9,7 +9,7 @@
       </div>
     </slot>
     <v-btn icon @click.prevent.stop="displayColorPicker" v-if="image && allowClick" class="color white--text">
-      <v-icon>color_lens</v-icon>
+      <v-icon>colorize</v-icon>
     </v-btn>
     <v-btn icon @click.prevent.stop="reset" v-if="image && allowClick" class="delete white--text">
       <v-icon>delete_forever</v-icon>
