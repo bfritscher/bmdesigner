@@ -496,8 +496,12 @@ export default {
         Vue.nextTick(() => {
           this.calculateFontSizeAndHeight(previous);
         });
-      } else if (this.listMode) {
-        this.sortSortable(this.value.type);
+      } else {
+        // done
+        this.$store.dispatch('NOTE_MOVE', { note: this.value, height: this.height });
+        if (this.listMode) {
+          this.sortSortable(this.value.type);
+        }
       }
     },
     setColor(position, colorId) {
