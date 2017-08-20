@@ -1,6 +1,8 @@
 <template>
-  <div @click.prevent.stop @wheel="handleWheel" class="draggable note" :class="{'list-mode': listMode, dragging: dragging, 'no-sticky': !value.showAsSticky}" :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, 'box-shadow': boxShadow, opacity, transform}">
-    <div class="colors" v-if="isEdit && $store.state.layout.isEditable">
+  <div @click.prevent.stop @wheel="handleWheel" class="draggable note"
+  :class="{'list-mode': listMode, 'hide-colors': hideColors, dragging: dragging, 'no-sticky': !value.showAsSticky}"
+   :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, 'box-shadow': boxShadow, opacity, transform}">
+    <div class="colors" v-if="isEdit && $store.state.layout.isEditable && !hideColors">
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
     </div>
@@ -198,6 +200,9 @@ export default {
     listMode() {
       return this.canvasSettings.listMode;
     },
+    hideColors() {
+      return this.canvasSettings.hideColors;
+    },
     colors() {
       return this.value.colors;
     },
@@ -268,6 +273,11 @@ export default {
         this.setBoxShadow();
       }
     },
+    hideColors(after, before) {
+      if (after !== before) {
+        this.setBoxShadow();
+      }
+    },
   },
   methods: {
     setOpacity() {
@@ -281,7 +291,9 @@ export default {
     },
     setBoxShadow() {
       this.boxShadow = this.value.colors.reduce((shadows, colorCode, i) => {
-        if (this.listMode || !this.value.showAsSticky) {
+        if (this.hideColors) {
+          return shadows;
+        } else if (this.listMode || !this.value.showAsSticky) {
           const size = ((i + 1) * 5) + (i * 2);
           shadows.push(`-${size}px 0px ${COLORS_MATERIAL[colorCode]}`);
           shadows.push(`-${size + 2}px 0px ${this.dragging ? 'transparent' : '#fff'}`);
@@ -538,7 +550,6 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
   line-height: 1.1;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
 }
@@ -563,6 +574,10 @@ export default {
 .note.list-mode {
   background-color: transparent !important;
   width: 18%;
+}
+
+.note.hide-colors {
+  background-color: transparent !important;
 }
 
 .note .text-box {

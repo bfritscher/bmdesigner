@@ -34,6 +34,7 @@ const DEFAULT_USER_CANVAS_SETTINGS = {
   colorsVisibility: [1, 1, 1, 1, 1, 1],
   isColorsOpen: false,
   fav: false,
+  hideColors: false,
 };
 
 const DEFAULT_USER_SETTINGS = {
