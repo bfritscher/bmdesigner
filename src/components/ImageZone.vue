@@ -27,11 +27,11 @@ export default {
   name: 'image-zone',
   props: {
     maxWidth: {
-      default: 200,
+      default: 400,
       type: Number,
     },
     maxHeight: {
-      default: 200,
+      default: 300,
       type: Number,
     },
     image: {
@@ -126,11 +126,7 @@ export default {
         const colorThief = new ColorThief();
         const [r, g, b] = colorThief.getColor(img);
         this.$emit('update:color', `rgb(${r}, ${g}, ${b})`);
-        if (this.width <= this.maxWidth && this.height <= this.maxHeight) {
-          this.setNewImage(src);
-        } else {
-          this.resize(img);
-        }
+        this.resize(img);
       };
       img.src = src;
     },
@@ -169,6 +165,10 @@ export default {
     resize(img) {
       const maxRatio = this.maxWidth / this.maxHeight;
       const ratio = this.width / this.height;
+      if (this.width <= this.maxWidth && this.height <= this.maxHeight) {
+        this.width += 20;
+        this.height += 20;
+      }
       if ((ratio > 1 && maxRatio > 1) ||
         (ratio > 1 && maxRatio < 1) ||
         (ratio === 1 && maxRatio < 1) ||
@@ -189,7 +189,7 @@ export default {
         const canvas = this.$refs.canvas;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, this.width, this.height);
-        ctx.drawImage(img, 0, 0, this.width, this.height);
+        ctx.drawImage(img, 10, 10, this.width - 20, this.height - 20);
         this.setNewImage(canvas.toDataURL());
       });
     },
@@ -256,6 +256,7 @@ export default {
 
 .image-zone > canvas {
   position: absolute;
+  cursor: crosshair;
 }
 
 
