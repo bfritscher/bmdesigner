@@ -43,7 +43,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile :to="{name: 'inspire'}" v-show="isModelList" v-ripple>
+        <v-list-tile :to="{name: 'inspire'}" v-show="isModelList" ripple>
           <v-list-tile-action>
             <v-icon light>lightbulb_outline</v-icon>
           </v-list-tile-action>
@@ -53,7 +53,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile :to="{name: 'learn'}" v-show="isModelList" v-ripple>
+        <v-list-tile :to="{name: 'learn'}" v-show="isModelList" ripple>
           <v-list-tile-action>
             <v-icon light>school</v-icon>
           </v-list-tile-action>
@@ -63,7 +63,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile :to="{name: 'play'}" v-show="isModelList" v-ripple>
+        <v-list-tile :to="{name: 'play'}" v-show="isModelList" ripple>
           <v-list-tile-action>
             <v-icon light>games</v-icon>
           </v-list-tile-action>
@@ -73,7 +73,7 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile :to="{name: 'about'}" v-ripple>
+        <v-list-tile :to="{name: 'about'}" ripple>
           <v-list-tile-action>
             <v-icon light>feedback</v-icon>
           </v-list-tile-action>
@@ -87,7 +87,7 @@
 
           <v-divider class="my-2"></v-divider>
 
-          <v-list-tile v-ripple @click.native="changeColorMode">
+          <v-list-tile ripple @click.native="changeColorMode">
             <v-list-tile-action>
               <v-icon>{{colorModeSwitch.icon}}</v-icon>
             </v-list-tile-action>
@@ -135,7 +135,18 @@
 
           </v-list-group>
 
-          <v-list-tile v-ripple @click.native="changeListMode">
+          <v-list-tile ripple @click.native="changeLabelMode">
+            <v-list-tile-action>
+              <v-icon>{{labelModeSwitch.icon}}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{labelModeSwitch.text}}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile ripple @click.native="changeListMode">
             <v-list-tile-action>
               <v-icon>{{listModeSwitch.icon}}</v-icon>
             </v-list-tile-action>
@@ -215,7 +226,7 @@
             </v-list>
 
             <v-dialog v-model="showDialogInvite" persistent style="display:block">
-              <v-list-tile class="mt-2" v-ripple slot="activator">
+              <v-list-tile class="mt-2" ripple slot="activator">
                 <v-list-tile-action>
                   <v-icon>add_circle_outline</v-icon>
                 </v-list-tile-action>
@@ -236,7 +247,7 @@
 
             <v-divider class="my-2"></v-divider>
 
-            <v-list-tile v-ripple @click.native="changeAccessType">
+            <v-list-tile ripple @click.native="changeAccessType">
               <v-list-tile-action>
                 <v-icon>{{accessTypeSwitch.icon}}</v-icon>
               </v-list-tile-action>
@@ -259,7 +270,7 @@
           </v-list-tile>
 
           <v-dialog v-model="showDialogSettings" persistent style="display:block" v-if="$store.state.layout.isEditable">
-            <v-list-tile class="mt-2" v-ripple slot="activator">
+            <v-list-tile class="mt-2" ripple slot="activator">
               <v-list-tile-action>
                 <v-icon>settings</v-icon>
               </v-list-tile-action>
@@ -421,10 +432,13 @@ export default {
       return this.canvasSettings.hideColors ? { text: 'Show colors', icon: 'invert_colors' } : { text: 'Hide colors', icon: 'invert_colors_off' };
     },
     listModeSwitch() {
-      return this.canvasSettings.listMode ? { text: 'Switch to sticky notes', icon: 'widgets' } : { text: 'Switch to lists', icon: 'list' };
+      return this.canvasSettings.listMode ? { text: 'Display as sticky notes', icon: 'widgets' } : { text: 'Display as lists', icon: 'list' };
     },
     accessTypeSwitch() {
-      return this.$store.state.canvas.info.public ? { text: 'Switch to private', icon: 'public' } : { text: 'Switch to public', icon: 'lock' };
+      return this.$store.state.canvas.info.public ? { text: 'Make private', icon: 'public' } : { text: 'Make public', icon: 'lock' };
+    },
+    labelModeSwitch() {
+      return this.canvasSettings.hideAllLabels ? { text: 'Show labels', icon: 'label' } : { text: 'Hide all labels', icon: 'label_outline' };
     },
     isModelList() {
       return ['home', 'play', 'inspire', 'learn', 'favorites', 'about', 'login'].includes(this.$route.name);
@@ -463,6 +477,9 @@ export default {
     },
     changeColorMode() {
       this.canvasUserSettingsUpdate({ hideColors: !this.canvasSettings.hideColors });
+    },
+    changeLabelMode() {
+      this.canvasUserSettingsUpdate({ hideAllLabels: !this.canvasSettings.hideAllLabels });
     },
     changeAccessType() {
       this.canvasInfoUpdate({ public: !this.$store.state.canvas.info.public });

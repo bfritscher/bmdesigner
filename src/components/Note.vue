@@ -21,7 +21,7 @@
     </div>
     <!-- needed for textarea sizing bug -->
     <div class="text-box" @click.prevent.stop :style="{'background-image': `url(${value.image})`}" :class="{image: value.image}">
-      <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :class="{'hide-label': !value.showLabel}" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
+      <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :class="{'hide-label': !value.showLabel || canvasSettings.hideAllLabels}" :value="value.text" @input="updateText" @focus="handleFocus" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
     </div>
     <div class="calcvar-display">
       <div class="calcvar-display-b" @click.prevent.stop="showNoteOptions(true)" v-if="calcResults[value.calcId] && value.calcDisplayB" v-tooltip:bottom="{ html: value.calcDisplayB }">
@@ -625,7 +625,7 @@ export default {
   color: #333;
 }
 
-.note:not(.list-mode) textarea.hide-label {
+.note textarea.hide-label {
   opacity: 0;
 }
 

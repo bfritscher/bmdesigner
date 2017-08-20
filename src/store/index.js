@@ -35,6 +35,7 @@ const DEFAULT_USER_CANVAS_SETTINGS = {
   isColorsOpen: false,
   fav: false,
   hideColors: false,
+  hideAllLabels: false,
 };
 
 const DEFAULT_USER_SETTINGS = {
