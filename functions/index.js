@@ -2,8 +2,12 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const algoliasearch = require('algoliasearch');
 
 admin.initializeApp(functions.config().firebase);
+
+const algoliaClient = algoliasearch(functions.config().algolia.id, functions.config().algolia.key);
+const indexNotes = algoliaClient.initIndex('prod_notes');
 
 const DB_ROOT = 'app';
 
@@ -76,6 +80,26 @@ exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateIn
     project.info.usersCount = Object.keys(project.users || {}).length;
     project.info.stickyCount = Object.keys(project.notes || {}).length;
     project.info.updatedAt = new Date().toISOString();
+
+    // update search index
+    // TODO: handle note delete
+    indexNotes.addObjects(Object.keys(project.notes).map((key) => {
+      const note = project.notes[key];
+      return {
+        objectID: `${pid}.${key}`,
+        type: note.type,
+        text: note.text,
+        description: note.description,
+        colors: note.colors,
+        values: Object.keys(note.values || {}),
+        projectTitle: project.info.name,
+        canvasKey: pid,
+        users: Object.keys(project.users || {}),
+        public: project.info.public,
+        updatedAt: project.info.updatedAt,
+      };
+    }));
+
     Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${pid}/info`).update(project.info),
       ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${pid}/info`).update(project.info))])
       .then(() => event.data.ref.remove());
@@ -90,6 +114,7 @@ exports.onRemoveUserFromProject = functions.database.ref(`/${DB_ROOT}/projects/{
   projectRef.once('value', (snapshot) => {
     const project = snapshot.val();
     const usersCount = Object.keys(project.users || {}).length;
+    // TODO: update index;
     if (usersCount === 0) {
       projectRef.remove();
     }
@@ -114,6 +139,17 @@ exports.inviteToken = functions.database.ref(`/${DB_ROOT}/projects/{pid}/invite_
     text: `Connect to https://bmdesigner.com/login/${pid}:${token} , to see the shared project.\n\nRegards,\nBM|Designer.com`,
   };
   mailer.sendMail(mailOptions);
+});
+
+// create search key filtered by user's permissions
+exports.addSearchKey = functions.database.ref(`/${DB_ROOT}/users/{uid}/settings/search_key`).onWrite((event) => {
+  const uid = event.params.uid;
+  const securedApiKey = algoliaClient.generateSecuredApiKey(
+    functions.config().algolia.search_key, // Make sure to use a search key
+    {
+      filters: `users:${uid} OR public:true`,
+    });
+  admin.database().ref(`/${DB_ROOT}/users/${uid}/settings/search_key`).set(securedApiKey);
 });
 
 /* register with token */

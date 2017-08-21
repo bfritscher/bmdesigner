@@ -65,13 +65,7 @@ export default {
     };
   },
   mounted() {
-    this.isLoading = true;
-    this.setCanvasRef(db.child('projects').child(this.$route.params.id)).then(() => {
-      this.isLoading = false;
-    });
-    resizeHandler = debounce(this.handleWindowResize, 300);
-    window.addEventListener('resize', resizeHandler);
-    this.handleWindowResize();
+    this.fetchData();
   },
   beforeDestroy() {
     if (resizeHandler) {
@@ -95,9 +89,20 @@ export default {
       // triggers heigh calculations
       window.dispatchEvent(new Event('resize'));
     },
+    // call again the method if the route changes
+    $route: 'fetchData',
   },
   methods: {
     ...mapActions(['setCanvasRef', 'canvasInfoUpdate']),
+    fetchData() {
+      this.isLoading = true;
+      this.setCanvasRef(db.child('projects').child(this.$route.params.id)).then(() => {
+        this.isLoading = false;
+      });
+      resizeHandler = debounce(this.handleWindowResize, 300);
+      window.addEventListener('resize', resizeHandler);
+      this.handleWindowResize();
+    },
     handleWindowResize() {
       if (!this.$refs.paper) {
         return;

@@ -49,6 +49,24 @@ export const COLORS_MATERIAL_DARK = [
   'grey lighten-1',
 ];
 
+export const TYPE_NAMES = {
+  pn: 'Partner Network',
+  ka: 'Key Activities',
+  kr: 'Key Resources',
+  c: 'Cost Structure',
+  vp: 'Value Proposition',
+  cs: 'Customer Segments',
+  cr: 'Customer relationship',
+  dc: 'Channels',
+  r: 'Revenue Streams',
+  features: 'Products and Services',
+  solution: 'Solutions',
+  job: 'Jobs to be done',
+  pain_gain: 'Gains & Pains',
+  bmc_tmp: 'Outside',
+  vpc_tmp: 'Outside',
+};
+
 /*
 #ffecb3 Amber 100
 #c8e6c9 Green-100

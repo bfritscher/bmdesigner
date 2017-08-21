@@ -300,7 +300,7 @@
                                       -->
     <v-toolbar fixed class="blue-grey darken-2" dark>
       <v-toolbar-side-icon @click.native.stop.prevent="userSettingsUpdate({drawer: !userSettings.drawer})"></v-toolbar-side-icon>
-      <!-- <v-text-field class="ml-5" v-if="$route.name === 'home'" prepend-icon="search" hide-details single-line placeholder="Search your models"></v-text-field> -->
+      <search></search>
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
         <v-dialog v-model="showDialogTitle" persistent :disabled="!$store.state.layout.isEditable || !isModelEdit">
@@ -319,6 +319,7 @@
         </v-dialog>
       </transition>
       <v-spacer></v-spacer>
+      <span style="width: 200px"></span>
       <v-menu offset-y v-if="currentUser">
         <v-list-tile-avatar slot="activator">
           <img v-if="currentUser.photoURL" :src="currentUser.photoURL" />
@@ -382,6 +383,7 @@ import { COLORS_MATERIAL } from '@/utils';
 import Avatar from 'vue-avatar/dist/Avatar';
 import { db } from '@/utils/firebase';
 import NoteOptions from '@/components/NoteOptions';
+import Search from '@/components/Search';
 
 export default {
   name: 'app',
@@ -503,6 +505,7 @@ export default {
   components: {
     NoteOptions,
     Avatar,
+    Search,
   },
 };
 </script>
