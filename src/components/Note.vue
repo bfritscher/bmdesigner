@@ -109,9 +109,9 @@ export default {
             type = this.parent.getAttribute('data-none');
           }
           if (this.listMode) {
-            this.$store.dispatch('NOTE_MOVE', { note: this.value, listLeft: left, listTop: top, type });
+            this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, listLeft: left, listTop: top, type });
           } else {
-            this.$store.dispatch('NOTE_MOVE', { note: this.value, left, top, type });
+            this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, left, top, type });
           }
 
           this.sortSortable(type, {
@@ -144,10 +144,10 @@ export default {
           this.$store.dispatch('NOTE_UPDATE', payload);
 
           // update list modes
-          this.sortSortable(newtype);
+          this.sortSortable(newtype, { save: true });
 
           if (this.dragStartType !== newtype) {
-            this.sortSortable(this.dragStartType);
+            this.sortSortable(this.dragStartType, { save: true });
           }
 
           // update free mode
@@ -416,7 +416,7 @@ export default {
 
         // only dispatch for notes not in the exclude list
         if (!(options && options.exclude && options.exclude.id === note.id)) {
-          this.$store.dispatch('NOTE_MOVE', {
+          this.$store.dispatch(options && options.save ? 'NOTE_MOVE' : 'NOTE_MOVE_LOCAL', {
             listTop: top,
             listLeft: left,
             note,
@@ -512,7 +512,7 @@ export default {
         // done
         this.$store.dispatch('NOTE_MOVE', { note: this.value, height: this.height });
         if (this.listMode) {
-          this.sortSortable(this.value.type);
+          this.sortSortable(this.value.type, { save: true });
         }
       }
     },
