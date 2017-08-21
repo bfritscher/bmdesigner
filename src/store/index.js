@@ -283,9 +283,9 @@ const actions = {
           if (refs.user && !state.user.projects[state.canvas['.key'].settings]) {
             refs.user.child('projects').child(state.canvas['.key']).child('settings').set(DEFAULT_USER_CANVAS_SETTINGS);
           }
-          if (!state.canvas.notesOrder || Object.keys(state.canvas.notesOrder).length
-            !== Object.keys(state.canvas.notes).length) {
-            refs.canvas.child('notesOrder').set(Object.keys(state.canvas.notes));
+          if (!state.canvas.notesOrder || Object.keys(state.canvas.notesOrder || {}).length
+            !== Object.keys(state.canvas.notes || {}).length) {
+            refs.canvas.child('notesOrder').set(Object.keys(state.canvas.notes || {}));
           }
           resolve();
           computeCurrentCanvasUsedColors(state);

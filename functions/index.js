@@ -83,7 +83,7 @@ exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateIn
 
     // update search index
     // TODO: handle note delete
-    indexNotes.addObjects(Object.keys(project.notes).map((key) => {
+    indexNotes.addObjects(Object.keys(project.notes || {}).map((key) => {
       const note = project.notes[key];
       return {
         objectID: `${pid}.${key}`,
