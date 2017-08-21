@@ -66,7 +66,7 @@ export default function solve(notes) {
   const parser = math.parser();
   const dict = notes.reduce((d, note) => {
     if (note.calcId) {
-      d[note.calcId] = Object.keys(note.values).reduce((v, key) => {
+      d[note.calcId] = Object.keys(note.values || {}).reduce((v, key) => {
         let transformedValue = note.values[key];
         Object.keys(note.values).forEach((varKey) => {
           transformedValue = transformedValue.replace(new RegExp(`[^\\.a-zA-Z](${varKey})[^\\.a-zA-Z]|^(${varKey})[^\\.a-zA-Z]|[^\\.a-zA-Z](${varKey})$`, 'gm'), `${note.calcId}.${varKey}`);
