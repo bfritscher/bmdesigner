@@ -33,7 +33,7 @@
         <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 60%; top: 75%; width: 40%; height: 25%">
           <v-icon light slot="icon">attach_money</v-icon>
         </zone>
-        <div class="logo" light>
+        <div class="logo" light :style="{'background-color': canvas.info.logoColor}">
           <image-zone :allow-click="$store.state.layout.isEditable" :image="canvas.info.logoImage" @update:image="canvasInfoUpdate({logoImage: $event})" :color="canvas.info.logoColor" @update:color="canvasInfoUpdate({logoColor: $event})"></image-zone>
         </div>
         <div>
@@ -199,10 +199,10 @@ export default {
 
 .logo>div {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
 }
 
 .credits {
