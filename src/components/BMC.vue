@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bmc">
     <div class="credits caption" ><a href="https://strategyzer.com/canvas/business-model-canvas" target="_blank">The Business Model Canvas</a> by <a href="http://strategyzer.com" target="_blank">Strategyzer AG</a> is licensed under <a href="http://creativecommons.org/licenses/by-sa/3.0" target="_blank">CC BY-SA 3.0</a></div>
     <image-zone :allow-click="false" @image-drop="addNote" class="canvas" @click.native.prevent.stop="addNote($event)">
       <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
@@ -54,6 +54,7 @@ import ImageZone from '@/components/ImageZone';
 import { mapGetters, mapState, mapActions } from 'vuex';
 import { totalOffset } from '@/utils';
 import { db } from '@/utils/firebase';
+import * as types from '@/store/mutation-types';
 
 let resizeHandler;
 
@@ -98,10 +99,27 @@ export default {
       this.isLoading = true;
       this.setCanvasRef(db.child('projects').child(this.$route.params.id)).then(() => {
         this.isLoading = false;
+        this.zoomNoteKey(this.$route.params.zoom1);
+        this.zoomNoteKey(this.$route.params.zoom2);
       });
       resizeHandler = debounce(this.handleWindowResize, 300);
       window.addEventListener('resize', resizeHandler);
       this.handleWindowResize();
+    },
+    zoomNoteKey(key) {
+      const note = this.$store.state.canvas.notes[key];
+      if (!note) {
+        return;
+      }
+      const parentNote = this.$store.getters.noteById(note.parent);
+      if (parentNote) {
+        if (parentNote.type === 'vp') {
+          this.$store.commit(types.LAYOUT_UPDATE, { selectedVP: parentNote, showVPC: true });
+        }
+        if (parentNote.type === 'cs') {
+          this.$store.commit(types.LAYOUT_UPDATE, { selectedCS: parentNote, showVPC: true });
+        }
+      }
     },
     handleWindowResize() {
       if (!this.$refs.paper) {
@@ -150,6 +168,21 @@ export default {
 </script>
 
 <style scoped>
+.bmc {
+  flex: 1;
+  position: relative;
+}
+
+.bmc.fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: #424242;
+}
+
 .canvas {
   position: absolute;
   left: 0;

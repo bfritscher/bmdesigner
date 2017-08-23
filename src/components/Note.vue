@@ -131,6 +131,8 @@ export default {
             note: this.value,
             changes: {
               type: newtype,
+              left: this.left,
+              top: this.top,
             },
           };
           // TODO: refactor to make note note dependent almost same as in VPC
@@ -278,16 +280,30 @@ export default {
         this.setBoxShadow();
       }
     },
+    'value.hidden': function valueHidden(after, before) {
+      if (after !== before) {
+        this.setOpacity();
+      }
+    },
+    '$store.state.layout.presentation': function layoutPresentation(after, before) {
+      if (after !== before) {
+        this.setOpacity();
+      }
+    },
   },
   methods: {
     setOpacity() {
-      // calculate visibility based on colors
-      this.opacity = this.colorsVisibility.reduce((totalOpacity, opacity, colorId) => {
-        if (this.value.colors.includes(colorId)) {
-          totalOpacity += opacity;
-        }
-        return Math.min(totalOpacity, 1);
-      }, 0);
+      if (this.$store.state.layout.presentation && this.value.hidden) {
+        this.opacity = 0;
+      } else {
+        // calculate visibility based on colors
+        this.opacity = this.colorsVisibility.reduce((totalOpacity, opacity, colorId) => {
+          if (this.value.colors.includes(colorId)) {
+            totalOpacity += opacity;
+          }
+          return Math.min(totalOpacity, 1);
+        }, 0);
+      }
     },
     setBoxShadow() {
       this.boxShadow = this.value.colors.reduce((shadows, colorCode, i) => {

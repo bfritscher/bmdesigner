@@ -58,9 +58,11 @@ const initialState = {
       createdAt: '',
       updatedAt: '',
     },
-    notesOrder: [],
+    notesOrder: [], // for z-index
+    notesPresentationOrder: [],
     notes: {},
     users: {},
+    currentPresentationKey: '',
   },
   currentUser: {},
   calcResults: {},
@@ -74,6 +76,7 @@ const initialState = {
     showLoading: '',
     currentCanvasUsedColors: new Set(),
     isEditable: false,
+    presentation: '',
   },
 };
 
@@ -138,6 +141,7 @@ const gettersDefinition = {
   notesVPC: (state, getters) => getters.getNotesByTypes(VPC_TYPES),
   notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
   notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
+  noteById: state => id => state.canvas.notes.find(n => n.id === id),
   canvasSettings: state => (state.canvas && state.user && state.user.projects[state.canvas['.key']] && state.user.projects[state.canvas['.key']].settings ?
     state.user.projects[state.canvas['.key']].settings : Object.assign({}, DEFAULT_USER_CANVAS_SETTINGS)),
   userSettings: state => state.user.settings || DEFAULT_USER_SETTINGS,
@@ -180,6 +184,7 @@ const actions = {
     commit(types.NOTE_MOVE_LOCAL, payload);
   },
   NOTE_DELETE({ state, commit }, payload) {
+    // TODO: update notesOrder, notesPresentationOrder
     refs.notes.child(payload['.key']).remove();
     commit(types.NOTE_DELETE, payload);
   },
@@ -266,8 +271,10 @@ const actions = {
               updatedAt: '',
             },
             notesOrder: [],
+            notesPresentationOrder: [],
             notes: {},
             users: {},
+            currentPresentationKey: '',
           };
         });
       });
@@ -286,6 +293,11 @@ const actions = {
           if (!state.canvas.notesOrder || Object.keys(state.canvas.notesOrder || {}).length
             !== Object.keys(state.canvas.notes || {}).length) {
             refs.canvas.child('notesOrder').set(Object.keys(state.canvas.notes || {}));
+          }
+          if (!state.canvas.notesPresentationOrder
+            || Object.keys(state.canvas.notesPresentationOrder || {}).length
+            !== Object.keys(state.canvas.notes || {}).length) {
+            refs.canvas.child('notesPresentationOrder').set(Object.keys(state.canvas.notes || {}));
           }
           resolve();
           computeCurrentCanvasUsedColors(state);
@@ -347,6 +359,71 @@ const actions = {
     .then(res => res.text()).then((url) => {
       window.location = url;
     });
+  },
+  updateCurrentPresentationKey({ commit, state }, value) {
+    // TODO: commit
+    if (state.layout.isEditable) {
+      refs.canvas.child('currentPresentationKey').set(value);
+    }
+  },
+  setNotesPresentationOrder({ commit, state }, value) {
+    // TODO: commit
+    if (state.layout.isEditable) {
+      refs.canvas.child('notesPresentationOrder').set(value);
+    }
+  },
+  startPresentation({ commit, state }) {
+    // hide all
+    Object.values(state.canvas.notes || {}).forEach((note) => {
+      // eslint-disable-next-line
+      store.dispatch('NOTE_UPDATE', { note, changes: { hidden: true } });
+    });
+    commit(types.LAYOUT_UPDATE, { presentation: 'single' });
+    // eslint-disable-next-line
+    store.dispatch('updateCurrentPresentationKey', '');
+  },
+  presentationExit({ commit }) {
+    commit(types.LAYOUT_UPDATE, { presentation: '' });
+  },
+  presentationNext({ state }) {
+    const currentIndex = state.canvas.notesPresentationOrder
+    .indexOf(state.canvas.currentPresentationKey);
+    if (currentIndex === -1) {
+      const key = state.canvas.notesPresentationOrder[0];
+      // eslint-disable-next-line
+      store.dispatch('NOTE_UPDATE', { note: state.canvas.notes[key], changes: { hidden: false }});
+      // eslint-disable-next-line
+      store.dispatch('updateCurrentPresentationKey', key);
+    } else if (currentIndex === state.canvas.notesPresentationOrder.length - 1) {
+      // eslint-disable-next-line
+      store.dispatch('presentationExit');
+    } else {
+      const key = state.canvas.notesPresentationOrder[currentIndex + 1];
+      // eslint-disable-next-line
+      store.dispatch('NOTE_UPDATE', { note: state.canvas.notes[key], changes: { hidden: false }});
+      // eslint-disable-next-line
+      store.dispatch('updateCurrentPresentationKey', key);
+    }
+  },
+  presentationPrevious({ state }) {
+    const currentIndex = state.canvas.notesPresentationOrder
+    .indexOf(state.canvas.currentPresentationKey);
+    if (currentIndex === -1) {
+      // eslint-disable-next-line
+      store.dispatch('presentationExit');
+    } else if (currentIndex === 0) {
+      const key = state.canvas.notesPresentationOrder[0];
+      // eslint-disable-next-line
+      store.dispatch('NOTE_UPDATE', { note: state.canvas.notes[key], changes: { hidden: true }});
+      // eslint-disable-next-line
+      store.dispatch('updateCurrentPresentationKey', '');
+    } else {
+      const key = state.canvas.notesPresentationOrder[currentIndex - 1];
+      // eslint-disable-next-line
+      store.dispatch('NOTE_UPDATE', { note: state.canvas.notes[state.canvas.currentPresentationKey], changes: { hidden: true }});
+      // eslint-disable-next-line
+      store.dispatch('updateCurrentPresentationKey', key);
+    }
   },
 };
 

@@ -55,7 +55,7 @@ const router = new Router({
       meta: { title: 'Ideas & Feedback' },
     },
     {
-      path: '/bmc/:id',
+      path: '/bmc/:id/:zoom1?/:zoom2?',
       name: 'bmc',
       component: BMC,
       meta: { title: '' },

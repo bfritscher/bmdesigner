@@ -87,6 +87,29 @@
 
           <v-divider class="my-2"></v-divider>
 
+          <v-list-tile ripple @click.native="startPresentation">
+            <v-list-tile-action>
+              <v-icon>{{colorModeSwitch.icon}}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{colorModeSwitch.text}}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-icon>{{colorModeSwitch.icon}}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <v-btn small @click.native="presentationPrevious"><<</v-btn>
+                <v-btn small @click.native="presentationNext">>></v-btn>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
           <v-list-tile ripple @click.native="changeColorMode">
             <v-list-tile-action>
               <v-icon>{{colorModeSwitch.icon}}</v-icon>
@@ -290,14 +313,9 @@
         </div>
       </v-list>
     </v-navigation-drawer>
-    <!--
-                                    <v-navigation-drawer
-                                        right
-                                        temporary
-                                        hide-overlay
-                                        :value="$store.state.layout.focusedNote"
-                                      ></v-navigation-drawer>
-                                      -->
+
+    <presentation-sorter></presentation-sorter>
+
     <v-toolbar fixed class="blue-grey darken-2" dark>
       <v-toolbar-side-icon @click.native.stop.prevent="userSettingsUpdate({drawer: !userSettings.drawer})"></v-toolbar-side-icon>
       <search></search>
@@ -358,7 +376,7 @@
 
     </v-toolbar>
     <main>
-      <v-container fluid style="position: relative">
+      <v-container fluid style="display: flex;padding:0;">
         <router-view></router-view>
       </v-container>
     </main>
@@ -383,6 +401,7 @@ import { COLORS_MATERIAL } from '@/utils';
 import Avatar from 'vue-avatar/dist/Avatar';
 import { db } from '@/utils/firebase';
 import NoteOptions from '@/components/NoteOptions';
+import PresentationSorter from '@/components/PresentationSorter';
 import Search from '@/components/Search';
 
 export default {
@@ -453,7 +472,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['signOut', 'canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate', 'duplicateCanvas']),
+    ...mapActions(['signOut', 'canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate',
+      'duplicateCanvas', 'startPresentation', 'presentationNext', 'presentationPrevious', 'presentationExit']),
     isMobile() {
       return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
     },
@@ -506,6 +526,7 @@ export default {
     NoteOptions,
     Avatar,
     Search,
+    PresentationSorter,
   },
 };
 </script>

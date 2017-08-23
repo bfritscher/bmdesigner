@@ -33,7 +33,7 @@
         <ais-results :search-store="searchStore">
           <template scope="{ result }">
             <v-divider></v-divider>
-            <v-list-tile class="search-result" :to="{name:'bmc', params: {id: result.canvasKey}}" @click.native="showResults=false">
+            <v-list-tile class="search-result" :to="{name:'bmc', params: {id: result.canvasKey, zoom1: result.objectID.split('.')[1]}}" @click.native="showResults=false">
               <v-list-tile-content>
                 <v-list-tile-title>
                   <ais-highlight :result="result" attribute-name="text"></ais-highlight>
