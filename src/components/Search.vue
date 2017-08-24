@@ -139,12 +139,12 @@ export default {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  margin-left: -32px;
+  margin-left: -12px;
   flex-wrap: wrap;
 }
 
 .type-facet .ais-tree-menu__item {
-  margin: 10px 0 10px 40px;
+  margin: 10px 20px 10px;
 }
 
 .type-facet .ais-tree-menu__item a {
@@ -213,9 +213,10 @@ export default {
   display: none;
 }
 
-.search-box form {
+form.search-box{
   display: flex;
   flex: 1 0 100%;
+  white-space: nowrap;
 }
 
 .ais-powered-by {

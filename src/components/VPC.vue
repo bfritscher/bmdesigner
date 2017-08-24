@@ -268,10 +268,6 @@ export default {
   position: absolute;
 }
 
-.vpc-both {
-  z-index: 2;
-}
-
 .vpc-cs-transition-enter-active,
 .vpc-cs-transition-leave-active,
 .vpc-vp-transition-enter-active,
@@ -279,6 +275,7 @@ export default {
 .vpc-overlay-transition-enter-active,
 .vpc-overlay-transition-leave-active {
   transition: all 0.5s ease;
+  z-index: 2;
 }
 
 .vpc-overlay-transition-enter:before,
@@ -317,7 +314,4 @@ export default {
     margin: auto;
   }
 }
-
-
-
 </style>

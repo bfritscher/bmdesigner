@@ -99,8 +99,11 @@ export default {
       this.isLoading = true;
       this.setCanvasRef(db.child('projects').child(this.$route.params.id)).then(() => {
         this.isLoading = false;
-        this.zoomNoteKey(this.$route.params.zoom1);
-        this.zoomNoteKey(this.$route.params.zoom2);
+        const zoomed = this.zoomNoteKey(this.$route.params.zoom1)
+          || this.zoomNoteKey(this.$route.params.zoom2);
+        if (!zoomed) {
+          this.$store.commit(types.LAYOUT_UPDATE, { showVPC: false });
+        }
       });
       if (resizeHandler) {
         window.removeEventListener('resize', resizeHandler);
@@ -112,7 +115,7 @@ export default {
     zoomNoteKey(key) {
       const note = this.$store.state.canvas.notes[key];
       if (!note) {
-        return;
+        return false;
       }
       const parentNote = this.$store.getters.noteById(note.parent);
       if (parentNote) {
@@ -122,7 +125,9 @@ export default {
         if (parentNote.type === 'cs') {
           this.$store.commit(types.LAYOUT_UPDATE, { selectedCS: parentNote, showVPC: true });
         }
+        return true;
       }
+      return false;
     },
     handleWindowResize() {
       if (!this.$refs.paper) {

@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer right temporary hide-overlay disable-route-watcher :value="$store.state.layout.focusedNote">
+  <v-navigation-drawer right temporary disable-route-watcher>
     <ul>
       <li class="note-item" v-for="k in $store.state.canvas.notesPresentationOrder" :data-key="k" :key="k">{{k}}</li>
       <li class="note-item last" ></li>
@@ -15,10 +15,6 @@ quiz mode
 -> dissallow delete or edit (localy), but allow move/save
 -> correction mode -> send compare by id to server
 -> reply correct/false or only number of correct/false based on difficulty
-
------
-ok  -> auto open?
-  -> highlight from search
 
 -----
 presentationMode
@@ -42,11 +38,6 @@ OK  -> play order
 -----
 
 fix height if width max
-
-fix search over vpc
-fix if no zoom remove vpc
-fix search x line return
-fix search tag outside box
 */
 import interact from 'interactjs';
 
