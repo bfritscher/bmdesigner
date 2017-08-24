@@ -141,7 +141,7 @@ const gettersDefinition = {
   notesVPC: (state, getters) => getters.getNotesByTypes(VPC_TYPES),
   notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
   notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
-  noteById: state => id => state.canvas.notes.find(n => n.id === id),
+  noteById: state => id => Object.values(state.canvas.notes || {}).find(n => n.id === id),
   canvasSettings: state => (state.canvas && state.user && state.user.projects[state.canvas['.key']] && state.user.projects[state.canvas['.key']].settings ?
     state.user.projects[state.canvas['.key']].settings : Object.assign({}, DEFAULT_USER_CANVAS_SETTINGS)),
   userSettings: state => state.user.settings || DEFAULT_USER_SETTINGS,

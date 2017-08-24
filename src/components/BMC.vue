@@ -102,6 +102,9 @@ export default {
         this.zoomNoteKey(this.$route.params.zoom1);
         this.zoomNoteKey(this.$route.params.zoom2);
       });
+      if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+      }
       resizeHandler = debounce(this.handleWindowResize, 300);
       window.addEventListener('resize', resizeHandler);
       this.handleWindowResize();

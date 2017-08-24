@@ -1,6 +1,7 @@
 <template>
   <div @click.prevent.stop @wheel="handleWheel" class="draggable note"
-  :class="{'list-mode': listMode, 'hide-colors': hideColors, dragging: dragging, 'no-sticky': !value.showAsSticky}"
+  :class="{'list-mode': listMode, 'hide-colors': hideColors, 'highlight-note': highlight,
+    dragging: dragging, 'no-sticky': !value.showAsSticky}"
    :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, 'box-shadow': boxShadow, opacity, transform}">
     <div class="colors" v-if="isEdit && $store.state.layout.isEditable && !hideColors">
       <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
@@ -65,7 +66,7 @@ export default {
       x: 0,
       y: 0,
       dx: 0,
-      height: MAX_HEIGHT,
+      height: MIN_HEIGHT,
       dragging: false,
       dragStartType: '',
       fontSize: MAX_FONT_SIZE,
@@ -182,10 +183,10 @@ export default {
         },
       });
 
+    this.setBoxShadow();
+    this.setOpacity();
     Vue.nextTick(() => {
-      this.calculateFontSizeAndHeight();
-      this.setBoxShadow();
-      this.setOpacity();
+      setTimeout(this.calculateFontSizeAndHeight, 500);
     });
   },
   beforeDestroy() {
@@ -236,6 +237,9 @@ export default {
     },
     angle() {
       return this.listMode ? 0 : this.value.angle;
+    },
+    highlight() {
+      return [this.$route.params.zoom1, this.$route.params.zoom2].indexOf(this.value['.key']) > -1;
     },
     transform() {
       if (this.dragging) {
@@ -568,6 +572,14 @@ export default {
   left: 0;
   line-height: 1.1;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.note.highlight-note:before {
+  box-shadow: 0 0 10px 3px #F44336;
+  content: '';
+  display: block;
+  height: 100%;
+  width: 100%;
 }
 
 .note.dragging {

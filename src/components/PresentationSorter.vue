@@ -14,30 +14,30 @@ quiz mode
 -> store source canvas key for checking
 -> dissallow delete or edit (localy), but allow move/save
 -> correction mode -> send compare by id to server
-	-> reply correct/false or only number of correct/false based on difficulty
+-> reply correct/false or only number of correct/false based on difficulty
 
 -----
-ok	-> auto open?
-	-> highlight from search
+ok  -> auto open?
+  -> highlight from search
 
 -----
 presentationMode
-OK	-> drag and drop sort
-OK	-> play order
-	-> fix update delete
-	-> display also VPC? auto open?
-	-> status currentIndex/Length
-	-> UI colors, types
-	-> fullscreen transition
-	-> keyboard shortcuts left, right, escape
-	-> draw on screen https://github.com/szimek/signature_pad
+OK  -> drag and drop sort
+OK  -> play order
+  -> fix update delete
+  -> display also VPC? auto open?
+  -> status currentIndex/Length
+  -> UI colors, types
+  -> fullscreen transition
+  -> keyboard shortcuts left, right, escape
+  -> draw on screen https://github.com/szimek/signature_pad
 
-	-> readonly public can playback
+  -> readonly public can playback
 
-	-> second screen display/readonly
-	-> show on click
-	-> skip already shown by clicking manually
-	-> paint order
+  -> second screen display/readonly
+  -> show on click
+  -> skip already shown by clicking manually
+  -> paint order
 
 -----
 
