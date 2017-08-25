@@ -287,7 +287,7 @@ const actions = {
     return new Promise((resolve) => {
       bindFirebaseRef('canvas', ref, {
         readyCallback: () => {
-          if (refs.user && !state.user.projects[state.canvas['.key'].settings]) {
+          if (refs.user && !state.user.projects[state.canvas['.key']].settings) {
             refs.user.child('projects').child(state.canvas['.key']).child('settings').set(DEFAULT_USER_CANVAS_SETTINGS);
           }
           if (!state.canvas.notesOrder || Object.keys(state.canvas.notesOrder || {}).length
