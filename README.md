@@ -1,5 +1,7 @@
 # bmdesigner
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/bfritscher/bmdesigner.svg)](https://greenkeeper.io/)
+
 > A Vue.js project
 
 ## Build Setup
