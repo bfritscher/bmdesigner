@@ -22,5 +22,25 @@ describe('utils/calc', () => {
         },
       ]).r1.revenue).to.equal(500);
     });
+    it('should eval local variable in short form without prefix', () => {
+      expect(solve([
+        {
+          calcId: 'cs1',
+          values: {
+            market: 100,
+            vip: 4,
+          },
+        },
+        {
+          calcId: 'r1',
+          values: {
+            revenue: 'size * price',
+            size: 'share * cs1.market',
+            share: 0.5,
+            price: 10,
+          },
+        },
+      ]).r1.revenue).to.equal(500);
+    });
   });
 });

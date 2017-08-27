@@ -69,7 +69,7 @@ export default function solve(notes) {
       d[note.calcId] = Object.keys(note.values || {}).reduce((v, key) => {
         let transformedValue = note.values[key];
         Object.keys(note.values).forEach((varKey) => {
-          transformedValue = transformedValue.replace(new RegExp(`[^\\.a-zA-Z](${varKey})[^\\.a-zA-Z]|^(${varKey})[^\\.a-zA-Z]|[^\\.a-zA-Z](${varKey})$`, 'gm'), `${note.calcId}.${varKey}`);
+          transformedValue = String(transformedValue).replace(new RegExp(`[^\\.a-zA-Z](${varKey})[^\\.a-zA-Z]|^(${varKey})[^\\.a-zA-Z]|[^\\.a-zA-Z](${varKey})$`, 'gm'), `${note.calcId}.${varKey}`);
         });
         v[key] = transformedValue;
         return v;

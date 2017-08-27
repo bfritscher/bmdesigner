@@ -528,7 +528,6 @@ export default {
       if (previous.length > 1) {
         twoAgo = previous.pop();
       }
-      console.log(maxedOutHeight, minedOutFont, minedOutHeight, maxedOutFont, previous);
       if (!((maxedOutHeight && minedOutFont) || (minedOutHeight && maxedOutFont))
         && (!twoAgo ||
           !(twoAgo.height === this.height && twoAgo.fontSize === this.fontSize))) {
