@@ -158,7 +158,13 @@ const actions = {
   NOTE_CREATE({ state, commit }, payload) {
     if (state.layout.isEditable) {
       const note = new Note(payload);
-      refs.notes.push(note);
+      const key = refs.notes.push(note).key;
+      const notesOrder = state.canvas.notesOrder.slice(0);
+      notesOrder.push(key);
+      refs.canvas.child('notesOrder').set(notesOrder);
+      const notesPresentationOrder = state.canvas.notesPresentationOrder.slice(0);
+      notesPresentationOrder.push(key);
+      refs.canvas.child('notesPresentationOrder').set(notesPresentationOrder);
       commit(types.LAYOUT_UPDATE, { focusedNote: note });
     }
     // commit(types.NOTE_CREATE, payload);
@@ -187,8 +193,14 @@ const actions = {
     commit(types.NOTE_MOVE_LOCAL, payload);
   },
   NOTE_DELETE({ state, commit }, payload) {
-    // TODO: update notesOrder, notesPresentationOrder
     refs.notes.child(payload['.key']).remove();
+    // TODO: move to commit?
+    const notesOrder = state.canvas.notesOrder.slice(0);
+    notesOrder.splice(notesOrder.indexOf(payload['.key']), 1);
+    refs.canvas.child('notesOrder').set(notesOrder);
+    const notesPresentationOrder = state.canvas.notesPresentationOrder.slice(0);
+    notesPresentationOrder.splice(notesPresentationOrder.indexOf(payload['.key']), 1);
+    refs.canvas.child('notesPresentationOrder').set(notesPresentationOrder);
     commit(types.NOTE_DELETE, payload);
   },
   NOTE_MOVE_TOP({ commit }, key) {
