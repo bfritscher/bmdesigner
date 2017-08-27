@@ -13,6 +13,39 @@ export function totalOffset(node) {
   return offsetTotal;
 }
 
+export const ICONS = {
+  bmc_tmp: 'help',
+  vp: 'group_work',
+  cs: 'people',
+  r: 'attach_money',
+  c: 'account_balance',
+  dc: 'local_shipping',
+  cr: 'favorite',
+  kr: 'store',
+  ka: 'settings',
+  pn: 'share',
+  vpc_tmp: 'help',
+  features: 'extension',
+  solution: 'done_all',
+  pain_gain: 'thumbs_up_down',
+  job: 'list',
+};
+
+export const COLORS_GESTURE = [
+  '#FFF',
+  '#000',
+  '#C00000',
+  '#F00',
+  '#FFC000',
+  '#FF0',
+  '#92D050',
+  '#00B050',
+  '#00B0F0',
+  '#0070C0',
+  '#002060',
+  '#7030A0',
+];
+
 export const COLORS = [
   '#FFF2B5',
   '#C7EFC4',

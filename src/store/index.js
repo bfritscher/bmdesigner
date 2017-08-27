@@ -66,7 +66,7 @@ const initialState = {
   },
   currentUser: {},
   calcResults: {},
-  layout: {
+  layout: { // local state vars for ui not synced
     selectedVP: null,
     selectedCS: null,
     focusedNote: null,
@@ -76,7 +76,9 @@ const initialState = {
     showLoading: '',
     currentCanvasUsedColors: new Set(),
     isEditable: false,
+    showDrawSurface: false,
     presentation: '',
+    showPresentationSorter: false,
   },
 };
 
@@ -176,7 +178,8 @@ const actions = {
   },
   NOTE_UPDATE({ state, commit }, payload) {
     commit(types.NOTE_UPDATE, payload);
-    if (payload.note['.key'] && state.layout.isEditable) {
+    // TODO fix permission  && state.layout.isEditable
+    if (payload.note['.key'] && state.currentUser && state.currentUser.uid in state.canvas.users) {
       refs.notes.child(payload.note['.key']).update(payload.changes);
     }
   },
@@ -207,6 +210,9 @@ const actions = {
       const key = payload.canvasKey || state.canvas['.key'];
       refs.user.child('projects').child(key).child('settings').update(payload);
     }
+  },
+  layoutUpdate({ commit }, payload) {
+    commit(types.LAYOUT_UPDATE, payload);
   },
   userSettingsUpdate({ commit }, payload) {
     commit(types.USER_SETTINGS_UPDATE, payload);
@@ -361,8 +367,8 @@ const actions = {
     });
   },
   updateCurrentPresentationKey({ commit, state }, value) {
-    // TODO: commit
-    if (state.layout.isEditable) {
+    commit(types.PRESENTATION_KEY, value);
+    if (state.currentUser && state.currentUser.uid in state.canvas.users) {
       refs.canvas.child('currentPresentationKey').set(value);
     }
   },
@@ -372,40 +378,39 @@ const actions = {
       refs.canvas.child('notesPresentationOrder').set(value);
     }
   },
-  startPresentation({ commit, state }) {
+  presentationStart({ commit, state }) {
     // hide all
     Object.values(state.canvas.notes || {}).forEach((note) => {
       // eslint-disable-next-line
       store.dispatch('NOTE_UPDATE', { note, changes: { hidden: true } });
     });
-    commit(types.LAYOUT_UPDATE, { presentation: 'single' });
+    commit(types.LAYOUT_UPDATE, { presentation: 'single', isEditable: false, showVPC: false });
     // eslint-disable-next-line
     store.dispatch('updateCurrentPresentationKey', '');
   },
-  presentationExit({ commit }) {
-    commit(types.LAYOUT_UPDATE, { presentation: '' });
+  presentationExit({ commit, state }) {
+    commit(types.LAYOUT_UPDATE, { presentation: '', showDrawSurface: false, isEditable: state.currentUser && state.currentUser.uid in state.canvas.users });
   },
   presentationNext({ state }) {
     const currentIndex = state.canvas.notesPresentationOrder
     .indexOf(state.canvas.currentPresentationKey);
-    if (currentIndex === -1) {
-      const key = state.canvas.notesPresentationOrder[0];
-      // eslint-disable-next-line
-      store.dispatch('NOTE_UPDATE', { note: state.canvas.notes[key], changes: { hidden: false }});
-      // eslint-disable-next-line
-      store.dispatch('updateCurrentPresentationKey', key);
-    } else if (currentIndex === state.canvas.notesPresentationOrder.length - 1) {
+    if (currentIndex === state.canvas.notesPresentationOrder.length - 1) {
       // eslint-disable-next-line
       store.dispatch('presentationExit');
     } else {
-      const key = state.canvas.notesPresentationOrder[currentIndex + 1];
+      let key = state.canvas.notesPresentationOrder[currentIndex + 1];
+      if (currentIndex === -1) {
+        key = state.canvas.notesPresentationOrder[0];
+      }
       // eslint-disable-next-line
       store.dispatch('NOTE_UPDATE', { note: state.canvas.notes[key], changes: { hidden: false }});
       // eslint-disable-next-line
       store.dispatch('updateCurrentPresentationKey', key);
+      // eslint-disable-next-line
+      store.dispatch('zoomNoteKey', key);
     }
   },
-  presentationPrevious({ state }) {
+  presentationPrevious({ state, commit }) {
     const currentIndex = state.canvas.notesPresentationOrder
     .indexOf(state.canvas.currentPresentationKey);
     if (currentIndex === -1) {
@@ -423,7 +428,31 @@ const actions = {
       store.dispatch('NOTE_UPDATE', { note: state.canvas.notes[state.canvas.currentPresentationKey], changes: { hidden: true }});
       // eslint-disable-next-line
       store.dispatch('updateCurrentPresentationKey', key);
+      // eslint-disable-next-line
+      store.dispatch('zoomNoteKey', key).then((zoomed) => {
+        if (!zoomed) {
+          commit(types.LAYOUT_UPDATE, { showVPC: false, selectedVP: null, selectedCS: null });
+        }
+      });
     }
+  },
+  zoomNoteKey({ commit, state }, key) {
+    const note = state.canvas.notes[key];
+    if (!note) {
+      return false;
+    }
+    // eslint-disable-next-line
+    const parentNote = store.getters.noteById(note.parent);
+    if (parentNote) {
+      if (parentNote.type === 'vp') {
+        commit(types.LAYOUT_UPDATE, { selectedVP: parentNote, showVPC: true });
+      }
+      if (parentNote.type === 'cs') {
+        commit(types.LAYOUT_UPDATE, { selectedCS: parentNote, showVPC: true });
+      }
+      return true;
+    }
+    return false;
   },
 };
 
@@ -514,6 +543,9 @@ const mutations = {
     Object.keys(payload).forEach((key) => {
       Vue.set(state.user.settings, key, payload[key]);
     });
+  },
+  [types.PRESENTATION_KEY](state, value) {
+    Vue.set(state.canvas, 'currentPresentationKey', value);
   },
 };
 

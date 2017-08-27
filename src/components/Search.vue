@@ -24,7 +24,7 @@
           <template scope="{ value, active, count }">
             <v-btn :key="value" class="color" small fab :flat="active" @click.native="$event.target.parentNode.previousSibling.click()" :class="[COLORS_MATERIAL_DARK[value], active ? active : '']">
               {{count}}
-              <v-icon v-if="active">check_circle</v-icon>
+              <v-icon v-if="active">check</v-icon>
             </v-btn>
           </template>
         </ais-refinement-list>
@@ -35,7 +35,7 @@
             <v-divider></v-divider>
             <v-list-tile class="search-result" :to="{name:'bmc', params: {id: result.canvasKey, zoom1: result.objectID.split('.')[1]}}" @click.native="showResults=false">
               <v-list-tile-content>
-                <v-list-tile-title>
+                <v-list-tile-title class="text">
                   <ais-highlight :result="result" attribute-name="text"></ais-highlight>
                 </v-list-tile-title>
                 <v-list-tile-sub-title class="grey--text text--darken-4 description">
@@ -47,7 +47,7 @@
               </v-list-tile-content>
               <v-list-tile-action>
                 <v-list-tile-action-text>
-                  <div class="type">{{TYPE_NAMES[result.type]}}</div>
+                  <div class="type">{{TYPE_NAMES[result.type]}} <v-icon>{{ICONS[result.type]}}</v-icon></div>
                   <div class="colors">
                     <span v-for="colorId in result.colors" :class="COLORS_MATERIAL_DARK[colorId]" :key="colorId"></span>
                   </div>
@@ -66,7 +66,7 @@
 import { createFromAlgoliaCredentials, SearchBox, TreeMenu, RefinementList, PoweredBy, Results, NoResults, Highlight } from 'vue-instantsearch';
 import Vue from 'vue';
 import { mapGetters } from 'vuex';
-import { COLORS_MATERIAL_DARK, TYPE_NAMES } from '@/utils';
+import { COLORS_MATERIAL_DARK, TYPE_NAMES, ICONS } from '@/utils';
 
 
 Vue.component('ais-search-box', SearchBox);
@@ -86,6 +86,7 @@ export default {
       localSearchStore: null,
       usedApiKey: '',
       showResults: false,
+      ICONS,
     };
   },
   computed: {
@@ -176,6 +177,12 @@ export default {
   white-space: nowrap;
 }
 
+.search-result .text {
+  font-size: 22px;
+  line-height: 26px;
+  font-family: 'Itim', cursive, sans-serif;
+}
+
 .search-result .description {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -183,17 +190,19 @@ export default {
 
 .search-result .colors {
   text-align: right;
+  margin-top: 4px;
 }
 
 .search-result .colors>span {
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
   display: inline-block;
+  margin: 0 2px;
 }
 
 .search-result .list__tile__action {
-  min-width: 120px;
+  min-width: 140px;
 }
 
 .application--light .input-group .search-box input {

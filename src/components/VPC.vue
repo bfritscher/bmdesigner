@@ -2,6 +2,7 @@
   <transition name="vpc-overlay-transition">
     <image-zone ref="vpc" key="vpc" :allow-click="false" @image-drop="addNote" class="canvas overlay-vpc" v-show="showVPC" @click.native.prevent.stop="addNote($event)">
       <div class="paper" ref="paper" data-none="vpc_tmp">
+        <draw-surface v-show="$store.state.layout.showDrawSurface"></draw-surface>
         <transition name="vpc-vp-transition" appear>
           <v-card v-if="vp" class="vpc-vp elevation-10" :class="{'vpc-both': cs && vp}">
             <v-toolbar dense :class="COLORS_MATERIAL_DARK[vp.colors[0]]">
@@ -22,10 +23,10 @@
               </v-btn>
             </v-toolbar>
             <zone dropzone-accept=".note-vpc" id="features" label="Products & Services" style="left: 0; top: 0; width: 50%; height: 100%; background-color: white;">
-              <v-icon light slot="icon">extension</v-icon>
+              <v-icon light slot="icon">{{ICONS['features']}}</v-icon>
             </zone>
             <zone dropzone-accept=".note-vpc" id="solution" label="Solutions" style="left: 50%; top: 0; width: 50%; height: 100%; background-color: white;">
-              <v-icon light slot="icon">done_all</v-icon>
+              <v-icon light slot="icon">{{ICONS['solution']}}</v-icon>
             </zone>
           </v-card>
         </transition>
@@ -60,10 +61,10 @@
               </v-btn>
             </v-toolbar>
             <zone dropzone-accept=".note-vpc" id="pain_gain" label="Gains & Pains" style="left: 0; top: 0; width: 50%; height: 100%;  background-color: white;">
-              <v-icon light slot="icon">thumbs_up_down</v-icon>
+              <v-icon light slot="icon">{{ICONS['pain_gain']}}</v-icon>
             </zone>
             <zone dropzone-accept=".note-vpc" id="job" label="Job to be done" style="left: 50%; top: 0; width: 50%; height: 100%;  background-color: white;">
-              <v-icon light slot="icon">list</v-icon>
+              <v-icon light slot="icon">{{ICONS['job']}}</v-icon>
             </zone>
           </v-card>
         </transition>
@@ -78,8 +79,9 @@
 <script>
 import Vue from 'vue';
 import { mapState, mapMutations } from 'vuex';
-import { totalOffset, COLORS_MATERIAL_DARK } from '@/utils';
+import { totalOffset, COLORS_MATERIAL_DARK, ICONS } from '@/utils';
 import { VPC_VP_TYPES, VPC_CS_TYPES } from '@/store';
+import DrawSurface from '@/components/DrawSurface';
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
 import ImageZone from '@/components/ImageZone';
@@ -89,6 +91,7 @@ export default {
   data() {
     return {
       COLORS_MATERIAL_DARK,
+      ICONS,
     };
   },
   computed: {
@@ -196,6 +199,7 @@ export default {
     Note,
     Zone,
     ImageZone,
+    DrawSurface,
   },
 };
 </script>

@@ -53,7 +53,7 @@ import { VPC_VP_TYPES, VPC_CS_TYPES, VPC_TYPES } from '@/store';
 import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
 
 const MIN_FONT_SIZE = 8;
-const MAX_FONT_SIZE = 22;
+const MAX_FONT_SIZE = 44;
 const MIN_HEIGHT = 5;
 const MAX_HEIGHT = 20;
 
@@ -681,7 +681,7 @@ export default {
   pointer-events: all;
 }
 
-.colors {
+.note .colors {
   position: absolute;
   top: -50px;
   left: -40px;
@@ -691,7 +691,7 @@ export default {
   transition: opacity 0.1s ease;
 }
 
-.colors .btn {
+.note .colors .btn {
   margin: 4px;
 }
 

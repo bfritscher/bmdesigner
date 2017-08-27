@@ -16,13 +16,11 @@
             <v-icon light>chevron_right</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>
-              Home
-            </v-list-tile-title>
+            <v-list-tile-title></v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile exact :to="{name: 'home'}" ripple>
-          <v-list-tile-action>
+          <v-list-tile-action title="Home">
             <v-icon light>home</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
@@ -33,7 +31,7 @@
         </v-list-tile>
 
         <v-list-tile :disabled="!currentUser" :to="{name: 'favorites'}" v-show="isModelList" ripple>
-          <v-list-tile-action>
+          <v-list-tile-action title="Favorite">
             <v-icon light>favorite</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
@@ -44,7 +42,7 @@
         </v-list-tile>
 
         <v-list-tile :to="{name: 'inspire'}" v-show="isModelList" ripple>
-          <v-list-tile-action>
+          <v-list-tile-action title="Inspire">
             <v-icon light>lightbulb_outline</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
@@ -54,7 +52,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile :to="{name: 'learn'}" v-show="isModelList" ripple>
-          <v-list-tile-action>
+          <v-list-tile-action title="Learn">
             <v-icon light>school</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
@@ -64,7 +62,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile :to="{name: 'play'}" v-show="isModelList" ripple>
-          <v-list-tile-action>
+          <v-list-tile-action title="Play">
             <v-icon light>games</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
@@ -74,44 +72,33 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile :to="{name: 'about'}" ripple>
-          <v-list-tile-action>
+          <v-list-tile-action title="Feedback">
             <v-icon light>feedback</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              Ideas & Feedback
+              Ideas &amp; Feedback
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <div v-if="$route.name === 'bmc'">
 
           <v-divider class="my-2"></v-divider>
+          <v-subheader>DISPLAY OPTIONS</v-subheader>
 
-          <v-list-tile ripple @click.native="startPresentation">
-            <v-list-tile-action>
-              <v-icon>{{colorModeSwitch.icon}}</v-icon>
+          <v-list-tile ripple @click.native="presentationStart">
+            <v-list-tile-action  title="Start presentation">
+              <v-icon >slideshow</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>
-                {{colorModeSwitch.text}}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon>{{colorModeSwitch.icon}}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
-                <v-btn small @click.native="presentationPrevious"><<</v-btn>
-                <v-btn small @click.native="presentationNext">>></v-btn>
+                Start presentation
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
           <v-list-tile ripple @click.native="changeColorMode">
-            <v-list-tile-action>
+            <v-list-tile-action :title="colorModeSwitch.text">
               <v-icon>{{colorModeSwitch.icon}}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
@@ -122,7 +109,7 @@
           </v-list-tile>
 
           <v-list-tile v-if="canvasSettings.hideColors" disabled>
-            <v-list-tile-action>
+            <v-list-tile-action title="Colors visibility">
               <v-icon light>color_lens</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
@@ -133,9 +120,9 @@
             </v-list-tile-action>
           </v-list-tile>
 
-          <v-list-group v-else no-action :value="isColorsOpen" @input="canvasUserSettingsUpdate({ isColorsOpen: !canvasSettings.isColorsOpen })">
+          <v-list-group v-else no-action :value="canvasSettings.isColorsOpen" @input="canvasUserSettingsUpdate({ isColorsOpen: !canvasSettings.isColorsOpen })">
             <v-list-tile slot="item" @click.native="showColors">
-              <v-list-tile-action>
+              <v-list-tile-action title="Colors visibility">
                 <v-icon light>color_lens</v-icon>
               </v-list-tile-action>
               <v-list-tile-content>
@@ -159,7 +146,7 @@
           </v-list-group>
 
           <v-list-tile ripple @click.native="changeLabelMode">
-            <v-list-tile-action>
+            <v-list-tile-action :title="labelModeSwitch.text">
               <v-icon>{{labelModeSwitch.icon}}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
@@ -170,7 +157,7 @@
           </v-list-tile>
 
           <v-list-tile ripple @click.native="changeListMode">
-            <v-list-tile-action>
+            <v-list-tile-action :title="listModeSwitch.text">
               <v-icon>{{listModeSwitch.icon}}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
@@ -180,11 +167,66 @@
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-divider class="my-2"></v-divider>
+            <v-divider class="my-2"></v-divider>
+
+            <v-subheader>PROJECT OPTIONS</v-subheader>
+
+          <v-list-tile ripple @click.native="duplicateCanvas">
+            <v-list-tile-action title="Duplicate canvas">
+              <v-icon>content_copy</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Duplicate canvas</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
 
           <div v-if="$store.state.layout.isEditable">
 
-            <v-subheader class="mt-2">COLLABORATORS</v-subheader>
+            <v-list-tile ripple @click.native.stop="layoutUpdate({showPresentationSorter: true})">
+              <v-list-tile-action title="Presentation order">
+                <v-icon>format_list_numbered</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  Presentation order
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-tile ripple @click.native="changeAccessType">
+              <v-list-tile-action :title="accessTypeSwitch.text">
+                <v-icon>{{accessTypeSwitch.icon}}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{accessTypeSwitch.text}}
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+          <v-dialog v-model="showDialogSettings" persistent style="display:block">
+            <v-list-tile class="mt-2" ripple slot="activator">
+              <v-list-tile-action title="Settings">
+                <v-icon>settings</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-title>Settings</v-list-tile-title>
+            </v-list-tile>
+            <v-card>
+              <v-card-text>
+                <h3 class="headline">Canvas settings</h3>
+                <v-btn error flat @click.native="deleteCanvas">Delete</v-btn>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="blue--text darken-1" flat @click.native="showDialogSettings = false">Done</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-divider class="mt-2"></v-divider>
+
+
+            <v-subheader>COLLABORATORS</v-subheader>
 
             <v-list>
               <v-list-tile v-for="(u, key) in $store.state.canvas.users" :key="key" avatar ripple>
@@ -250,7 +292,7 @@
 
             <v-dialog v-model="showDialogInvite" persistent style="display:block">
               <v-list-tile class="mt-2" ripple slot="activator">
-                <v-list-tile-action>
+                <v-list-tile-action title="Invite a person">
                   <v-icon>add_circle_outline</v-icon>
                 </v-list-tile-action>
                 <v-list-tile-title>Invite a person</v-list-tile-title>
@@ -267,49 +309,7 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-
-            <v-divider class="my-2"></v-divider>
-
-            <v-list-tile ripple @click.native="changeAccessType">
-              <v-list-tile-action>
-                <v-icon>{{accessTypeSwitch.icon}}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  {{accessTypeSwitch.text}}
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-
           </div>
-
-          <v-list-tile ripple @click.native="duplicateCanvas">
-            <v-list-tile-action>
-              <v-icon>content_copy</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Duplicate canvas</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-dialog v-model="showDialogSettings" persistent style="display:block" v-if="$store.state.layout.isEditable">
-            <v-list-tile class="mt-2" ripple slot="activator">
-              <v-list-tile-action>
-                <v-icon>settings</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-title>Settings</v-list-tile-title>
-            </v-list-tile>
-            <v-card>
-              <v-card-text>
-                <h3 class="headline">Canvas settings</h3>
-                <v-btn error flat @click.native="deleteCanvas">Delete</v-btn>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn class="blue--text darken-1" flat @click.native="showDialogSettings = false">Done</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </div>
       </v-list>
     </v-navigation-drawer>
@@ -425,9 +425,6 @@ export default {
       currentCanvasUsedColors: state => state.layout.currentCanvasUsedColors,
     }),
     ...mapGetters(['userSettings', 'canvasSettings']),
-    isColorsOpen() {
-      return this.canvasSettings.isColorsOpen;
-    },
     title() {
       let title = this.$route.meta && this.$route.meta.title ? this.$route.meta.title : '';
       if (this.isModelEdit) {
@@ -473,7 +470,7 @@ export default {
   },
   methods: {
     ...mapActions(['signOut', 'canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate',
-      'duplicateCanvas', 'startPresentation', 'presentationNext', 'presentationPrevious', 'presentationExit']),
+      'duplicateCanvas', 'presentationStart', 'layoutUpdate']),
     isMobile() {
       return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
     },

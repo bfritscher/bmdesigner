@@ -1,37 +1,42 @@
 <template>
-  <div class="bmc">
-    <div class="credits caption" ><a href="https://strategyzer.com/canvas/business-model-canvas" target="_blank">The Business Model Canvas</a> by <a href="http://strategyzer.com" target="_blank">Strategyzer AG</a> is licensed under <a href="http://creativecommons.org/licenses/by-sa/3.0" target="_blank">CC BY-SA 3.0</a></div>
+  <div class="bmc" :class="{presentation: showAsPresentation}">
+    <v-progress-linear v-if="showAsPresentation" v-model="presentationProgress" height="4" class="ma-0"></v-progress-linear>
+    <div class="credits caption">
+      <a href="https://strategyzer.com/canvas/business-model-canvas" target="_blank">The Business Model Canvas</a> by
+      <a href="http://strategyzer.com" target="_blank">Strategyzer AG</a> is licensed under
+      <a href="http://creativecommons.org/licenses/by-sa/3.0" target="_blank">CC BY-SA 3.0</a>
+    </div>
     <image-zone :allow-click="false" @image-drop="addNote" class="canvas" @click.native.prevent.stop="addNote($event)">
       <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
-
+        <draw-surface v-show="$store.state.layout.showDrawSurface && !$store.state.layout.showVPC"></draw-surface>
         <v-progress-linear transition="slide-y-transition" class="ma-0" v-if="isLoading" :indeterminate="true"></v-progress-linear>
 
         <zone dropzone-accept=".note-bmc" id="c" label="Cost Structure" style="left: 0; top: 75%; width: 40%; height: 25%">
-          <v-icon light slot="icon">account_balance</v-icon>
+          <v-icon light slot="icon">{{ICONS['c']}}</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="pn" label="Partner Network" style="left: 0; top:0; width: 20%; height: 75%">
-          <v-icon light slot="icon">share</v-icon>
+          <v-icon light slot="icon">{{ICONS['pn']}}</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="ka" label="Key Activities" style="left: 20%; top:0; width: 20%; height: 37.5%">
-          <v-icon light slot="icon">settings</v-icon>
+          <v-icon light slot="icon">{{ICONS['ka']}}</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="kr" label="Key Resources" style="left: 20%; top:37.5%; width: 20%; height: 37.5%">
-          <v-icon light slot="icon">store</v-icon>
+          <v-icon light slot="icon">{{ICONS['kr']}}</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="vp" class="zone-highlight" :class="{'highlight-on': selectedCS && !selectedVP, 'elevation-10': selectedCS && !selectedVP}" label="Value Proposition" style="left: 40%; top:0; width: 20%; height: 75%">
-          <v-icon light slot="icon">group_work</v-icon>
+          <v-icon light slot="icon">{{ICONS['vp']}}</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="cr" label="Customer Relationships" style="left: 60%; top:0; width: 20%; height: 37.5%">
-          <v-icon light slot="icon">favorite</v-icon>
+          <v-icon light slot="icon">{{ICONS['cr']}}</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="dc" label="Distribution Channels" style="left: 60%; top:37.5%; width: 20%; height: 37.5%">
-          <v-icon light slot="icon">local_shipping</v-icon>
+          <v-icon light slot="icon">{{ICONS['dc']}}</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="cs" class="zone-highlight" :class="{'highlight-on': !selectedCS && selectedVP, 'elevation-10': !selectedCS && selectedVP}" label="Customer Segments" style="left: 80%; top:0; width: 20%; height: 75%">
-          <v-icon light slot="icon">people</v-icon>
+          <v-icon light slot="icon">{{ICONS['cs']}}</v-icon>
         </zone>
         <zone dropzone-accept=".note-bmc" id="r" label="Revenue Streams" style="left: 60%; top: 75%; width: 40%; height: 25%">
-          <v-icon light slot="icon">attach_money</v-icon>
+          <v-icon light slot="icon">{{ICONS['r']}}</v-icon>
         </zone>
         <div class="logo" light :style="{'background-color': canvas.info.logoColor}">
           <image-zone :allow-click="$store.state.layout.isEditable" :image="canvas.info.logoImage" @update:image="canvasInfoUpdate({logoImage: $event})" :color="canvas.info.logoColor" @update:color="canvasInfoUpdate({logoColor: $event})"></image-zone>
@@ -42,17 +47,39 @@
       </div>
     </image-zone>
     <vpc></vpc>
+    <div v-if="showAsPresentation" class="presentation-controls">
+      <div class="presentation-nav">
+        <v-btn icon @click.native="presentationPrevious">
+          <v-icon>arrow_back</v-icon>
+        </v-btn>
+        <v-btn icon @click.native="presentationNext">
+          <v-icon>arrow_forward</v-icon>
+        </v-btn>
+        <v-btn icon :class="{'white--text': $store.state.layout.showDrawSurface}" @click.native="$store.state.layout.showDrawSurface = !$store.state.layout.showDrawSurface">
+          <v-icon>gesture</v-icon>
+        </v-btn>
+        <v-btn icon @click.native="toggleFullscreen">
+          <v-icon>{{isFullscreen ? 'fullscreen_exit' : 'fullscreen'}}</v-icon>
+        </v-btn>
+      </div>
+      <span class="presentation-index">{{canvas.notesPresentationOrder.indexOf(canvas.currentPresentationKey) + 1}} / {{canvas.notesPresentationOrder.length}}</span>
+      <v-btn icon @click.native="presentationExit" class="presentation-exit">
+        <v-icon>close</v-icon>
+      </v-btn>
+    </div>
   </div>
 </template>
 
 <script>
 import debounce from 'lodash.debounce';
+import fscreen from 'fscreen'; // TODO: remove when vendor prefix no longer required
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
 import Vpc from '@/components/VPC';
+import DrawSurface from '@/components/DrawSurface';
 import ImageZone from '@/components/ImageZone';
 import { mapGetters, mapState, mapActions } from 'vuex';
-import { totalOffset } from '@/utils';
+import { totalOffset, ICONS } from '@/utils';
 import { db } from '@/utils/firebase';
 import * as types from '@/store/mutation-types';
 
@@ -63,6 +90,9 @@ export default {
   data() {
     return {
       isLoading: false,
+      showAsPresentation: false,
+      isFullscreen: false,
+      ICONS,
     };
   },
   mounted() {
@@ -81,6 +111,11 @@ export default {
       selectedCS: state => state.layout.selectedCS,
       canvas: state => state.canvas,
     }),
+    presentationProgress() {
+      return ((this.canvas.notesPresentationOrder
+        .indexOf(this.canvas.currentPresentationKey) + 1) * 100)
+        / this.canvas.notesPresentationOrder.length;
+    },
     listMode() {
       return this.canvasSettings.listMode;
     },
@@ -92,9 +127,35 @@ export default {
     },
     // call again the method if the route changes
     $route: 'fetchData',
+    '$store.state.layout.presentation': function animatePresentation(val) {
+      const crowdShortcut = document.getElementById('crowd-shortcut');
+      if (val) {
+        const offset = totalOffset(this.$el);
+        this.$el.style.top = `${offset.top}px`;
+        this.$el.style.left = `${offset.left}px`;
+        this.$el.style.position = 'absolute';
+        if (crowdShortcut) {
+          crowdShortcut.style.display = 'none';
+        }
+        setTimeout(() => {
+          this.showAsPresentation = true;
+        }, 0);
+      } else {
+        this.showAsPresentation = false;
+        setTimeout(() => {
+          this.$el.style.top = '';
+          this.$el.style.left = '';
+          this.$el.style.position = 'relative';
+          if (crowdShortcut) {
+            crowdShortcut.style.display = 'block';
+          }
+        }, 500);
+      }
+    },
   },
   methods: {
-    ...mapActions(['setCanvasRef', 'canvasInfoUpdate']),
+    ...mapActions(['setCanvasRef', 'canvasInfoUpdate', 'presentationNext',
+      'presentationPrevious', 'presentationExit', 'zoomNoteKey']),
     fetchData() {
       this.isLoading = true;
       this.setCanvasRef(db.child('projects').child(this.$route.params.id)).then(() => {
@@ -111,23 +172,6 @@ export default {
       resizeHandler = debounce(this.handleWindowResize, 300);
       window.addEventListener('resize', resizeHandler);
       this.handleWindowResize();
-    },
-    zoomNoteKey(key) {
-      const note = this.$store.state.canvas.notes[key];
-      if (!note) {
-        return false;
-      }
-      const parentNote = this.$store.getters.noteById(note.parent);
-      if (parentNote) {
-        if (parentNote.type === 'vp') {
-          this.$store.commit(types.LAYOUT_UPDATE, { selectedVP: parentNote, showVPC: true });
-        }
-        if (parentNote.type === 'cs') {
-          this.$store.commit(types.LAYOUT_UPDATE, { selectedCS: parentNote, showVPC: true });
-        }
-        return true;
-      }
-      return false;
     },
     handleWindowResize() {
       if (!this.$refs.paper) {
@@ -165,12 +209,22 @@ export default {
 
       this.$store.dispatch('NOTE_CREATE', note);
     },
+    toggleFullscreen() {
+      if (fscreen.fullscreenElement) {
+        fscreen.exitFullscreen();
+        this.isFullscreen = false;
+      } else {
+        fscreen.requestFullscreen(document.body);
+        this.isFullscreen = true;
+      }
+    },
   },
   components: {
     Note,
     Zone,
     Vpc,
     ImageZone,
+    DrawSurface,
   },
 };
 </script>
@@ -179,15 +233,18 @@ export default {
 .bmc {
   flex: 1;
   position: relative;
-}
-
-.bmc.fullscreen {
-  position: absolute;
-  top: 0;
-  left: 0;
+  transition: all 0.5s ease;
   right: 0;
   bottom: 0;
-  z-index: 100;
+}
+
+.bmc.presentation {
+  position: absolute;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
   background-color: #424242;
 }
 
@@ -252,12 +309,53 @@ export default {
   right: 8px;
 }
 
-.credits a{
+.credits a {
   text-decoration: none;
 }
 
+.bmc.presentation .credits a {
+  color: #9E9E9E;
+}
+
+.presentation-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.presentation-controls .presentation-index {
+  position: absolute;
+  left: 0;
+  bottom: 8px;
+  right: 0;
+  text-align: center;
+}
+
+.presentation-controls .presentation-exit {
+  position: absolute;
+  top: 4px;
+  right: 0;
+}
+
+.presentation-controls .presentation-nav {
+  position: absolute;
+  bottom: 0;
+  left: 44px;
+}
+
+.presentation-controls .btn--icon {
+  pointer-events: auto;
+}
+
+.presentation-controls .btn--icon:hover {
+  color: white;
+}
+
 @media (max-width: 1024px) {
-  .highlight-on{
+  .highlight-on {
     z-index: 0;
   }
 }

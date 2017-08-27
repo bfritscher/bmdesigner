@@ -12,6 +12,7 @@ import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue';
 */
 
+import { mapActions } from 'vuex';
 import App from './App';
 import router from './router';
 import store from './store';
@@ -100,6 +101,26 @@ new Vue({
     });
   },
   mounted() {
+    document.addEventListener('keydown', (e) => {
+      if ((e.which || e.keyCode) === 116 && this.$route.name === 'bmc') { // F5
+        e.preventDefault();
+        this.presentationStart();
+      }
+      if (this.$route.name === 'bmc' && this.$store.state.layout.presentation) {
+        if ((e.which || e.keyCode) === 27) { // ESC
+          e.preventDefault();
+          this.presentationExit();
+        }
+        if ((e.which || e.keyCode) === 37 || (e.which || e.keyCode) === 33) { // left pageup
+          this.presentationPrevious();
+        }
+        if ((e.which || e.keyCode) === 39 || (e.which || e.keyCode) === 34) { // right pagedown
+          this.presentationNext();
+        }
+        if ((e.which || e.keyCode) === 190) { // .
+        }
+      }
+    });
     setTimeout(() => {
       const ur = document.createElement('script');
       ur.type = 'text/javascript';
@@ -107,5 +128,8 @@ new Vue({
       ur.src = '//cdn.userreport.com/userreport.js';
       document.body.appendChild(ur);
     }, 4000);
+  },
+  methods: {
+    ...mapActions(['presentationStart', 'presentationExit', 'presentationNext', 'presentationPrevious']),
   },
 });
