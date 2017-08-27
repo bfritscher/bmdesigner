@@ -26,14 +26,13 @@ OK  -> keyboard shortcuts left, right, escape, pageup/down . F5
 OK  -> UI colors, types sorter
 OK  -> bug: also remove selectedCS, VP....
 OK  -> fix update delete
--> bug: empty note being cleaned?
--> bug: note_update after moving note if presentation
+OK  -> bug: note_update after moving note if presentation
+OK  -> bug: change font calc to be relative like titles
+OK  -> bug: fix height if width max
+OK  -> draw on screen https://github.com/szimek/signature_pad
 
--> bug: change font calc to be relative like titles
--> bug: fix height if width max
 -> change color grey?
 
-OK  -> draw on screen https://github.com/szimek/signature_pad
 TEST  -> readonly public can playback
 
 v2

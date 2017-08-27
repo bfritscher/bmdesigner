@@ -52,8 +52,8 @@ import * as types from '@/store/mutation-types';
 import { VPC_VP_TYPES, VPC_CS_TYPES, VPC_TYPES } from '@/store';
 import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
 
-const MIN_FONT_SIZE = 8;
-const MAX_FONT_SIZE = 44;
+const MIN_FONT_SIZE = 10;
+let MAX_FONT_SIZE = 24;
 const MIN_HEIGHT = 5;
 const MAX_HEIGHT = 20;
 
@@ -456,8 +456,11 @@ export default {
       if (!this.$refs.textarea) {
         return;
       }
+      // TODO: cache it
+      MAX_FONT_SIZE = this.$el.parentNode.parentNode.offsetHeight * 0.03;
       if (!Array.isArray(previous)) {
         previous = [];
+        this.fontSize = Math.min(this.fontSize, MAX_FONT_SIZE);
       }
       previous.unshift({
         height: this.height,
@@ -505,8 +508,9 @@ export default {
         }
       }
 
-      if (this.$refs.textarea.scrollHeight <= this.$refs.textarea.offsetHeight && !fontChanged) {
-        if (this.fontSize < MAX_FONT_SIZE) {
+      if (this.$refs.textarea.scrollHeight <= this.$refs.textarea.offsetHeight &&
+          (!fontChanged || minedOutFont)) {
+        if (this.fontSize < MAX_FONT_SIZE && !minedOutFont) {
           this.fontSize += 1;
         } else {
           maxedOutFont = true;
@@ -524,6 +528,7 @@ export default {
       if (previous.length > 1) {
         twoAgo = previous.pop();
       }
+      console.log(maxedOutHeight, minedOutFont, minedOutHeight, maxedOutFont, previous);
       if (!((maxedOutHeight && minedOutFont) || (minedOutHeight && maxedOutFont))
         && (!twoAgo ||
           !(twoAgo.height === this.height && twoAgo.fontSize === this.fontSize))) {
