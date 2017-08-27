@@ -144,7 +144,9 @@ export default {
           if (this.$store.state.layout.selectedCS && VPC_CS_TYPES.indexOf(newtype) > 0) {
             payload.changes.parent = this.$store.state.layout.selectedCS.id;
           }
-          this.$store.dispatch('NOTE_UPDATE', payload);
+          if (this.$store.state.layout.isEditable) {
+            this.$store.dispatch('NOTE_UPDATE', payload);
+          }
 
           // update list modes
           this.sortSortable(newtype, { save: true });
