@@ -79,6 +79,7 @@ const initialState = {
     showDrawSurface: false,
     presentation: '',
     showPresentationSorter: false,
+    showPrint: false,
   },
 };
 
@@ -398,8 +399,7 @@ const actions = {
       body: JSON.stringify(job),
     })
     .then(res => res.blob()).then((img) => {
-      window.open(URL.createObjectURL(img));
-      commit(types.LAYOUT_UPDATE, { showLoading: '' });
+      commit(types.LAYOUT_UPDATE, { showLoading: '', showPrint: URL.createObjectURL(img) });
     });
   },
   fetchPrintData({ commit, state }, id) {

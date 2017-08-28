@@ -401,6 +401,22 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-dialog :value="$store.state.layout.showPrint" persistent>
+      <v-card>
+        <v-card-title class="headline">
+          Export result
+        </v-card-title>
+        <v-card-text>
+          <p><a :href="$store.state.layout.showPrint" download="export.jpg"><img :src="$store.state.layout.showPrint" style="width: 100%"></a></p>
+          <p>Click image to download large version</p>
+
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn class="blue--text darken-1" flat @click.native="layoutUpdate({showPrint: ''})">Done</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
