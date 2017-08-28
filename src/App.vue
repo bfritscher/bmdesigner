@@ -171,6 +171,15 @@
 
             <v-subheader>PROJECT OPTIONS</v-subheader>
 
+          <v-list-tile ripple @click.native="printCanvas">
+            <v-list-tile-action title="Print canvas">
+              <v-icon>print</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Print canvas</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
           <v-list-tile ripple @click.native="duplicateCanvas">
             <v-list-tile-action title="Duplicate canvas">
               <v-icon>content_copy</v-icon>
@@ -470,7 +479,7 @@ export default {
   },
   methods: {
     ...mapActions(['signOut', 'canvasUserSettingsUpdate', 'userSettingsUpdate', 'canvasInfoUpdate',
-      'duplicateCanvas', 'presentationStart', 'layoutUpdate']),
+      'duplicateCanvas', 'presentationStart', 'layoutUpdate', 'printCanvas']),
     isMobile() {
       return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
     },

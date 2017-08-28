@@ -5,13 +5,9 @@ import Vuetify from 'vuetify';
 import VueTimeago from 'vue-timeago';
 import humanFormat from 'human-format';
 import { auth, db } from '@/utils/firebase';
-
-
-/*
+import VueAnalytics from 'vue-analytics';
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue';
-*/
-
 import { mapActions } from 'vuex';
 import App from './App';
 import router from './router';
@@ -26,8 +22,13 @@ Vue.use(VueTimeago, {
   },
 });
 
+Vue.use(VueAnalytics, {
+  id: 'UA-20936263-1',
+  router,
+});
+
 Vue.filter('humanformat', input => (isNaN(input) ? input : humanFormat(input)));
-/*
+
 Raven
   .config('https://a3e9d60494a249d4bba6e6244380e411@sentry.j42.org/15', {
     environment: process.env.NODE_ENV,
@@ -44,7 +45,7 @@ Raven
   })
   .addPlugin(RavenVue, Vue)
   .install();
-*/
+
 Vue.config.productionTip = false;
 
 
@@ -68,6 +69,7 @@ new Vue({
     auth.onAuthStateChanged((user) => {
       this.$store.commit('CURRENT_USER', user);
       if (user) {
+        this.$ga.set('userId', user.uid);
         this.$store.dispatch('setUserRef', db.child('users').child(user.uid));
         const inviteCode = localStorage.getItem(INVITE_TOKEN);
         if (inviteCode) {
@@ -121,13 +123,15 @@ new Vue({
         }
       }
     });
-    setTimeout(() => {
-      const ur = document.createElement('script');
-      ur.type = 'text/javascript';
-      ur.async = true;
-      ur.src = '//cdn.userreport.com/userreport.js';
-      document.body.appendChild(ur);
-    }, 4000);
+    if (this.$route.name !== 'print') {
+      setTimeout(() => {
+        const ur = document.createElement('script');
+        ur.type = 'text/javascript';
+        ur.async = true;
+        ur.src = '//cdn.userreport.com/userreport.js';
+        document.body.appendChild(ur);
+      }, 4000);
+    }
   },
   methods: {
     ...mapActions(['presentationStart', 'presentationExit', 'presentationNext', 'presentationPrevious']),

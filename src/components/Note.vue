@@ -564,6 +564,11 @@ export default {
 </script>
 
 <style>
+
+.bmc.print .note .icons .btn {
+  display: none;
+}
+
 .draggable {
   transform: translate(0px, 0px);
 }

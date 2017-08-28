@@ -60,6 +60,12 @@ const router = new Router({
       component: BMC,
       meta: { title: '' },
     },
+    {
+      path: '/print/:id',
+      name: 'print',
+      component: BMC,
+      meta: { title: '' },
+    },
   ],
 });
 

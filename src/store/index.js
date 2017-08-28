@@ -365,7 +365,7 @@ const actions = {
     canvas.info = Object.assign({}, state.canvas.info);
     canvas.info.name += ' copy';
     canvas.source = 'bmdesigner';
-    fetch(' https://us-central1-bmdesigner-50d6c.cloudfunctions.net/importJSONProject', {
+    fetch('https://us-central1-bmdesigner-50d6c.cloudfunctions.net/importJSONProject', {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
@@ -375,6 +375,50 @@ const actions = {
     })
     .then(res => res.text()).then((url) => {
       window.location = url;
+    });
+  },
+  printCanvas({ commit, state }) {
+    commit(types.LAYOUT_UPDATE, { showLoading: 'Printing canvas...' });
+    const job = {
+      canvas: state.canvas,
+      layout: state.layout,
+      calcResults: state.calcResults,
+      user: {
+        projects: {
+          [state.canvas['.key']]: state.user.projects[state.canvas['.key']],
+        },
+      },
+    };
+    fetch('https://s.j42.org/rendertron/print', {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify(job),
+    })
+    .then(res => res.blob()).then((img) => {
+      window.open(URL.createObjectURL(img));
+      commit(types.LAYOUT_UPDATE, { showLoading: '' });
+    });
+  },
+  fetchPrintData({ commit, state }, id) {
+    return fetch(`https://s.j42.org/rendertron/bmdesignerdata/${id}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+    .then(res => res.json()).then((data) => {
+      // TODO: commit?
+      data.layout.showLoading = '';
+      data.layout.isEditable = false;
+      data.layout.focusedNote = null;
+      Vue.set(state, 'canvas', data.canvas);
+      Vue.set(state, 'layout', data.layout);
+      Vue.set(state, 'user', data.user);
+      Vue.set(state, 'calcResults', data.calcResults);
     });
   },
   updateCurrentPresentationKey({ commit, state }, value) {
