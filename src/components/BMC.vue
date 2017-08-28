@@ -72,7 +72,7 @@
 
 <script>
 import debounce from 'lodash.debounce';
-import fscreen from 'fscreen'; // TODO: remove when vendor prefix no longer required
+import fscreen from 'fscreen'; // TODO #77: remove when vendor prefix no longer required
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
 import Vpc from '@/components/VPC';
@@ -202,7 +202,7 @@ export default {
       if (e.target.classList.contains('zone')) {
         note.type = e.target.getAttribute('id');
       }
-      // TODO: keep previous setting?
+      // TODO #56: keep previous setting?
       if (e.image) {
         note.showAsSticky = false;
       }

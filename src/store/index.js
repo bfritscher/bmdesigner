@@ -184,7 +184,6 @@ const actions = {
   },
   NOTE_UPDATE({ state, commit }, payload) {
     commit(types.NOTE_UPDATE, payload);
-    // TODO fix permission  && state.layout.isEditable
     if (payload.note['.key'] && state.currentUser && state.currentUser.uid in state.canvas.users) {
       refs.notes.child(payload.note['.key']).update(payload.changes);
     }
