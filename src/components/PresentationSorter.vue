@@ -13,53 +13,6 @@
   </v-navigation-drawer>
 </template>
 <script>
-/*
-presentationMode
-OK  -> drag and drop sort
-OK  -> play order
-OK  -> fullscreen toggle
-OK  -> exit presentation
-OK  -> status currentIndex/Length
-OK  -> display also VPC? auto open?
-OK  -> fullscreen transition
-OK  -> keyboard shortcuts left, right, escape, pageup/down . F5
-OK  -> UI colors, types sorter
-OK  -> bug: also remove selectedCS, VP....
-OK  -> fix update delete
-OK  -> bug: note_update after moving note if presentation
-OK  -> bug: change font calc to be relative like titles
-OK  -> bug: fix height if width max
-OK  -> draw on screen https://github.com/szimek/signature_pad
-
--> change color grey?
-
-TEST  -> readonly public can playback
-
-v2
-  -> second screen display/readonly
-  -> share drawing
-  -> save drawing?
-  -> show on click
-  -> skip already shown by clicking manually
-  -> paint order
-
-----
--> print layout
--> print send json to api which post to site and generates png? high res?
-
------
-quiz mode
--> duplicate without type
--> store source canvas key for checking
--> dissallow delete or edit (locally), but allow move/save
--> correction mode -> send compare by id to server
--> reply correct/false or only number of correct/false based on difficulty
-
------
-Home
-show inspire/quiz
-
-*/
 import Vue from 'vue';
 import interact from 'interactjs';
 import { mapActions } from 'vuex';

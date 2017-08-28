@@ -70,7 +70,7 @@ export const COLORS_MATERIAL = [
   '#bbdefb',
   '#e1bee7',
   '#ffccbc',
-  '#f5f5f5',
+  '#f3f3f3',
 ];
 
 export const COLORS_MATERIAL_DARK = [
