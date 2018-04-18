@@ -10,7 +10,7 @@
       <a href="http://creativecommons.org/licenses/by-sa/3.0" target="_blank">CC BY-SA 3.0</a>
     </div>
     <image-zone :allow-click="false" @image-drop="addNote" class="canvas" @click.native.prevent.stop="addNote($event)">
-      <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
+      <div ref="paper" class="paper elevation-10" :class="{game: canvas.info.isGame}" data-none="bmc_tmp">
         <draw-surface v-show="$store.state.layout.showDrawSurface && !$store.state.layout.showVPC"></draw-surface>
         <v-progress-linear transition="slide-y-transition" class="ma-0" v-if="isLoading" :indeterminate="true"></v-progress-linear>
 
@@ -300,6 +300,13 @@ export default {
   min-height: 560px;
   margin: auto;
   position: relative;
+}
+
+.paper.game {
+  width: 60vw;
+  height: 34.88vw;
+  min-width: 800px;
+  min-height: 440px;
 }
 
 .zone-highlight {
