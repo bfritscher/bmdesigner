@@ -292,14 +292,15 @@ export default {
         note.left = left;
         note.top = top;
         note.isGame = true;
-        note.type = 'bmc_tmp';
         note.type_saved = note.type;
+        note.type = 'bmc_tmp';
         // TODO: source ref if serverside check
       });
       const canvas = Object.assign({}, this.canvas);
       canvas.info = Object.assign({}, this.canvas.info);
       canvas.info.name += ' GAME';
       canvas.source = 'bmdesigner';
+      canvas.isGame = true;
       function downloadObjectAsJson(exportObj, exportName) {
         const dataStr = `data:text/json;charset=utf-8, ${encodeURIComponent(JSON.stringify(exportObj))}`;
         const downloadAnchorNode = document.createElement('a');
@@ -324,7 +325,7 @@ export default {
       });
       if (this.gameStats.correct === this.gameStats.total) {
         // TODO bravo
-        this.canvasInfoUpdate({ isGame: false });
+        this.canvasInfoUpdate({ isGame: false, gameCompleted: new Date() });
         this.notesBMC.forEach((note) => {
           this.$store.dispatch('NOTE_UPDATE', {
             note,
