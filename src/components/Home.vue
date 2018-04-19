@@ -69,8 +69,17 @@ export default {
         if (this.$route.name === 'favorites') {
           return p.settings.fav;
         }
+        if (this.$route.name === 'inspire') {
+          // only show user's current games
+          return p.isGame;
+        }
         return true;
       });
+
+      if (this.$route.name === 'inspire') {
+        // append public game starers?
+      }
+
       projects.sort((a, b) => new Date(b.info.updatedAt) - new Date(a.info.updatedAt));
       return projects;
     },
