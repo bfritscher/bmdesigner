@@ -1,3 +1,6 @@
+
+export { default as random } from './random';
+
 // eslint-disable-next-line
 export function totalOffset(node) {
   const offsetTotal = {

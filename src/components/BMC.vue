@@ -49,15 +49,9 @@
         </div>
       </div>
     </image-zone>
-
-      <v-subheader v-if="canvas.info.isGame" class="game-header elevation-1 white">
-            <span class="title" title="Move elements to right block.">Play!</span>
-            <span><b>Current score:</b> {{gameStats.correct}} / {{gameStats.total}} </span>
-            <span><b>Number of tries:</b> {{canvas.info.gameNbChecks || 0}}</span>
-            <span><v-btn flat primary @click.native="gameCheck">check</v-btn></span>
-      </v-subheader>
-
     <vpc></vpc>
+    <game-status-bar v-if="canvas.info.isGame" @won="showCongrats= true"></game-status-bar>
+    <pop-in-text v-if="showCongrats" v-model="showCongrats"></pop-in-text>
     <div v-if="showAsPresentation && !showAsPrint" class="presentation-controls">
       <div class="presentation-nav">
         <v-btn icon @click.native="presentationPrevious">
@@ -87,6 +81,8 @@ import fscreen from 'fscreen'; // TODO #77: remove when vendor prefix no longer 
 import Note from '@/components/Note';
 import Zone from '@/components/Zone';
 import Vpc from '@/components/VPC';
+import PopInText from '@/components/PopInText';
+import GameStatusBar from '@/components/GameStatusBar';
 import DrawSurface from '@/components/DrawSurface';
 import ImageZone from '@/components/ImageZone';
 import { mapGetters, mapState, mapActions } from 'vuex';
@@ -105,10 +101,7 @@ export default {
       showAsPrint: false,
       isFullscreen: false,
       ICONS,
-      gameStats: {
-        total: 0,
-        correct: 0,
-      },
+      showCongrats: false,
     };
   },
   mounted() {
@@ -312,34 +305,6 @@ export default {
       }
       downloadObjectAsJson(canvas, canvas.info.name);
     },
-    gameCheck() {
-      this.gameStats = this.notesBMC.filter(n => n.isGame)
-      .reduce((s, note) => {
-        if (note.type === note.type_saved) {
-          s.correct += 1;
-        }
-        s.total += 1;
-        return s;
-      }, {
-        correct: 0,
-        total: 0,
-      });
-      if (this.gameStats.correct === this.gameStats.total) {
-        // TODO bravo
-        this.canvasInfoUpdate({ isGame: false, gameCompleted: new Date() });
-        this.notesBMC.forEach((note) => {
-          this.$store.dispatch('NOTE_UPDATE', {
-            note,
-            changes: {
-              isGame: false,
-            },
-          });
-        });
-      } else {
-        // TODO visual feedback
-        this.canvasInfoUpdate({ gameNbChecks: (this.canvas.info.gameNbChecks || 0) + 1 });
-      }
-    },
   },
   components: {
     Note,
@@ -347,6 +312,8 @@ export default {
     Vpc,
     ImageZone,
     DrawSurface,
+    GameStatusBar,
+    PopInText,
   },
 };
 </script>
@@ -416,10 +383,6 @@ export default {
   min-width: 800px;
   min-height: 440px;
   transition: all 0.5s linear;
-}
-
-.game-header span {
-  padding-right: 2em;
 }
 
 .zone-highlight {
