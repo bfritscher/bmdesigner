@@ -7,7 +7,7 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text style="max-height: calc(80vh - 104px);">
-          <v-layout row wrap v-if="$store.state.layout.isEditable">
+          <v-layout row wrap v-if="isEditable">
             <v-flex xs12 md6>
               <image-zone v-ripple class="image-zone" :max-width="200" :max-height="100" :image="note.image" @update:image="updateNote('image', $event)"></image-zone>
             </v-flex>
@@ -17,7 +17,7 @@
             </v-flex>
           </v-layout>
 
-          <v-divider v-if="$store.state.layout.isEditable"></v-divider>
+          <v-divider v-if="isEditable"></v-divider>
           <v-text-field :class="`color-${note.colors[0]}`" name="description" label="Description" :value="note.description" @input="updateNote('description', $event)" textarea></v-text-field>
           <v-divider></v-divider>
           <v-layout row align-center @click="toggleShowCalc">
@@ -38,7 +38,7 @@
                   <v-icon>vpn_key</v-icon>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field label="id" :value="note.calcId" @input="updateNote('calcId', $event)" hint="Name used as reference in calculations for this item." required :rules="[rules.variable, rules.unique]"></v-text-field>
+                  <v-text-field :disabled="!isEditable" label="id" :value="note.calcId" @input="updateNote('calcId', $event)" hint="Name used as reference in calculations for this item." required :rules="[rules.variable, rules.unique]"></v-text-field>
                 </v-flex>
               </v-layout>
 
@@ -69,10 +69,10 @@
                   </v-menu>
                 </v-flex>
                 <v-flex xs11>
-                  <v-text-field hint="Any calculation example cs1.size * tickets.price" :label="calcVar" :value="val" @input="updateCalcVal(calcVar, $event)" :error-messages="getError(calcVar)" :suffix="`= ${getResult(note.calcId, calcVar)}   `" append-icon="delete_forever" :append-icon-cb="() => removeCalcVar(calcVar)"></v-text-field>
+                  <v-text-field :disabled="!isEditable" hint="Any calculation example cs1.size * tickets.price" :label="calcVar" :value="val" @input="updateCalcVal(calcVar, $event)" :error-messages="getError(calcVar)" :suffix="`= ${getResult(note.calcId, calcVar)}   `" :append-icon="isEditable ? 'delete_forever' : false" :append-icon-cb="() => removeCalcVar(calcVar)"></v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row align-center>
+              <v-layout row align-center  v-if="isEditable">
                 <v-flex xs1>
                   <v-icon>bookmark</v-icon>
                 </v-flex>
@@ -89,7 +89,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn error flat @click.native="deleteNote"  v-if="$store.state.layout.isEditable">Delete</v-btn>
+          <v-btn error flat @click.native="deleteNote"  v-if="isEditable">Delete</v-btn>
           <v-spacer></v-spacer>
           <v-btn class="blue--text darken-1" flat @click.native="hideDialog">Close</v-btn>
         </v-card-actions>
@@ -147,6 +147,9 @@ export default {
         return note;
       }
       return note || new Note();
+    },
+    isEditable() {
+      return !this.note.isGame && this.$store.state.layout.isEditable;
     },
   },
   methods: {
