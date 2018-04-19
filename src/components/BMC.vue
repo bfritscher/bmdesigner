@@ -49,6 +49,14 @@
         </div>
       </div>
     </image-zone>
+
+      <v-subheader v-if="canvas.info.isGame" class="game-header elevation-1 white">
+            <span class="title" title="Move elements to right block.">Play!</span>
+            <span><b>Current score:</b> {{gameStats.correct}} / {{gameStats.total}} </span>
+            <span><b>Number of tries:</b> {{canvas.info.gameNbChecks || 0}}</span>
+            <span><v-btn flat primary @click.native="gameCheck">check</v-btn></span>
+      </v-subheader>
+
     <vpc></vpc>
     <div v-if="showAsPresentation && !showAsPrint" class="presentation-controls">
       <div class="presentation-nav">
@@ -97,6 +105,10 @@ export default {
       showAsPrint: false,
       isFullscreen: false,
       ICONS,
+      gameStats: {
+        total: 0,
+        correct: 0,
+      },
     };
   },
   mounted() {
@@ -232,6 +244,100 @@ export default {
         this.isFullscreen = true;
       }
     },
+    // TODO: move and generalize for VPC + move to server
+    prepareGame() {
+      // https://bost.ocks.org/mike/shuffle/
+      function shuffle(array) {
+        let m = array.length;
+        let t;
+        let i;
+
+        // While there remain elements to shuffle…
+        while (m) {
+          // Pick a remaining element…
+          m -= 1;
+          i = Math.floor(Math.random() * m);
+
+          // And swap it with the current element.
+          t = array[m];
+          array[m] = array[i];
+          array[i] = t;
+        }
+
+        return array;
+      }
+      let it = 0;
+      let il = 0;
+      const TOP_END = 8;
+      const BOTTOM_START = 19;
+      const X_INTERVAL = 14;
+      const Y_INTERVAL = 18;
+      shuffle(this.notesBMC.slice()).forEach((note, i) => {
+        if (i > TOP_END && i < BOTTOM_START) {
+          if (i % 2 === 1) {
+            il = 0;
+            it += Y_INTERVAL;
+          } else {
+            il = 100 + X_INTERVAL;
+          }
+        }
+        if (i === BOTTOM_START) {
+          il = 0;
+          it = 100 + Y_INTERVAL;
+        }
+        const left = -X_INTERVAL + (Math.random() * 4) + il;
+        const top = -Y_INTERVAL + (Math.random() * 4) + it;
+        il += X_INTERVAL;
+
+        note.left = left;
+        note.top = top;
+        note.isGame = true;
+        note.type = 'bmc_tmp';
+        note.type_saved = note.type;
+        // TODO: source ref if serverside check
+      });
+      const canvas = Object.assign({}, this.canvas);
+      canvas.info = Object.assign({}, this.canvas.info);
+      canvas.info.name += ' GAME';
+      canvas.source = 'bmdesigner';
+      function downloadObjectAsJson(exportObj, exportName) {
+        const dataStr = `data:text/json;charset=utf-8, ${encodeURIComponent(JSON.stringify(exportObj))}`;
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute('href', dataStr);
+        downloadAnchorNode.setAttribute('download', `${exportName}.json`);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+      }
+      downloadObjectAsJson(canvas, canvas.info.name);
+    },
+    gameCheck() {
+      this.gameStats = this.notesBMC.filter(n => n.isGame)
+      .reduce((s, note) => {
+        if (note.type === note.type_saved) {
+          s.correct += 1;
+        }
+        s.total += 1;
+        return s;
+      }, {
+        correct: 0,
+        total: 0,
+      });
+      if (this.gameStats.correct === this.gameStats.total) {
+        // TODO bravo
+        this.canvasInfoUpdate({ isGame: false });
+        this.notesBMC.forEach((note) => {
+          this.$store.dispatch('NOTE_UPDATE', {
+            note,
+            changes: {
+              isGame: false,
+            },
+          });
+        });
+      } else {
+        // TODO visual feedback
+        this.canvasInfoUpdate({ gameNbChecks: (this.canvas.info.gameNbChecks || 0) + 1 });
+      }
+    },
   },
   components: {
     Note,
@@ -307,6 +413,11 @@ export default {
   height: 34.88vw;
   min-width: 800px;
   min-height: 440px;
+  transition: all 0.5s linear;
+}
+
+.game-header span {
+  padding-right: 2em;
 }
 
 .zone-highlight {
