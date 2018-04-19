@@ -299,8 +299,9 @@ export default {
       const canvas = Object.assign({}, this.canvas);
       canvas.info = Object.assign({}, this.canvas.info);
       canvas.info.name += ' GAME';
+      canvas.info.isGame = true;
       canvas.source = 'bmdesigner';
-      canvas.isGame = true;
+
       function downloadObjectAsJson(exportObj, exportName) {
         const dataStr = `data:text/json;charset=utf-8, ${encodeURIComponent(JSON.stringify(exportObj))}`;
         const downloadAnchorNode = document.createElement('a');
