@@ -6,7 +6,11 @@
       </v-btn>
       <v-flex xs12 sm6 md4 xl3 v-for="({info, settings={}, key}) in projects" :key="key">
         <v-card class="model">
-          <v-card-media @click.native="$router.push({name:'bmc', params: {id: key}})" :contain="!!info.logoImage" :class="{'default-background': !info.logoImage}" :style="{'background-color': info.logoColor ? info.logoColor : colorHash(info.name)}" :src="info.logoImage ? info.logoImage : require('@/assets/default_bmc_logo_background.jpg')">
+          <v-card-media @click.native="$router.push({name:'bmc', params: {id: key}})"
+          :contain="!!info.logoImage"
+          :class="{'default-background': !info.logoImage, 'fix-white': info.logoColor == 'rgb(255, 255, 255)' }"
+          :style="{'background-color': info.logoColor ? info.logoColor : colorHash(info.name)}"
+          :src="info.logoImage ? info.logoImage : require('@/assets/default_bmc_logo_background.jpg')">
             <div class="left-icons" v-if="info.updatedAt">
               <v-icon>
                 event_note
@@ -116,6 +120,10 @@ export default {
 .model .default-background .card__media__background {
   opacity: 0.5;
   background-position: 0 0 !important;
+}
+
+.model .fix-white .card__media__content{
+  background-color: rgba(69, 89, 100, 0.33);
 }
 
 .model .badge--overlap.badge--bottom:after {
