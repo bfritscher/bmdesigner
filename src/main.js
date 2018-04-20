@@ -36,6 +36,7 @@ Raven
     release: COMMIT_HASH,
     shouldSendCallback: (data) => {
       if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line
         console.debug(data);
         return false;
       }
