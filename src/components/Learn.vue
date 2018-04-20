@@ -52,15 +52,15 @@ export default {
     };
   },
   mounted() {
+    const s = document.createElement('script');
+    s.src = '//e.issuu.com/embed.js';
+    s.async = true;
+    this.$refs.issue.append(s);
     setTimeout(() => {
       this.asyncLinks = [
         'https://www.youtube.com/embed/wwShFsSFb-Y?list=PLBh9h0LWoawphbpUvC1DofjagNqG1Qdf3',
         'https://www.youtube.com/embed/ReM1uqmVfP0',
       ];
-      const s = document.createElement('script');
-      s.src = '//e.issuu.com/embed.js';
-      s.async = true;
-      this.$refs.issue.append(s);
     }, 300);
   },
 };
