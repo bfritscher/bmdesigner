@@ -15,9 +15,6 @@ export default {
       display: 'none',
     };
   },
-  mounted() {
-    this.listener.$on('animate', this.animate);
-  },
   methods: {
     reset() {
       TweenMax.set(this.$el, { x: 0, y: 0, opacity: 1 });
