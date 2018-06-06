@@ -2,14 +2,14 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "dependencies": {
-    "@google-cloud/storage": "^1.2.1",
-    "algoliasearch": "^3.24.3",
+    "@google-cloud/storage": "^1.7.0",
+    "algoliasearch": "^3.27.1",
     "cors": "^2.8.4",
-    "firebase-admin": "~4.2.1",
-    "firebase-functions": "^0.5.7",
-    "nodemailer": "^4.0.1",
+    "firebase-admin": "^5.12.1",
+    "firebase-functions": "^1.0.4",
+    "nodemailer": "^4.6.5",
     "nodemailer-sendgrid-transport": "^0.2.0",
-    "uuid": "^3.1.0"
+    "uuid": "^3.2.1"
   },
   "private": true
 }

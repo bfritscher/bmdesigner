@@ -4,7 +4,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const algoliasearch = require('algoliasearch');
 
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp();
 
 const algoliaClient = algoliasearch(functions.config().algolia.id, functions.config().algolia.key);
 const indexNotes = algoliaClient.initIndex('prod_notes');
@@ -35,14 +35,14 @@ function UserProjectSettings() {
 }
 
 /* FIREBASE DATABASE TRIGGERS */
-exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_project`).onWrite((event) => {
-  const uid = event.params.uid;
-  if (!event.data.val()) {
+exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_project`).onWrite((change, context) => {
+  const uid = context.params.uid;
+  if (!change.after.val()) {
     return;
   }
   const project = {
     info: {
-      name: event.data.val(),
+      name: change.after.val(),
       logoImage: '',
       logoColor: '',
       stickyCount: 0,
@@ -57,7 +57,7 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
   };
 
   project.users[uid] = {
-    name: event.auth.variable.name,
+    name: context.auth.variable.name,
   };
   const node = admin.database().ref(`/${DB_ROOT}/projects`).push(project);
   admin.database()
@@ -65,13 +65,13 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
     .set({
       info: project.info,
       settings: UserProjectSettings(),
-    }).then(() => event.data.ref.remove());
+    }).then(() => change.ref.remove());
 });
 
 // TRIGER to update copy projects canvas.info to users projects...
-exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateInfo`).onWrite((event) => {
-  const pid = event.params.pid;
-  if (!event.data.val()) {
+exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateInfo`).onWrite((change, context) => {
+  const pid = context.params.pid;
+  if (!change.after.val()) {
     return;
   }
   const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${pid}`);
@@ -102,13 +102,13 @@ exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateIn
 
     Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${pid}/info`).update(project.info),
       ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${pid}/info`).update(project.info))])
-      .then(() => event.data.ref.remove());
+      .then(() => change.ref.remove());
   });
 });
 
-exports.onRemoveUserFromProject = functions.database.ref(`/${DB_ROOT}/projects/{pid}/users/{uid}`).onDelete((event) => {
-  const uid = event.params.uid;
-  const pid = event.params.pid;
+exports.onRemoveUserFromProject = functions.database.ref(`/${DB_ROOT}/projects/{pid}/users/{uid}`).onDelete((snap, context) => {
+  const uid = context.params.uid;
+  const pid = context.params.pid;
   admin.database().ref(`/${DB_ROOT}/users/${uid}/projects/${pid}`).remove();
   const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${pid}`);
   projectRef.once('value', (snapshot) => {
@@ -121,29 +121,29 @@ exports.onRemoveUserFromProject = functions.database.ref(`/${DB_ROOT}/projects/{
   });
 });
 
-exports.inviteToken = functions.database.ref(`/${DB_ROOT}/projects/{pid}/invite_request`).onWrite((event) => {
-  const pid = event.params.pid;
-  if (!event.data.val()) {
+exports.inviteToken = functions.database.ref(`/${DB_ROOT}/projects/{pid}/invite_request`).onWrite((change, context) => {
+  const pid = context.params.pid;
+  const email = change.after.val();
+  if (!email) {
     return;
   }
   // FEATURE: check is valid email?
   // FEATURE: user can add custom message?
-  const email = event.data.val();
   const token = admin.database().ref(`/${DB_ROOT}/projects/${pid}/invites_sent`).push(email).key;
-  event.data.ref.remove();
+  change.ref.remove();
 
   const mailOptions = {
-    from: `"${event.auth.variable.name}" <${event.auth.variable.email}>`,
+    from: `"${context.auth.variable.name}" <${context.auth.variable.email}>`,
     to: email,
-    subject: `${event.auth.variable.name} invited you to his Business Model Canvas`,
+    subject: `${context.auth.variable.name} invited you to his Business Model Canvas`,
     text: `Connect to https://bmdesigner.com/login/${pid}:${token} , to see the shared project.\n\nRegards,\nBM|Designer.com`,
   };
   mailer.sendMail(mailOptions);
 });
 
 // create search key filtered by user's permissions
-exports.addSearchKey = functions.database.ref(`/${DB_ROOT}/users/{uid}/settings/search_key`).onWrite((event) => {
-  const uid = event.params.uid;
+exports.addSearchKey = functions.database.ref(`/${DB_ROOT}/users/{uid}/settings/search_key`).onWrite((change, context) => {
+  const uid = context.params.uid;
   const securedApiKey = algoliaClient.generateSecuredApiKey(
     functions.config().algolia.search_key, // Make sure to use a search key
     {
