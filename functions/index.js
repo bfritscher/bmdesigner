@@ -7,7 +7,7 @@ const algoliasearch = require('algoliasearch');
 admin.initializeApp();
 
 const algoliaClient = algoliasearch(functions.config().algolia.id, functions.config().algolia.key);
-const indexNotes = algoliaClient.initIndex('prod_notes');
+// const indexNotes = algoliaClient.initIndex('prod_notes');
 
 const DB_ROOT = 'app';
 
@@ -38,7 +38,7 @@ function UserProjectSettings() {
 exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_project`).onWrite((change, context) => {
   const uid = context.params.uid;
   if (!change.after.val()) {
-    return;
+    return 'no value';
   }
   const project = {
     info: {
@@ -55,24 +55,26 @@ exports.createProject = functions.database.ref(`/${DB_ROOT}/users/{uid}/create_p
     users: {},
     notes: [],
   };
-
   project.users[uid] = {
-    name: context.auth.variable.name,
+    name: context.auth.token.name,
   };
   const node = admin.database().ref(`/${DB_ROOT}/projects`).push(project);
-  admin.database()
+  return admin.database()
     .ref(`/${DB_ROOT}/users/${uid}/projects/${node.key}`)
     .set({
       info: project.info,
       settings: UserProjectSettings(),
-    }).then(() => change.ref.remove());
+    }).then(() => {
+      change.after.ref.remove();
+      return 'ok';
+    });
 });
 
 // TRIGER to update copy projects canvas.info to users projects...
 exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateInfo`).onWrite((change, context) => {
   const pid = context.params.pid;
   if (!change.after.val()) {
-    return;
+    return 'no value';
   }
   const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${pid}`);
   projectRef.once('value', (snapshot) => {
@@ -83,6 +85,8 @@ exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateIn
 
     // update search index
     // TODO: handle note delete
+    // TODO FIX quota
+    /*
     indexNotes.addObjects(Object.keys(project.notes || {}).map((key) => {
       const note = project.notes[key];
       return {
@@ -99,10 +103,11 @@ exports.updateInfo = functions.database.ref(`/${DB_ROOT}/projects/{pid}/updateIn
         updatedAt: project.info.updatedAt,
       };
     }));
+    */
 
-    Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${pid}/info`).update(project.info),
+    return Promise.all([admin.database().ref(`/${DB_ROOT}/projects/${pid}/info`).update(project.info),
       ...Object.keys(project.users || {}).map(key => admin.database().ref(`/${DB_ROOT}/users/${key}/projects/${pid}/info`).update(project.info))])
-      .then(() => change.ref.remove());
+      .then(() => change.after.ref.remove());
   });
 });
 
@@ -111,7 +116,7 @@ exports.onRemoveUserFromProject = functions.database.ref(`/${DB_ROOT}/projects/{
   const pid = context.params.pid;
   admin.database().ref(`/${DB_ROOT}/users/${uid}/projects/${pid}`).remove();
   const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${pid}`);
-  projectRef.once('value', (snapshot) => {
+  return projectRef.once('value', (snapshot) => {
     const project = snapshot.val();
     const usersCount = Object.keys(project.users || {}).length;
     // TODO: update index;
@@ -125,20 +130,20 @@ exports.inviteToken = functions.database.ref(`/${DB_ROOT}/projects/{pid}/invite_
   const pid = context.params.pid;
   const email = change.after.val();
   if (!email) {
-    return;
+    return 'no email';
   }
   // FEATURE: check is valid email?
   // FEATURE: user can add custom message?
   const token = admin.database().ref(`/${DB_ROOT}/projects/${pid}/invites_sent`).push(email).key;
-  change.ref.remove();
+  change.after.ref.remove();
 
   const mailOptions = {
-    from: `"${context.auth.variable.name}" <${context.auth.variable.email}>`,
+    from: `"${context.auth.token.name}" <${context.auth.token.email}>`,
     to: email,
-    subject: `${context.auth.variable.name} invited you to his Business Model Canvas`,
+    subject: `${context.auth.token.name} invited you to his Business Model Canvas`,
     text: `Connect to https://bmdesigner.com/login/${pid}:${token} , to see the shared project.\n\nRegards,\nBM|Designer.com`,
   };
-  mailer.sendMail(mailOptions);
+  return mailer.sendMail(mailOptions);
 });
 
 // create search key filtered by user's permissions
@@ -149,7 +154,7 @@ exports.addSearchKey = functions.database.ref(`/${DB_ROOT}/users/{uid}/settings/
     {
       filters: `users:${uid} OR public:true`,
     });
-  admin.database().ref(`/${DB_ROOT}/users/${uid}/settings/search_key`).set(securedApiKey);
+  return admin.database().ref(`/${DB_ROOT}/users/${uid}/settings/search_key`).set(securedApiKey);
 });
 
 /* register with token */
