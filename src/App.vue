@@ -423,7 +423,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { COLORS_MATERIAL } from '@/utils';
-import Avatar from 'vue-avatar/dist/Avatar';
+import Avatar from 'vue-avatar';
 import { db } from '@/utils/firebase';
 import NoteOptions from '@/components/NoteOptions';
 import PresentationSorter from '@/components/PresentationSorter';
