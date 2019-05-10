@@ -80,7 +80,7 @@
                   <v-text-field label="New variable" value="hello" @keypress.enter="addCalcVar" v-model="newVariable" hint="Add a new variable name only use a-z, a-Z, 0-9, _" :rules="[rules.variable,]"></v-text-field>
                 </v-flex>
                 <v-flex xs3>
-                  <v-btn primary block flat @click.native="addCalcVar">add</v-btn>
+                  <v-btn color="primary" block flat @click.native="addCalcVar">add</v-btn>
                 </v-flex>
               </v-layout>
             </div>

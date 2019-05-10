@@ -9,16 +9,30 @@ import VueAnalytics from 'vue-analytics';
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue';
 import { mapActions } from 'vuex';
+import colors from 'vuetify/es5/util/colors';
+import 'vuetify/dist/vuetify.min.css';
+
 import App from './App';
 import router from './router';
 import store from './store';
+import './stylus/main.styl';
 
-Vue.use(Vuetify);
+Vue.use(Vuetify, { theme: {
+  primary: colors.teal.lighten1,
+  accent: colors.blue.accent2,
+  secondary: colors.grey.darken3,
+  info: colors.blue.base,
+  warning: colors.amber.base,
+  error: colors.red.accent2,
+  success: colors.green.base,
+},
+});
+
 Vue.use(VueTimeago, {
   locale: 'en-US',
   locales: {
     // eslint-disable-next-line
-    'en-US': require('vue-timeago/locales/en-US.json'),
+    'en': require('date-fns/locale/en'),
   },
 });
 

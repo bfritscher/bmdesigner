@@ -1,5 +1,8 @@
-import firebase from 'firebase';
-import firebaseui from 'firebaseui';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/database';
+import 'firebase/storage';
+import * as firebaseui from 'firebaseui';
 import 'firebaseui/dist/firebaseui.css';
 
 export const DB_ROOT = 'app';
@@ -18,8 +21,8 @@ const uiConfig = {
   // signInSuccessUrl: '<url-to-redirect-to-on-success>',
   callbacks: {
     // Called when the user has been successfully signed in.
-    // user, credential, redirectUrl
-    signInSuccess() {
+    // authResult, redirectUrl
+    signInSuccessWithAuthResult() {
       // Do not redirect.
       return false;
     },
@@ -52,5 +55,3 @@ export const ui = new firebaseui.auth.AuthUI(firebase.auth());
 export function startLoginUI() {
   ui.start('#firebaseui-auth-container', uiConfig);
 }
-
-export const messaging = firebase.messaging();

@@ -13,15 +13,16 @@
         <ais-powered-by></ais-powered-by>
         <h6 class="subheading">Types</h6>
         <ais-tree-menu :search-store="searchStore" class="type-facet" :attributes="['type']" :limit="20" :sort-by="['count:desc', 'name:asc', 'isRefined:desc']">
-          <template scope="{ value, active, count }">
-            <div v-badge="{ value: count }">
+          <template slot-scope="{ value, active, count }">
+            <v-badge>
+              <span slot="badge">{{count}}</span>
               {{TYPE_NAMES[value]}}
-            </div>
+            </v-badge>
           </template>
         </ais-tree-menu>
         <h6 class="subheading">Colors</h6>
         <ais-refinement-list :search-store="searchStore" attribute-name="colors" class="color-facet" :sort-by="['name:asc', 'count:desc', 'isRefined:desc',]">
-          <template scope="{ value, active, count }">
+          <template slot-scope="{ value, active, count }">
             <v-btn :key="value" class="color" small fab :flat="active" @click.native="$event.target.parentNode.previousSibling.click()" :class="[COLORS_MATERIAL_DARK[value], active ? active : '']">
               {{count}}
               <v-icon v-if="active">check</v-icon>
@@ -31,7 +32,7 @@
       </div>
       <v-list three-line style="overflow: auto;">
         <ais-results :search-store="searchStore">
-          <template scope="{ result }">
+          <template slot-scope="{ result }">
             <v-divider></v-divider>
             <v-list-tile class="search-result" :to="{name:'bmc', params: {id: result.canvasKey, zoom1: result.objectID.split('.')[1]}}" @click.native="showResults=false">
               <v-list-tile-content>

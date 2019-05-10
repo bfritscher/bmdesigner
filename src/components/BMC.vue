@@ -1,4 +1,5 @@
 <template>
+<v-layout fluid fill-height>
   <div class="bmc" :class="{presentation: showAsPresentation, print: showAsPrint}">
     <v-progress-linear v-if="showAsPresentation && !showAsPrint" v-model="presentationProgress" height="4" class="ma-0"></v-progress-linear>
     <div class="credits-own caption">
@@ -73,6 +74,7 @@
       </v-btn>
     </div>
   </div>
+</v-layout>
 </template>
 
 <script>

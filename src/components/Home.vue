@@ -1,7 +1,7 @@
 <template>
   <v-container fluid grid-list-lg>
     <v-layout row wrap>
-      <v-btn v-if="$store.state.currentUser" fab primary dark class="floating-action" @click.native="createNewCanvas">
+      <v-btn v-if="$store.state.currentUser" color="primary" fab primary class="floating-action" @click.native="createNewCanvas">
         <v-icon>add</v-icon>
       </v-btn>
       <v-flex xs12 sm6 md4 xl3 v-for="({info, settings={}, key}) in projects" :key="key">
@@ -18,30 +18,30 @@
               <timeago :since="info.updatedAt"></timeago>
             </div>
             <div class="right-icons">
-              <v-icon v-badge="{value: info.stickyCount || 0, overlap: true, bottom: true}">
-                note
-              </v-icon>
-              <v-icon v-badge="{value: info.usersCount || 1, overlap: true, bottom: true}">
-                account_box
-              </v-icon>
+              <v-badge bottom overlap>
+                <span slot="badge">{{info.stickyCount || 0}}</span>
+                <v-icon>note</v-icon>
+              </v-badge>
+              <v-badge bottom overlap>
+                <span slot="badge">{{info.usersCount || 1}}</span>
+                <v-icon>account_box</v-icon>
+              </v-badge>
               <v-spacer></v-spacer>
               <v-icon v-if="info.public" title="public">public</v-icon>
               <v-icon v-if="!info.public" title="private">lock</v-icon>
             </div>
             <v-container fill-height fluid>
-              <v-layout fill-height>
-                <v-flex xs12 align-end flexbox>
-                  <span class="headline white--text">{{info.name}}</span>
-                </v-flex>
+              <v-layout fill-height align-end>
+                <v-flex  xs12 class="headline white--text">{{info.name}}</v-flex>
               </v-layout>
             </v-container>
           </v-card-media>
           <v-card-actions class="white">
             <v-btn icon light @click.native="toggleFav(key, !settings.fav)">
-              <v-icon :primary="settings.fav">favorite</v-icon>
+              <v-icon :color="settings.fav ? 'primary' : 'grey'">favorite</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn flat primary :to="{name:'bmc', params: {id: key}}">Open</v-btn>
+            <v-btn flat color="primary" :to="{name:'bmc', params: {id: key}}">Open</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>

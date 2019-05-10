@@ -1,6 +1,6 @@
 <template>
-  <v-app toolbar>
-    <v-navigation-drawer ref="drawer" :mobile-break-point="1440" class="drawer" overflow :mini-variant="userSettings.mini && !isMobile()" persistent enable-resize-watcher :value="userSettings.drawer" @input="userSettingsUpdate({drawer: $event})">
+  <v-app>
+    <v-navigation-drawer app ref="drawer" width="240" mini-variant-width="64" :mobile-break-point="1440" class="drawer" fixed :clipped="userSettings.mini && !isMobile()" :mini-variant="userSettings.mini && !isMobile()"  :value="userSettings.drawer" @input="userSettingsUpdate({drawer: $event})">
       <v-toolbar flat class="blue-grey darken-2" dark v-show="!userSettings.mini">
         <v-toolbar-title>
           <router-link :to="{name: 'home'}" id="logo-title">BM|Designer</router-link>
@@ -121,7 +121,7 @@
           </v-list-tile>
 
           <v-list-group v-else no-action :value="canvasSettings.isColorsOpen" @input="canvasUserSettingsUpdate({ isColorsOpen: !canvasSettings.isColorsOpen })">
-            <v-list-tile slot="item" @click.native="showColors">
+            <v-list-tile activator="item" @click.native="showColors">
               <v-list-tile-action title="Colors visibility">
                 <v-icon light>color_lens</v-icon>
               </v-list-tile-action>
@@ -139,7 +139,9 @@
             </v-list-tile>
             <v-list-tile v-for="(colorCode, colorId) in COLORS_MATERIAL" :key="colorId" v-show="currentCanvasUsedColors.has(colorId)">
 
-              <v-btn-toggle class="color-btn" :style="{'background-color': colorCode}" :class="colorCode" :items="[{text: 'off', value: '0'}, {text: '1/4', value: '0.25'}, {text: '1/2', value: '0.5'},  {text: '3/4', value: '0.75'}, {text: 'on', value: '1'},]" mandatory :input-value="colorsVisibility[colorId]" @change="toggleColorVisibility($event, colorId)"> </v-btn-toggle>
+              <v-btn-toggle class="color-btn" :style="{'background-color': colorCode}" :class="colorCode"
+              :items="[{text: 'off', value: '0'}, {text: '1/4', value: '0.25'}, {text: '1/2', value: '0.5'},  {text: '3/4', value: '0.75'}, {text: 'on', value: '1'},]" mandatory
+              :input-value="colorsVisibility[colorId]" @change="toggleColorVisibility($event, colorId)"> </v-btn-toggle>
 
             </v-list-tile>
 
@@ -239,10 +241,13 @@
 
             <v-list>
               <v-list-tile v-for="(u, key) in $store.state.canvas.users" :key="key" avatar ripple>
-                <v-list-tile-avatar v-badge="{ value:'', overlap: true, left: true }" :class="[u.online ? 'green--after' : 'red--after']">
-                  <img v-if="u.avatar" :src="u.avatar" :alt="u.name">
-                  <avatar v-if="u.name && !u.avatar" :username="u.name" :size="38"></avatar>
-                </v-list-tile-avatar>
+                <v-badge overlap left :class="[u.online ? 'green--after' : 'red--after']">
+                  <span slot="badge"></span>
+                  <v-list-tile-avatar>
+                    <img v-if="u.avatar" :src="u.avatar" :alt="u.name">
+                    <avatar v-if="u.name && !u.avatar" :username="u.name" :size="38"></avatar>
+                  </v-list-tile-avatar>
+                </v-badge>
                 <v-list-tile-content>
                   <v-list-tile-title v-text="u.name"></v-list-tile-title>
                 </v-list-tile-content>
@@ -325,7 +330,7 @@
 
     <presentation-sorter></presentation-sorter>
 
-    <v-toolbar fixed class="blue-grey darken-2" dark>
+    <v-toolbar app fixed class="blue-grey darken-2" dark :clipped-left="userSettings.mini && !isMobile()">
       <v-toolbar-side-icon @click.native.stop.prevent="userSettingsUpdate({drawer: !userSettings.drawer})"></v-toolbar-side-icon>
       <search></search>
       <v-spacer></v-spacer>
@@ -384,11 +389,9 @@
       <v-btn v-else exact :to="{name: 'login'}">Sign in</v-btn>
 
     </v-toolbar>
-    <main>
-      <v-container fluid style="display: flex;padding:0;">
-        <router-view></router-view>
-      </v-container>
-    </main>
+    <v-content>
+      <router-view></router-view>
+    </v-content>
     <note-options></note-options>
     <v-dialog :value="$store.state.layout.showLoading" persistent>
       <v-card>
@@ -553,9 +556,7 @@ export default {
 };
 </script>
 
-<style lang="stylus">
-@import './stylus/main'
-
+<style>
 html {
   overflow-y: auto;
 }
@@ -571,7 +572,7 @@ body {
 }
 
 .navigation-drawer--mini-variant .list__tile {
-  padding 0 8px;
+  padding: 0 8px;
 }
 
 .title-fade-transition-enter-active {
