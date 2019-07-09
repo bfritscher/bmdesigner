@@ -3,31 +3,35 @@
     <v-flex md6 offset-md3 mt-3>
       <v-card>
         <v-alert info :value="hasInviteToken && !$store.state.currentUser">
-          Login or create an account to which you want to add the shared Business Model Canvas.
+          Login or create an account to which you want to add the shared
+          Business Model Canvas.
         </v-alert>
         <v-alert success :value="hasInviteToken && $store.state.currentUser">
           Please wait you will be redirected to your new canvas.
         </v-alert>
-        <div id="firebaseui-auth-container" v-show="!$store.state.currentUser"></div>
+        <div
+          id="firebaseui-auth-container"
+          v-show="!$store.state.currentUser"
+        ></div>
       </v-card>
     </v-flex>
   </v-layout>
 </template>
 
 <script>
-import { startLoginUI } from '@/utils/firebase';
+import { startLoginUI } from "@/utils/firebase";
 
 export default {
-  name: 'login',
+  name: "login",
   data() {
     return {
-      hasInviteToken: false,
+      hasInviteToken: false
     };
   },
   mounted() {
-    this.hasInviteToken = localStorage.getItem('inviteToken');
+    this.hasInviteToken = localStorage.getItem("inviteToken");
     startLoginUI();
-  },
+  }
 };
 </script>
 

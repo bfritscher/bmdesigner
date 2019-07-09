@@ -1,47 +1,86 @@
 <template>
   <v-container fluid grid-list-lg>
     <v-layout row wrap>
-      <v-btn v-if="$store.state.currentUser" color="primary" fab primary class="floating-action" @click.native="createNewCanvas">
+      <v-btn
+        v-if="$store.state.currentUser"
+        color="primary"
+        fab
+        class="floating-action"
+        @click="createNewCanvas"
+      >
         <v-icon>add</v-icon>
       </v-btn>
-      <v-flex xs12 sm6 md4 xl3 v-for="({info, settings={}, key}) in projects" :key="key">
+      <v-flex
+        xs12
+        sm6
+        md4
+        xl3
+        v-for="{ info, settings = {}, key } in projects"
+        :key="key"
+      >
         <v-card class="model">
-          <v-card-media @click.native="$router.push({name:'bmc', params: {id: key}})"
-          :contain="!!info.logoImage"
-          :class="{'default-background': !info.logoImage, 'fix-white': info.logoColor == 'rgb(255, 255, 255)' }"
-          :style="{'background-color': info.logoColor ? info.logoColor : colorHash(info.name)}"
-          :src="info.logoImage ? info.logoImage : require('@/assets/default_bmc_logo_background.jpg')">
+          <v-img
+            @click="$router.push({ name: 'bmc', params: { id: key } })"
+            :contain="!!info.logoImage"
+            :class="{
+              'default-background': !info.logoImage,
+              'fix-white': info.logoColor == 'rgb(255, 255, 255)'
+            }"
+            :style="{
+              'background-color': info.logoColor
+                ? info.logoColor
+                : colorHash(info.name)
+            }"
+            :src="
+              info.logoImage
+                ? info.logoImage
+                : require('@/assets/default_bmc_logo_background.jpg')
+            "
+          >
             <div class="left-icons" v-if="info.updatedAt">
-              <v-icon>
+              <v-icon dark>
                 event_note
               </v-icon>
-              <timeago :since="info.updatedAt"></timeago>
+              <timeago :datetime="info.updatedAt"></timeago>
             </div>
             <div class="right-icons">
               <v-badge bottom overlap>
-                <span slot="badge">{{info.stickyCount || 0}}</span>
-                <v-icon>note</v-icon>
+                <template v-slot:badge>
+                  <span>{{ info.stickyCount || 0 }}</span>
+                </template>
+                <v-icon dark>note</v-icon>
               </v-badge>
               <v-badge bottom overlap>
-                <span slot="badge">{{info.usersCount || 1}}</span>
-                <v-icon>account_box</v-icon>
+                <template v-slot:badge>
+                  <span>{{ info.usersCount || 1 }}</span>
+                </template>
+                <v-icon dark>account_box</v-icon>
               </v-badge>
               <v-spacer></v-spacer>
-              <v-icon v-if="info.public" title="public">public</v-icon>
-              <v-icon v-if="!info.public" title="private">lock</v-icon>
+              <v-icon dark v-if="info.public" title="public">public</v-icon>
+              <v-icon dark v-if="!info.public" title="private">lock</v-icon>
             </div>
             <v-container fill-height fluid>
               <v-layout fill-height align-end>
-                <v-flex  xs12 class="headline white--text">{{info.name}}</v-flex>
+                <v-flex xs12 class="headline white--text">{{
+                  info.name
+                }}</v-flex>
               </v-layout>
             </v-container>
-          </v-card-media>
+          </v-img>
           <v-card-actions class="white">
-            <v-btn icon light @click.native="toggleFav(key, !settings.fav)">
-              <v-icon :color="settings.fav ? 'primary' : 'grey'">favorite</v-icon>
+            <v-btn icon @click="toggleFav(key, !settings.fav)">
+              <v-icon :color="settings.fav ? 'primary' : 'grey'"
+                >favorite</v-icon
+              >
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn flat color="primary" :to="{name:'bmc', params: {id: key}}">Open</v-btn>
+            <v-btn
+              flat
+              color="primary"
+              :to="{ name: 'bmc', params: { id: key } }"
+              >Open</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -50,86 +89,96 @@
 </template>
 
 <script>
-import ColorHash from 'color-hash';
-import { mapActions, mapState } from 'vuex';
+import ColorHash from "color-hash";
+import { mapActions, mapState } from "vuex";
 
 const colorHash = new ColorHash({
   saturation: [0.35, 0.4],
-  lightness: [0.6, 0.65],
+  lightness: [0.6, 0.65]
 });
 
 export default {
-  name: 'home',
+  name: "home",
   computed: {
     ...mapState({
-      user: 'user',
+      user: "user"
     }),
     projects() {
-      const projects = Object.keys(this.user.projects || {}).map((key) => {
-        const p = this.user.projects[key];
-        p.key = key;
-        return p;
-      }).filter((p) => {
-        if (this.$route.name === 'favorites') {
-          return p.settings.fav;
-        }
-        if (this.$route.name === 'inspire') {
-          // only show user's current games
-          return p.isGame;
-        }
-        return true;
-      });
+      const projects = Object.keys(this.user.projects || {})
+        .map(key => {
+          const p = this.user.projects[key];
+          p.key = key;
+          return p;
+        })
+        .filter(p => {
+          if (this.$route.name === "favorites") {
+            return p.settings.fav;
+          }
+          if (this.$route.name === "inspire") {
+            // only show user's current games
+            return p.isGame;
+          }
+          return true;
+        });
 
-      if (this.$route.name === 'inspire') {
+      if (this.$route.name === "inspire") {
         // append public game starers?
       }
 
-      projects.sort((a, b) => new Date(b.info.updatedAt) - new Date(a.info.updatedAt));
+      projects.sort(
+        (a, b) => new Date(b.info.updatedAt) - new Date(a.info.updatedAt)
+      );
       return projects;
-    },
+    }
   },
   methods: {
-    ...mapActions(['createNewCanvas', 'canvasInfoUpdate', 'canvasUserSettingsUpdate']),
+    ...mapActions([
+      "createNewCanvas",
+      "canvasInfoUpdate",
+      "canvasUserSettingsUpdate"
+    ]),
     colorHash(input) {
       return colorHash.hex(input);
     },
     toggleFav(canvasKey, fav) {
       this.canvasUserSettingsUpdate({
         fav,
-        canvasKey,
+        canvasKey
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style>
-
 .model .headline {
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.60);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.6);
 }
 
-.model .card__media {
+.model .v-image {
   height: 160px !important;
 }
 
-.model .card__media__background {
+.model .v-image__image {
   opacity: 0.8;
 }
 
-.model .default-background .card__media__background {
+.model .default-background .v-image__image {
   opacity: 0.5;
   background-position: 0 0 !important;
 }
 
-.model .fix-white .card__media__content{
+.model .fix-white .v-responsive__content {
   background-color: rgba(69, 89, 100, 0.33);
 }
 
-.model .badge--overlap.badge--bottom:after {
+.model .v-badge--overlap.v-badge--bottom:after {
   font-size: 12px;
   height: 18px;
   width: 18px;
+}
+.v-badge--overlap.v-badge--bottom .v-badge__badge {
+  z-index: 10;
 }
 
 .model .right-icons {
@@ -147,16 +196,21 @@ export default {
   left: 10px;
   color: #fff;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.65);
+  line-height: 12px;
 }
 
-.model .card__media .icon {
-  margin: 4px 0;
+.model .v-image .v-icon {
+  margin: 4px 4px 0 4px;
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 
+.model .container {
+  padding: 16px;
+}
+
 .floating-action {
-  position: fixed;
+  position: fixed !important;
   right: 16px;
   bottom: 16px;
   z-index: 1;

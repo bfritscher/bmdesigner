@@ -1,75 +1,128 @@
 <template>
   <transition name="vpc-overlay-transition">
-    <image-zone ref="vpc" key="vpc" :allow-click="false" @image-drop="addNote" class="canvas overlay-vpc" v-show="showVPC" @click.native.prevent.stop="addNote($event)">
+    <image-zone
+      ref="vpc"
+      key="vpc"
+      :allow-click="false"
+      @image-drop="addNote"
+      class="canvas overlay-vpc"
+      v-show="showVPC"
+      @click.native.prevent.stop="addNote($event)"
+    >
       <div class="paper" ref="paper" data-none="vpc_tmp">
-        <draw-surface v-show="$store.state.layout.showDrawSurface"></draw-surface>
+        <draw-surface v-if="$store.state.layout.showDrawSurface"></draw-surface>
         <transition name="vpc-vp-transition" appear>
-          <v-card v-if="vp" class="vpc-vp elevation-10" :class="{'vpc-both': cs && vp}">
-            <v-toolbar dense :class="COLORS_MATERIAL_DARK[vp.colors[0]]">
-              <v-menu :nudge-width="100"  @click.native.prevent.stop>
-                <v-toolbar-title slot="activator">
-                  <span>{{vp.text}}</span>
-                  <v-icon>arrow_drop_down</v-icon>
-                </v-toolbar-title>
+          <v-card
+            v-if="vp"
+            class="vpc-vp elevation-10"
+            :class="{ 'vpc-both': cs && vp }"
+          >
+            <v-toolbar dense :class="COLORS_MATERIAL_DARK[vp.colors[0]]" @click.native.prevent.stop>
+              <v-menu :nudge-width="100">
+                <template v-slot:activator="{ on }">
+                  <v-toolbar-title v-on="on">
+                    <span>{{ vp.text }}</span>
+                    <v-icon>arrow_drop_down</v-icon>
+                  </v-toolbar-title>
+                </template>
                 <v-list class="list">
-                  <v-list-tile v-for="note in notesVP" :key="note.id" @click.native.prevent="LAYOUT_UPDATE({selectedVP: note})" :class="COLORS_MATERIAL_DARK[note.colors[0]]">
+                  <v-list-tile
+                    v-for="note in notesVP"
+                    :key="note.id"
+                    @click.prevent="LAYOUT_UPDATE({ selectedVP: note })"
+                    :class="COLORS_MATERIAL_DARK[note.colors[0]]"
+                  >
                     <v-list-tile-title v-text="note.text"></v-list-tile-title>
                   </v-list-tile>
                 </v-list>
               </v-menu>
               <v-spacer></v-spacer>
-              <v-btn icon @click.native.prevent.stop="LAYOUT_UPDATE({selectedVP: null})">
+              <v-btn
+                icon
+                @click.prevent.stop="LAYOUT_UPDATE({ selectedVP: null })"
+              >
                 <v-icon>close</v-icon>
               </v-btn>
             </v-toolbar>
-            <zone dropzone-accept=".note-vpc" id="features" label="Products & Services" style="left: 0; top: 0; width: 50%; height: 100%; background-color: white;">
-              <v-icon light slot="icon">{{ICONS['features']}}</v-icon>
+            <zone
+              dropzone-accept=".note-vpc"
+              id="features"
+              label="Products & Services"
+              style="left: 0; top: 0; width: 50%; height: 100%; background-color: white;"
+            >
+              <v-icon light slot="icon">{{ ICONS["features"] }}</v-icon>
             </zone>
-            <zone dropzone-accept=".note-vpc" id="solution" label="Solutions" style="left: 50%; top: 0; width: 50%; height: 100%; background-color: white;">
-              <v-icon light slot="icon">{{ICONS['solution']}}</v-icon>
+            <zone
+              dropzone-accept=".note-vpc"
+              id="solution"
+              label="Solutions"
+              style="left: 50%; top: 0; width: 50%; height: 100%; background-color: white;"
+            >
+              <v-icon light slot="icon">{{ ICONS["solution"] }}</v-icon>
             </zone>
           </v-card>
         </transition>
-<!--
-   <v-progress-circular
-      v-show="vp && cs"
-      class="fit"
-      :size="160"
-      :width="30"
-      :value="75">
-      Fit<br>
-      {{ 50 }} %
-    </v-progress-circular>
--->
+
         <transition name="vpc-cs-transition" appear>
-          <v-card v-if="cs" class="vpc-cs elevation-10" :class="{'vpc-both': cs && vp}">
-            <v-toolbar dense :class="COLORS_MATERIAL_DARK[cs.colors[0]]">
-              <v-menu :nudge-width="100" @click.native.prevent.stop>
-                <v-toolbar-title slot="activator">
-                  <span>{{cs.text}}</span>
-                  <v-icon>arrow_drop_down</v-icon>
-                </v-toolbar-title>
+          <v-card
+            v-if="cs"
+            class="vpc-cs elevation-10"
+            :class="{ 'vpc-both': cs && vp }"
+          >
+            <v-toolbar dense :class="COLORS_MATERIAL_DARK[cs.colors[0]]" @click.native.prevent.stop>
+              <v-menu :nudge-width="100">
+                <template v-slot:activator="{ on }">
+                  <v-toolbar-title v-on="on">
+                    <span>{{ cs.text }}</span>
+                    <v-icon>arrow_drop_down</v-icon>
+                  </v-toolbar-title>
+                </template>
                 <v-list class="list">
-                  <v-list-tile v-for="note in notesCS" :key="note.id" @click.native.prevent="LAYOUT_UPDATE({selectedCS: note})" :class="COLORS_MATERIAL_DARK[note.colors[0]]">
+                  <v-list-tile
+                    v-for="note in notesCS"
+                    :key="note.id"
+                    @click.prevent="LAYOUT_UPDATE({ selectedCS: note })"
+                    :class="COLORS_MATERIAL_DARK[note.colors[0]]"
+                  >
                     <v-list-tile-title v-text="note.text"></v-list-tile-title>
                   </v-list-tile>
                 </v-list>
               </v-menu>
               <v-spacer></v-spacer>
-              <v-btn icon @click.native.stop.prevent="LAYOUT_UPDATE({selectedCS: null})">
+              <v-btn
+                icon
+                @click.stop.prevent="LAYOUT_UPDATE({ selectedCS: null })"
+              >
                 <v-icon>close</v-icon>
               </v-btn>
             </v-toolbar>
-            <zone dropzone-accept=".note-vpc" id="pain_gain" label="Gains & Pains" style="left: 0; top: 0; width: 50%; height: 100%;  background-color: white;">
-              <v-icon light slot="icon">{{ICONS['pain_gain']}}</v-icon>
+            <zone
+              dropzone-accept=".note-vpc"
+              id="pain_gain"
+              label="Gains & Pains"
+              style="left: 0; top: 0; width: 50%; height: 100%;  background-color: white;"
+            >
+              <v-icon light slot="icon">{{ ICONS["pain_gain"] }}</v-icon>
             </zone>
-            <zone dropzone-accept=".note-vpc" id="job" label="Job to be done" style="left: 50%; top: 0; width: 50%; height: 100%;  background-color: white;">
-              <v-icon light slot="icon">{{ICONS['job']}}</v-icon>
+            <zone
+              dropzone-accept=".note-vpc"
+              id="job"
+              label="Job to be done"
+              style="left: 50%; top: 0; width: 50%; height: 100%;  background-color: white;"
+            >
+              <v-icon light slot="icon">{{ ICONS["job"] }}</v-icon>
             </zone>
           </v-card>
         </transition>
         <div>
-          <note v-for="n in notesVPC" :value="n" :key="n.id" class="note-vpc"  :class="{'vpc-both': cs && vp}" :parent="$refs.paper"></note>
+          <note
+            v-for="n in notesVPC"
+            :value="n"
+            :key="n.id"
+            class="note-vpc"
+            :class="{ 'vpc-both': cs && vp }"
+            :parent="$refs.paper"
+          ></note>
         </div>
       </div>
     </image-zone>
@@ -77,21 +130,21 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState, mapMutations } from 'vuex';
-import { totalOffset, COLORS_MATERIAL_DARK, ICONS } from '@/utils';
-import { VPC_VP_TYPES, VPC_CS_TYPES } from '@/store';
-import DrawSurface from '@/components/DrawSurface';
-import Note from '@/components/Note';
-import Zone from '@/components/Zone';
-import ImageZone from '@/components/ImageZone';
+import Vue from "vue";
+import { mapState, mapMutations } from "vuex";
+import { totalOffset, COLORS_MATERIAL_DARK, ICONS } from "@/utils";
+import { VPC_VP_TYPES, VPC_CS_TYPES } from "@/store";
+import DrawSurface from "@/components/DrawSurface";
+import Note from "@/components/Note";
+import Zone from "@/components/Zone";
+import ImageZone from "@/components/ImageZone";
 
 export default {
-  name: 'vpc',
+  name: "vpc",
   data() {
     return {
       COLORS_MATERIAL_DARK,
-      ICONS,
+      ICONS
     };
   },
   computed: {
@@ -99,41 +152,43 @@ export default {
       let notes = [];
       if (this.vp && this.cs) {
         notes = this.$store.getters.notesVPC.filter(
-          note => note.parent === this.vp.id
-            || note.parent === this.cs.id
-            || !note.parent);
+          note =>
+            note.parent === this.vp.id ||
+            note.parent === this.cs.id ||
+            !note.parent
+        );
       } else if (this.cs) {
         notes = this.$store.getters.notesVPCcs.filter(
-          note => note.parent === this.cs.id
-            || !note.parent);
+          note => note.parent === this.cs.id || !note.parent
+        );
       } else if (this.vp) {
         notes = this.$store.getters.notesVPCvp.filter(
-          note => note.parent === this.vp.id
-            || !note.parent);
+          note => note.parent === this.vp.id || !note.parent
+        );
       }
       return notes;
     },
     notesCS() {
-      const list = this.$store.getters.getNotesByTypes('cs');
+      const list = this.$store.getters.getNotesByTypes("cs");
       return [this.cs].concat(list.filter(note => note.id !== this.cs.id));
     },
     notesVP() {
-      const list = this.$store.getters.getNotesByTypes('vp');
+      const list = this.$store.getters.getNotesByTypes("vp");
       return [this.vp].concat(list.filter(note => note.id !== this.vp.id));
     },
     ...mapState({
       vp: state => state.layout.selectedVP,
       cs: state => state.layout.selectedCS,
       vpcSourceX: state => state.layout.vpcSourceX,
-      showVPC: state => state.layout.showVPC,
-    }),
+      showVPC: state => state.layout.showVPC
+    })
   },
   methods: {
     addNote(e) {
       const offset = totalOffset(this.$refs.paper);
       const noteCenter = {
         x: this.$refs.paper.offsetWidth / 15,
-        y: 20,
+        y: 20
       };
       const x = e.x - noteCenter.x - offset.left;
       const y = e.y - noteCenter.y - offset.top;
@@ -143,13 +198,13 @@ export default {
         top: y / (this.$refs.paper.offsetHeight / 100),
         listLeft: x / (this.$refs.paper.offsetWidth / 100),
         listTop: y / (this.$refs.paper.offsetHeight / 100),
-        type: 'vpc_tmp',
+        type: "vpc_tmp",
         colors: this.$store.getters.canvasSettings.lastUsedColors,
-        image: e.image,
+        image: e.image
       };
 
-      if (e.target.classList.contains('zone')) {
-        note.type = e.target.getAttribute('id');
+      if (e.target.classList.contains("zone")) {
+        note.type = e.target.getAttribute("id");
         // ignore tmp which is at position 0
         if (VPC_VP_TYPES.indexOf(note.type) > 0) {
           note.parent = this.vp.id;
@@ -158,20 +213,26 @@ export default {
           note.parent = this.cs.id;
         }
       }
-      this.$store.dispatch('NOTE_CREATE', note);
+      this.$store.dispatch("NOTE_CREATE", note);
     },
-    ...mapMutations(['LAYOUT_UPDATE']),
+    ...mapMutations(["LAYOUT_UPDATE"])
   },
   watch: {
     // TODO: refactor?
     vp(val, oldVal) {
       if (val) {
-        this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${val.left}%`);
-        this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${val.top}%`);
+        this.$refs.vpc.$el.style.setProperty("--vpc-source-x", `${val.left}%`);
+        this.$refs.vpc.$el.style.setProperty("--vpc-source-y", `${val.top}%`);
         this.LAYOUT_UPDATE({ showVPC: true });
       } else {
-        this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${oldVal.left}%`);
-        this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${oldVal.top}%`);
+        this.$refs.vpc.$el.style.setProperty(
+          "--vpc-source-x",
+          `${oldVal.left}%`
+        );
+        this.$refs.vpc.$el.style.setProperty(
+          "--vpc-source-y",
+          `${oldVal.top}%`
+        );
         if (!this.cs && this.showVPC) {
           Vue.nextTick(() => {
             this.LAYOUT_UPDATE({ showVPC: false });
@@ -181,26 +242,32 @@ export default {
     },
     cs(val, oldVal) {
       if (val) {
-        this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${val.left}%`);
-        this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${val.top}%`);
+        this.$refs.vpc.$el.style.setProperty("--vpc-source-x", `${val.left}%`);
+        this.$refs.vpc.$el.style.setProperty("--vpc-source-y", `${val.top}%`);
         this.LAYOUT_UPDATE({ showVPC: true });
       } else {
-        this.$refs.vpc.$el.style.setProperty('--vpc-source-x', `${oldVal.left}%`);
-        this.$refs.vpc.$el.style.setProperty('--vpc-source-y', `${oldVal.top}%`);
+        this.$refs.vpc.$el.style.setProperty(
+          "--vpc-source-x",
+          `${oldVal.left}%`
+        );
+        this.$refs.vpc.$el.style.setProperty(
+          "--vpc-source-y",
+          `${oldVal.top}%`
+        );
         if (!this.vp && this.showVPC) {
           Vue.nextTick(() => {
             this.LAYOUT_UPDATE({ showVPC: false });
           });
         }
       }
-    },
+    }
   },
   components: {
     Note,
     Zone,
     ImageZone,
-    DrawSurface,
-  },
+    DrawSurface
+  }
 };
 </script>
 
@@ -237,8 +304,8 @@ export default {
   content: "";
   -webkit-filter: blur(10%);
   filter: blur(10%);
-  transition: .5s ease;
-  opacity: .46;
+  transition: 0.5s ease;
+  opacity: 0.46;
   left: 0;
   bottom: 0;
   right: 0;
@@ -265,8 +332,8 @@ export default {
   bottom: 0;
 }
 
-.vpc-vp .toolbar,
-.vpc-cs .toolbar {
+.vpc-vp .v-toolbar,
+.vpc-cs .v-toolbar {
   left: 0;
   top: -48px;
   position: absolute;
@@ -304,11 +371,11 @@ export default {
   top: calc(50% - 120px);
 }
 
-.menu {
+.v-menu {
   max-width: 84%;
 }
 
-.vpc .menu .list {
+.vpc .v-menu .v-list {
   padding: 0;
 }
 

@@ -1,4 +1,4 @@
-const uuidv4 = require('uuid/v4');
+const uuidv4 = require("uuid/v4");
 
 export default class Note {
   constructor(args) {
@@ -10,20 +10,20 @@ export default class Note {
     this.listTop = args.listTop || 0;
     this.angle = args.angle || 0;
     this.height = args.height || 5;
-    this.type = args.type || '';
-    this.text = args.text || '';
-    this.description = args.description || '';
+    this.type = args.type || "";
+    this.text = args.text || "";
+    this.description = args.description || "";
     this.colors = args.colors && args.colors.length > 0 ? args.colors : [0];
-    this.image = args.image || '';
-    this.parent = args.parent || '';
-    this.calcId = args.calcId || '';
+    this.image = args.image || "";
+    this.parent = args.parent || "";
+    this.calcId = args.calcId || "";
     this.values = args.values || {};
     this.calcDisplayR = args.calcDisplayR || null;
     this.calcDisplayG = args.calcDisplayG || null;
     this.calcDisplayB = args.calcDisplayB || null;
-    this.showLabel = 'showLabel' in args ? args.showLabel : true;
-    this.showAsSticky = 'showAsSticky' in args ? args.showAsSticky : true;
-    this.hidden = 'hidden' in args ? args.hidden : false;
+    this.showLabel = "showLabel" in args ? args.showLabel : true;
+    this.showAsSticky = "showAsSticky" in args ? args.showAsSticky : true;
+    this.hidden = "hidden" in args ? args.hidden : false;
   }
 
   static changeColor(colorsSource, index, color) {

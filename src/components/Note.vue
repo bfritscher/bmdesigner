@@ -1,66 +1,182 @@
 <template>
-  <div @click.prevent.stop @wheel="handleWheel" class="draggable note"
-  :class="{'list-mode': listMode, 'hide-colors': hideColors, 'highlight-note': highlight,
-    dragging: dragging, 'no-sticky': !value.showAsSticky}"
-   :style="{'background-color': colorsBG[color], height: `${height}%`, left: `${left}%`, top: `${top}%`, 'box-shadow': boxShadow, opacity, transform}">
-    <div class="colors" v-if="isEdit && $store.state.layout.isEditable && !hideColors">
-      <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" v-for="(colorIndex, i) in value.colors" :value="colorIndex" @input="setColor(i, $event)" :key="i" :small="i > 0" :canDelete="i > 0" :direction="direction"></color-selector>
-      <color-selector :style="{transform: `rotateZ(${-angle}deg)`}" @input="setColor(value.colors.length, $event)" small v-show="value.colors.length < 6" :hide="value.colors" :direction="direction"></color-selector>
+  <div
+    @click.prevent.stop
+    @wheel="handleWheel"
+    class="draggable note"
+    :class="{
+      'list-mode': listMode,
+      'hide-colors': hideColors,
+      'highlight-note': highlight,
+      dragging: dragging,
+      'no-sticky': !value.showAsSticky
+    }"
+    :style="{
+      'background-color': colorsBG[color],
+      height: `${height}%`,
+      left: `${left}%`,
+      top: `${top}%`,
+      'box-shadow': boxShadow,
+      opacity,
+      transform
+    }"
+  >
+    <div
+      class="colors"
+      v-if="isEdit && $store.state.layout.isEditable && !hideColors"
+    >
+      <color-selector
+        :style="{ transform: `rotateZ(${-angle}deg)` }"
+        v-for="(colorIndex, i) in value.colors"
+        :value="colorIndex"
+        @input="setColor(i, $event)"
+        :key="i"
+        :small="i > 0"
+        :canDelete="i > 0"
+        :direction="direction"
+      ></color-selector>
+      <color-selector
+        :style="{ transform: `rotateZ(${-angle}deg)` }"
+        @input="setColor(value.colors.length, $event)"
+        small
+        v-show="value.colors.length < 6"
+        :hide="value.colors"
+        :direction="direction"
+      ></color-selector>
     </div>
     <div class="icons">
       <v-spacer v-if="listMode"></v-spacer>
-      <v-btn @mouseover="moveToTop" v-tooltip:bottom="{ html: value.description }" v-if="value.description" flat icon primary small class="description" light @click.native.prevent.stop="showNoteOptions">
-        <v-icon>description</v-icon>
-      </v-btn>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            @mouseover="moveToTop"
+            v-if="value.description"
+            flat
+            icon
+            color="primary"
+            small
+            class="description"
+            light
+            @click.prevent.stop="showNoteOptions()"
+          >
+            <v-icon>description</v-icon>
+          </v-btn>
+        </template>
+        <span>{{ value.description }}</span>
+      </v-tooltip>
       <v-spacer v-if="!listMode"></v-spacer>
-      <v-btn v-if="isEdit" flat icon primary small class="show-detail" light @click.native.prevent.stop="showNoteOptions()">
+      <v-btn
+        v-if="isEdit"
+        flat
+        icon
+        color="primary"
+        small
+        class="show-detail"
+        light
+        @click.prevent.stop="showNoteOptions()"
+      >
         <v-icon>mode_edit</v-icon>
       </v-btn>
-      <v-btn v-if="value.type=== 'vp' || value.type=== 'cs'" flat icon primary small class="zoom" light @click.native="zoom()">
+      <v-btn
+        v-if="value.type === 'vp' || value.type === 'cs'"
+        flat
+        icon
+        color="primary"
+        small
+        class="zoom"
+        light
+        @click="zoom()"
+      >
         <v-icon>zoom_in</v-icon>
       </v-btn>
     </div>
     <!-- needed for textarea sizing bug -->
-    <div class="text-box" @click.prevent.stop :style="{'background-image': `url(${value.image})`}" :class="{image: value.image}">
-      <textarea placeholer="text" @click.prevent.stop ref="textarea" class="text" :class="{'hide-label': !value.showLabel || canvasSettings.hideAllLabels}" :value="value.text" @input="updateText" @focus="handleFocus" @keydown="handleKeyDown($event)" @keyup="handleKeyUp($event)" :style="{'font-size': `${fontSize}px`}"></textarea>
+    <div
+      class="text-box"
+      @click.prevent.stop
+      :style="{ 'background-image': `url(${value.image})` }"
+      :class="{ image: value.image }"
+    >
+      <textarea
+        placeholer="text"
+        @click.prevent.stop
+        ref="textarea"
+        class="text"
+        :class="{
+          'hide-label': !value.showLabel || canvasSettings.hideAllLabels
+        }"
+        :value="value.text"
+        @input="updateText"
+        @focus="handleFocus"
+        @keydown="handleKeyDown($event)"
+        @keyup="handleKeyUp($event)"
+        :style="{ 'font-size': `${fontSize}px` }"
+      ></textarea>
     </div>
     <div class="calcvar-display">
-      <div class="calcvar-display-b" @click.prevent.stop="showNoteOptions(true)" v-if="calcResults[value.calcId] && value.calcDisplayB" v-tooltip:bottom="{ html: value.calcDisplayB }">
-        {{this.calcResults[value.calcId][value.calcDisplayB] | humanformat}}
-      </div>
-      <div class="calcvar-display-r" @click.prevent.stop="showNoteOptions(true)" v-if="calcResults[value.calcId] && value.calcDisplayR" v-tooltip:bottom="{ html: value.calcDisplayR }">
-        {{this.calcResults[value.calcId][value.calcDisplayR] | humanformat}}
-      </div>
-      <div class="calcvar-display-g" @click.prevent.stop="showNoteOptions(true)" v-if="calcResults[value.calcId] && value.calcDisplayG" v-tooltip:bottom="{ html: value.calcDisplayG }">
-        {{this.calcResults[value.calcId][value.calcDisplayG] | humanformat}}
-      </div>
+      <v-tooltip bottom nudge-bottom="2">
+        <template v-slot:activator="{ on }">
+          <div
+            class="calcvar-display-b"
+            v-on="on"
+            @click.prevent.stop="showNoteOptions(true)"
+            v-if="calcResults[value.calcId] && value.calcDisplayB"
+          >
+            {{ calcResults[value.calcId][value.calcDisplayB] | humanformat }}
+          </div>
+        </template>
+        <span>{{ value.calcDisplayB }}</span>
+      </v-tooltip>
+      <v-tooltip bottom nudge-bottom="2">
+        <template v-slot:activator="{ on }">
+          <div
+            class="calcvar-display-r"
+            v-on="on"
+            @click.prevent.stop="showNoteOptions(true)"
+            v-if="calcResults[value.calcId] && value.calcDisplayR"
+          >
+            {{ calcResults[value.calcId][value.calcDisplayR] | humanformat }}
+          </div>
+        </template>
+        <span>{{ value.calcDisplayR }}</span>
+      </v-tooltip>
+      <v-tooltip bottom nudge-bottom="2">
+        <template v-slot:activator="{ on }">
+          <div
+            class="calcvar-display-g"
+            v-on="on"
+            @click.prevent.stop="showNoteOptions(true)"
+            v-if="calcResults[value.calcId] && value.calcDisplayG"
+          >
+            {{ calcResults[value.calcId][value.calcDisplayG] | humanformat }}
+          </div>
+        </template>
+        <span>{{ value.calcDisplayG }}</span>
+      </v-tooltip>
     </div>
-
   </div>
 </template>
 
 <script>
-import debounce from 'lodash.debounce';
-import isEqual from 'lodash.isequal';
-import interact from 'interactjs';
-import Vue from 'vue';
-import { mapState, mapGetters } from 'vuex';
-import ImageZone from '@/components/ImageZone';
-import Note from '@/models/Note';
-import ColorSelector from '@/components/ColorSelector';
-import * as types from '@/store/mutation-types';
-import { VPC_VP_TYPES, VPC_CS_TYPES, VPC_TYPES } from '@/store';
-import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from '@/utils';
+import debounce from "lodash.debounce";
+import isEqual from "lodash.isequal";
+import interact from "interactjs";
+import Vue from "vue";
+import { mapState, mapGetters } from "vuex";
+import Note from "@/models/Note";
+import ColorSelector from "@/components/ColorSelector";
+import * as types from "@/store/mutation-types";
+import { VPC_VP_TYPES, VPC_CS_TYPES, VPC_TYPES } from "@/store";
+import { COLORS_MATERIAL_DARK, COLORS_MATERIAL } from "@/utils";
 
 const MIN_FONT_SIZE = 10;
 let MAX_FONT_SIZE = 24;
 const MIN_HEIGHT = 5;
 const MAX_HEIGHT = 20;
 
-
 export default {
-  name: 'note',
-  props: ['value', 'parent', 'focus'],
+  name: "note",
+  props: ["value", "parent", "focus"],
   data() {
     return {
       x: 0,
@@ -68,25 +184,25 @@ export default {
       dx: 0,
       height: MIN_HEIGHT,
       dragging: false,
-      dragStartType: '',
+      dragStartType: "",
       fontSize: MAX_FONT_SIZE,
       colorList: COLORS_MATERIAL_DARK,
       colorsBG: COLORS_MATERIAL,
       opacity: 1,
-      boxShadow: '',
-      focused: false,
+      boxShadow: "",
+      focused: false
     };
   },
   mounted() {
     this.debouncedCalculateFontSizeAndHeight = this.createDebouncedCalculateFontSizeAndHeight();
-    window.addEventListener('resize', this.debouncedCalculateFontSizeAndHeight);
+    window.addEventListener("resize", this.debouncedCalculateFontSizeAndHeight);
     interact(this.$el)
       .draggable({
         inertia: true,
         restrict: {
-          restriction: '.canvas',
+          restriction: ".canvas",
           endOnly: true,
-          elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+          elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
         },
         autoScroll: true,
         onstart: () => {
@@ -96,36 +212,46 @@ export default {
           this.y = this.$el.offsetTop;
           this.moveToTop();
         },
-        onmove: (event) => {
+        onmove: event => {
           this.x += event.dx;
           this.y += event.dy;
           this.dx = event.dx;
           const left = (parseFloat(this.x) / this.parent.offsetWidth) * 100;
           const top = (parseFloat(this.y) / this.parent.offsetHeight) * 100;
 
-          let type = '';
+          let type = "";
           if (event.dropzone) {
-            type = event.dropzone.target.getAttribute('id');
+            type = event.dropzone.target.getAttribute("id");
           } else {
-            type = this.parent.getAttribute('data-none');
+            type = this.parent.getAttribute("data-none");
           }
           if (this.listMode) {
-            this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, listLeft: left, listTop: top, type });
+            this.$store.dispatch("NOTE_MOVE_LOCAL", {
+              note: this.value,
+              listLeft: left,
+              listTop: top,
+              type
+            });
           } else {
-            this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, left, top, type });
+            this.$store.dispatch("NOTE_MOVE_LOCAL", {
+              note: this.value,
+              left,
+              top,
+              type
+            });
           }
 
           this.sortSortable(type, {
-            exclude: this.value,
+            exclude: this.value
           });
         },
-        onend: (event) => {
+        onend: event => {
           this.dragging = false;
-          let newtype = '';
+          let newtype = "";
           if (event.relatedTarget) {
-            newtype = event.relatedTarget.getAttribute('id');
+            newtype = event.relatedTarget.getAttribute("id");
           } else {
-            newtype = this.parent.getAttribute('data-none');
+            newtype = this.parent.getAttribute("data-none");
           }
 
           const payload = {
@@ -133,19 +259,25 @@ export default {
             changes: {
               type: newtype,
               left: this.left,
-              top: this.top,
-            },
+              top: this.top
+            }
           };
           // TODO: refactor to make note note dependent almost same as in VPC
           // ignore tmp which is at position 0
-          if (this.$store.state.layout.selectedVP && VPC_VP_TYPES.indexOf(newtype) > 0) {
+          if (
+            this.$store.state.layout.selectedVP &&
+            VPC_VP_TYPES.indexOf(newtype) > 0
+          ) {
             payload.changes.parent = this.$store.state.layout.selectedVP.id;
           }
-          if (this.$store.state.layout.selectedCS && VPC_CS_TYPES.indexOf(newtype) > 0) {
+          if (
+            this.$store.state.layout.selectedCS &&
+            VPC_CS_TYPES.indexOf(newtype) > 0
+          ) {
             payload.changes.parent = this.$store.state.layout.selectedCS.id;
           }
           if (this.$store.state.layout.isEditable) {
-            this.$store.dispatch('NOTE_UPDATE', payload);
+            this.$store.dispatch("NOTE_UPDATE", payload);
           }
 
           // update list modes
@@ -159,30 +291,45 @@ export default {
           if (this.listMode) {
             if (this.value.left === 0 && this.value.top === 0) {
               // never been positionned in free mode take list position
-              this.$store.dispatch('NOTE_MOVE', { note: this.value, left: this.value.listLeft, top: this.value.listTop });
+              this.$store.dispatch("NOTE_MOVE", {
+                note: this.value,
+                left: this.value.listLeft,
+                top: this.value.listTop
+              });
             } else if (this.dragStartType !== newtype) {
               // ratio if zone changed
               const start = document.getElementById(this.dragStartType);
               const end = document.getElementById(newtype);
               if (start && end) {
-                const left = (((this.value.left - parseFloat(start.style.left))
-                  / parseFloat(start.style.width)) * parseFloat(end.style.width))
-                  + parseFloat(end.style.left);
+                const left =
+                  ((this.value.left - parseFloat(start.style.left)) /
+                    parseFloat(start.style.width)) *
+                    parseFloat(end.style.width) +
+                  parseFloat(end.style.left);
 
-                const top = (((this.value.top - parseFloat(start.style.top))
-                  / parseFloat(start.style.height)) * parseFloat(end.style.height))
-                  + parseFloat(end.style.top);
-                this.$store.dispatch('NOTE_MOVE', { note: this.value, left, top });
+                const top =
+                  ((this.value.top - parseFloat(start.style.top)) /
+                    parseFloat(start.style.height)) *
+                    parseFloat(end.style.height) +
+                  parseFloat(end.style.top);
+                this.$store.dispatch("NOTE_MOVE", {
+                  note: this.value,
+                  left,
+                  top
+                });
               }
             }
           }
-        },
+        }
       })
       .gesturable({
-        onmove: (event) => {
+        onmove: event => {
           const angle = this.value.angle || 0;
-          this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: angle + event.da });
-        },
+          this.$store.dispatch("NOTE_MOVE", {
+            note: this.value,
+            angle: angle + event.da
+          });
+        }
       });
 
     this.setBoxShadow();
@@ -192,12 +339,15 @@ export default {
     });
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.debouncedCalculateFontSizeAndHeight);
+    window.removeEventListener(
+      "resize",
+      this.debouncedCalculateFontSizeAndHeight
+    );
   },
   computed: {
-    ...mapGetters(['canvasSettings']),
+    ...mapGetters(["canvasSettings"]),
     ...mapState({
-      calcResults: 'calcResults',
+      calcResults: "calcResults"
     }),
     colorsVisibility() {
       return this.canvasSettings.colorsVisibility;
@@ -215,19 +365,25 @@ export default {
       return this.value.colors[0];
     },
     direction() {
-      return this.value.top > 70 ? 'top' : 'bottom';
+      return this.value.top > 70 ? "top" : "bottom";
     },
     isEdit() {
-      if (this.$store.state.layout.focusedNote && this.value &&
-        this.$store.state.layout.focusedNote.id === this.value.id) {
+      // TODO: review
+      if (
+        this.$store.state.layout.focusedNote &&
+        this.value &&
+        this.$store.state.layout.focusedNote.id === this.value.id
+      ) {
         if (!this.focused) {
           Vue.nextTick(() => {
             this.$refs.textarea.focus();
+            //eslint-disable-next-line
             this.focused = true;
           });
         }
         return true;
       }
+      //eslint-disable-next-line
       this.focused = false;
       return false;
     },
@@ -241,17 +397,22 @@ export default {
       return this.listMode ? 0 : this.value.angle;
     },
     highlight() {
-      return [this.$route.params.zoom1, this.$route.params.zoom2].indexOf(this.value['.key']) > -1;
+      return (
+        [this.$route.params.zoom1, this.$route.params.zoom2].indexOf(
+          this.value[".key"]
+        ) > -1
+      );
     },
     transform() {
       if (this.dragging) {
-        return `rotateZ(${this.angle - (this.dx > 0 ? Math.min(this.dx, 8) : Math.max(this.dx, -8))}deg)`;
+        return `rotateZ(${this.angle -
+          (this.dx > 0 ? Math.min(this.dx, 8) : Math.max(this.dx, -8))}deg)`;
       }
       return `rotateZ(${this.angle}deg)`;
     },
     showAsSticky() {
       return this.value.showAsSticky;
-    },
+    }
   },
   watch: {
     isEdit(val) {
@@ -286,16 +447,19 @@ export default {
         this.setBoxShadow();
       }
     },
-    'value.hidden': function valueHidden(after, before) {
+    "value.hidden": function valueHidden(after, before) {
       if (after !== before) {
         this.setOpacity();
       }
     },
-    '$store.state.layout.presentation': function layoutPresentation(after, before) {
+    "$store.state.layout.presentation": function layoutPresentation(
+      after,
+      before
+    ) {
       if (after !== before) {
         this.setOpacity();
       }
-    },
+    }
   },
   methods: {
     setOpacity() {
@@ -303,43 +467,51 @@ export default {
         this.opacity = 0;
       } else {
         // calculate visibility based on colors
-        this.opacity = this.colorsVisibility.reduce((totalOpacity, opacity, colorId) => {
-          if (this.value.colors.includes(colorId)) {
-            totalOpacity += opacity;
-          }
-          return Math.min(totalOpacity, 1);
-        }, 0);
+        this.opacity = this.colorsVisibility.reduce(
+          (totalOpacity, opacity, colorId) => {
+            if (this.value.colors.includes(colorId)) {
+              totalOpacity += opacity;
+            }
+            return Math.min(totalOpacity, 1);
+          },
+          0
+        );
       }
     },
     setBoxShadow() {
-      this.boxShadow = this.value.colors.reduce((shadows, colorCode, i) => {
-        if (this.hideColors) {
+      this.boxShadow = this.value.colors
+        .reduce((shadows, colorCode, i) => {
+          if (this.hideColors) {
+            return shadows;
+          } else if (this.listMode || !this.value.showAsSticky) {
+            const size = (i + 1) * 5 + i * 2;
+            shadows.push(`-${size}px 0px ${COLORS_MATERIAL[colorCode]}`);
+            shadows.push(
+              `-${size + 2}px 0px ${this.dragging ? "transparent" : "#fff"}`
+            );
+          } else if (i === 0) {
+            shadows.push("0px 1px 2px rgba(0, 0, 0, 0.3)");
+          } else {
+            const size = i * 5 + 1;
+            shadows.push(`-${size}px -${size}px ${COLORS_MATERIAL[colorCode]}`);
+          }
           return shadows;
-        } else if (this.listMode || !this.value.showAsSticky) {
-          const size = ((i + 1) * 5) + (i * 2);
-          shadows.push(`-${size}px 0px ${COLORS_MATERIAL[colorCode]}`);
-          shadows.push(`-${size + 2}px 0px ${this.dragging ? 'transparent' : '#fff'}`);
-        } else if (i === 0) {
-          shadows.push('0px 1px 2px rgba(0, 0, 0, 0.3)');
-        } else {
-          const size = (i * 5) + 1;
-          shadows.push(`-${size}px -${size}px ${COLORS_MATERIAL[colorCode]}`);
-        }
-        return shadows;
-      }, []).join(',');
+        }, [])
+        .join(",");
     },
     showNoteOptions(showNoteOptionsCalc) {
       const payload = {
         showNoteOptions: true,
-        focusedNote: this.value,
+        focusedNote: this.value
       };
-      if (typeof showNoteOptionsCalc !== 'undefined') {
+      if (typeof showNoteOptionsCalc !== "undefined") {
         payload.showNoteOptionsCalc = showNoteOptionsCalc;
       }
       this.$store.commit(types.LAYOUT_UPDATE, payload);
     },
     handleKeyDown(e) {
-      const allowEdit = this.$store.state.layout.isEditable && !this.value.isGame;
+      const allowEdit =
+        this.$store.state.layout.isEditable && !this.value.isGame;
       if (!allowEdit) {
         e.preventDefault();
       }
@@ -350,14 +522,23 @@ export default {
         return;
       }
       if (e.keyCode === 13 && e.ctrlKey) {
-        const left = (this.$el.offsetLeft / this.$el.parentElement.offsetWidth) * 100;
-        const top = ((this.$el.offsetTop + this.$el.offsetHeight + 20)
-          / this.parent.offsetHeight) * 100;
-        this.$store.dispatch('NOTE_CREATE', { type: this.value.type, left, top, listLeft: left, listTop: top });
+        const left =
+          (this.$el.offsetLeft / this.$el.parentElement.offsetWidth) * 100;
+        const top =
+          ((this.$el.offsetTop + this.$el.offsetHeight + 20) /
+            this.parent.offsetHeight) *
+          100;
+        this.$store.dispatch("NOTE_CREATE", {
+          type: this.value.type,
+          left,
+          top,
+          listLeft: left,
+          listTop: top
+        });
         return;
       }
       if (e.keyCode === 27) {
-        if (this.value.text === '') {
+        if (this.value.text === "") {
           this.removeIfEmpty();
           return;
         }
@@ -365,7 +546,7 @@ export default {
       this.debouncedCalculateFontSizeAndHeight();
     },
     moveToTop() {
-      this.$store.dispatch('NOTE_MOVE_TOP', this.value['.key']);
+      this.$store.dispatch("NOTE_MOVE_TOP", this.value[".key"]);
     },
     handleFocus() {
       this.$store.commit(types.LAYOUT_UPDATE, { focusedNote: this.value });
@@ -374,12 +555,15 @@ export default {
     handleWheel(e) {
       if (!this.listMode) {
         const delta = (e.deltaY - (e.deltaY % 100)) / 50;
-        this.$store.dispatch('NOTE_MOVE', { note: this.value, angle: this.value.angle + delta });
+        this.$store.dispatch("NOTE_MOVE", {
+          note: this.value,
+          angle: this.value.angle + delta
+        });
       }
     },
     removeIfEmpty() {
-      if (this.value.text === '' && this.value.image === '') {
-        this.$store.dispatch('NOTE_DELETE', this.value);
+      if (this.value.text === "" && this.value.image === "") {
+        this.$store.dispatch("NOTE_DELETE", this.value);
       }
     }, // TODO move?
     sortSortable(type, options) {
@@ -398,22 +582,22 @@ export default {
         zoneLeft = parseFloat(zone.style.left);
         zoneHeight = parseFloat(zone.style.height);
         zoneWidth = parseFloat(zone.style.width);
-        if (type === 'solution') {
+        if (type === "solution") {
           zoneWidth = 20;
           zoneLeft = 20;
         }
-        if (type === 'pain_gain') {
+        if (type === "pain_gain") {
           zoneWidth = 20;
           zoneLeft = 60;
         }
-        if (type === 'job') {
+        if (type === "job") {
           zoneWidth = 20;
           zoneLeft = 80;
         }
       }
       let ordered = this.$store.getters.getNotesByTypes(type);
       if (VPC_TYPES.includes(type)) {
-        ordered = ordered.filter(((note) => {
+        ordered = ordered.filter(note => {
           let matched = false;
           if (this.$store.state.layout.selectedVP) {
             matched = note.parent === this.$store.state.layout.selectedVP.id;
@@ -422,7 +606,7 @@ export default {
             matched = note.parent === this.$store.state.layout.selectedCS.id;
           }
           return matched;
-        }));
+        });
       }
 
       ordered.sort((a, b) => {
@@ -437,26 +621,29 @@ export default {
 
       let top = zoneTop + offsetTop;
       let left = zoneLeft + offsetLeft;
-      ordered.forEach((note) => {
+      ordered.forEach(note => {
         if (top + note.height > zoneTop + zoneHeight) {
           top = zoneTop + offsetTop;
-          left += (zoneWidth / 2.0) + marginLeft;
+          left += zoneWidth / 2.0 + marginLeft;
         }
 
         // only dispatch for notes not in the exclude list
         if (!(options && options.exclude && options.exclude.id === note.id)) {
-          this.$store.dispatch(options && options.save ? 'NOTE_MOVE' : 'NOTE_MOVE_LOCAL', {
-            listTop: top,
-            listLeft: left,
-            note,
-          });
+          this.$store.dispatch(
+            options && options.save ? "NOTE_MOVE" : "NOTE_MOVE_LOCAL",
+            {
+              listTop: top,
+              listLeft: left,
+              note
+            }
+          );
         }
         top += note.height + marginTop;
       });
     },
     createDebouncedCalculateFontSizeAndHeight() {
       return debounce(this.calculateFontSizeAndHeight, 300, {
-        leading: true,
+        leading: true
       });
     },
     calculateFontSizeAndHeight(previous) {
@@ -471,9 +658,8 @@ export default {
       }
       previous.unshift({
         height: this.height,
-        fontSize: this.fontSize,
+        fontSize: this.fontSize
       });
-
 
       let minedOutFont = false;
       let maxedOutFont = false;
@@ -481,7 +667,7 @@ export default {
       let maxedOutHeight = false;
       let fontChanged = false;
 
-      if ((this.$refs.textarea.scrollWidth > this.$refs.textarea.offsetWidth)) {
+      if (this.$refs.textarea.scrollWidth > this.$refs.textarea.offsetWidth) {
         if (this.fontSize > MIN_FONT_SIZE) {
           this.fontSize -= 1;
           fontChanged = true;
@@ -506,7 +692,10 @@ export default {
         }
       }
 
-      if (this.$refs.textarea.scrollWidth <= this.$refs.textarea.offsetWidth && !fontChanged) {
+      if (
+        this.$refs.textarea.scrollWidth <= this.$refs.textarea.offsetWidth &&
+        !fontChanged
+      ) {
         if (this.fontSize < MAX_FONT_SIZE) {
           this.fontSize += 1;
           fontChanged = true;
@@ -515,8 +704,10 @@ export default {
         }
       }
 
-      if (this.$refs.textarea.scrollHeight <= this.$refs.textarea.offsetHeight &&
-          (!fontChanged || minedOutFont)) {
+      if (
+        this.$refs.textarea.scrollHeight <= this.$refs.textarea.offsetHeight &&
+        (!fontChanged || minedOutFont)
+      ) {
         if (this.fontSize < MAX_FONT_SIZE && !minedOutFont) {
           this.fontSize += 1;
         } else {
@@ -529,21 +720,32 @@ export default {
         }
       }
       // store height to compute list mode positions
-      this.$store.dispatch('NOTE_MOVE_LOCAL', { note: this.value, height: this.height });
+      this.$store.dispatch("NOTE_MOVE_LOCAL", {
+        note: this.value,
+        height: this.height
+      });
       // loop if not min/maxed or in stable state.
       let twoAgo;
       if (previous.length > 1) {
         twoAgo = previous.pop();
       }
-      if (!((maxedOutHeight && minedOutFont) || (minedOutHeight && maxedOutFont))
-        && (!twoAgo ||
-          !(twoAgo.height === this.height && twoAgo.fontSize === this.fontSize))) {
+      if (
+        !(
+          (maxedOutHeight && minedOutFont) ||
+          (minedOutHeight && maxedOutFont)
+        ) &&
+        (!twoAgo ||
+          !(twoAgo.height === this.height && twoAgo.fontSize === this.fontSize))
+      ) {
         Vue.nextTick(() => {
           this.calculateFontSizeAndHeight(previous);
         });
       } else {
         // done
-        this.$store.dispatch('NOTE_MOVE', { note: this.value, height: this.height });
+        this.$store.dispatch("NOTE_MOVE", {
+          note: this.value,
+          height: this.height
+        });
         if (this.listMode) {
           this.sortSortable(this.value.type, { save: true });
         }
@@ -551,8 +753,13 @@ export default {
     },
     setColor(position, colorId) {
       const colors = Note.changeColor(this.value.colors, position, colorId);
-      this.$store.dispatch('NOTE_UPDATE', { changes: { colors }, note: this.value });
-      this.$store.dispatch('canvasUserSettingsUpdate', { lastUsedColors: colors });
+      this.$store.dispatch("NOTE_UPDATE", {
+        changes: { colors },
+        note: this.value
+      });
+      this.$store.dispatch("canvasUserSettingsUpdate", {
+        lastUsedColors: colors
+      });
     },
     zoom() {
       const payload = {};
@@ -560,19 +767,20 @@ export default {
       this.$store.commit(types.LAYOUT_UPDATE, payload);
     },
     updateText(e) {
-      this.$store.dispatch('NOTE_UPDATE', { changes: { text: e.target.value }, note: this.value });
-    },
+      this.$store.dispatch("NOTE_UPDATE", {
+        changes: { text: e.target.value },
+        note: this.value
+      });
+    }
   },
   components: {
-    ColorSelector,
-    ImageZone,
-  },
+    ColorSelector
+  }
 };
 </script>
 
 <style>
-
-.bmc.print .note .icons .btn {
+.bmc.print .note .icons .v-btn {
   display: none;
 }
 
@@ -589,12 +797,13 @@ export default {
   top: 0;
   left: 0;
   line-height: 1.1;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .note.highlight-note:before {
-  box-shadow: 0 0 10px 3px #F44336;
-  content: '';
+  box-shadow: 0 0 10px 3px #f44336;
+  content: "";
   display: block;
   height: 100%;
   width: 100%;
@@ -667,7 +876,7 @@ export default {
   border: none;
   outline: none;
   background-color: transparent;
-  font-family: 'Itim', cursive, sans-serif;
+  font-family: "Itim", cursive, sans-serif;
   color: #333;
 }
 
@@ -694,7 +903,7 @@ export default {
   bottom: 0;
 }
 
-.note .icons .btn {
+.note .icons .v-btn {
   margin: 0;
   pointer-events: all;
 }
@@ -709,15 +918,9 @@ export default {
   transition: opacity 0.1s ease;
 }
 
-.note .colors .btn {
+.note .colors .v-btn {
   margin: 4px;
 }
-
-.btn--floating.btn--small .icon:not(:only-of-type):last-of-type {
-  left: calc(50% - 9px);
-  top: calc(50% - 9px);
-}
-
 
 .note .calcvar-display {
   position: absolute;
@@ -726,27 +929,27 @@ export default {
   display: flex;
 }
 
-.note .calcvar-display>div {
+.note .calcvar-display div {
   box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px;
   border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
   padding: 4px;
-  font-family: 'Itim', cursive;
+  font-family: "Itim", cursive;
   font-weight: bold;
   margin: 0 4px;
 }
 
 .note .calcvar-display-r {
-  color: #D32F2F;
+  color: #d32f2f;
   background-color: rgba(229, 115, 115, 0.7);
 }
 
 .note .calcvar-display-g {
-  color: #558B2F;
+  color: #558b2f;
   background-color: rgba(139, 195, 74, 0.7);
 }
 
 .note .calcvar-display-b {
-  color: #2196F3;
+  color: #2196f3;
   background-color: rgba(144, 202, 249, 0.7);
 }
 </style>

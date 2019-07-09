@@ -2,17 +2,23 @@
   <div class="draw-surface">
     <canvas ref="canvas"></canvas>
     <div>
-      <v-btn class="color" @click.native="color(c)" v-for="c in COLORS_GESTURE" :key="c" :style="{'background-color': c}">
+      <v-btn
+        class="color"
+        @click="color(c)"
+        v-for="c in COLORS_GESTURE"
+        :key="c"
+        :style="{ 'background-color': c }"
+      >
         <v-icon v-if="penColor === c">check</v-icon>
       </v-btn>
-      <v-btn small @click.native="signaturePad.clear">clear</v-btn>
+      <v-btn small @click="signaturePad.clear()">clear</v-btn>
     </div>
   </div>
 </template>
 
 <script>
-import { COLORS_GESTURE } from '@/utils';
-import SignaturePad from './../../static/libs/signature_pad.min';
+import { COLORS_GESTURE } from "@/utils";
+import SignaturePad from "signature_pad/dist/signature_pad";
 
 export default {
   data() {
@@ -22,13 +28,13 @@ export default {
       width: 0,
       height: 0,
       COLORS_GESTURE,
-      penColor: '#F00',
+      penColor: "#F00"
     };
   },
   mounted() {
     const canvas = this.$refs.canvas;
     this.signaturePad = new SignaturePad(this.$refs.canvas, {
-      backgroundColor: 'rgba(255, 255, 255, 0)',
+      backgroundColor: "rgba(255, 255, 255, 0)",
       penColor: this.penColor,
       maxWidth: 3,
       minWidth: 1,
@@ -36,17 +42,17 @@ export default {
         this.data = this.signaturePad.toData();
         this.width = canvas.width;
         this.height = canvas.height;
-      },
+      }
     });
-    window.addEventListener('resize', this.resizeCanvas);
+    window.addEventListener("resize", this.resizeCanvas);
     this.resizeCanvas();
   },
   watch: {
-    '$store.state.layout.showDrawSurface': function show(val) {
+    "$store.state.layout.showDrawSurface": function show(val) {
       if (val) {
         this.resizeCanvas();
       }
-    },
+    }
   },
   methods: {
     color(color) {
@@ -62,18 +68,25 @@ export default {
         /*
         canvas.getContext('2d').scale(ratio, ratio);
         */
-        this.signaturePad.fromData(this.data.map(s => s.map((p) => {
-          p.x = (p.x / this.width) * canvas.width;
-          p.y = (p.y / this.height) * canvas.height;
-          return p;
-        })));
+        this.signaturePad.fromData(
+          this.data.map(s => {
+            return {
+              color: s.color,
+              points: s.points.map(p => {
+                p.x = (p.x / this.width) * canvas.width;
+                p.y = (p.y / this.height) * canvas.height;
+                return p;
+              })
+            };
+          })
+        );
         this.width = canvas.width;
         this.height = canvas.height;
       } else {
         this.signaturePad.clear(); // otherwise isEmpty() might return incorrect value
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -94,9 +107,10 @@ export default {
 
 .draw-surface .color {
   min-width: 36px;
+  max-width: 36px;
 }
 
-.draw-surface .color .btn__content {
+.draw-surface .color .v-btn__content {
   padding: 0;
 }
 </style>
