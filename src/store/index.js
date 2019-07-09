@@ -221,6 +221,7 @@ const actions = {
     if (
       payload.note[".key"] &&
       state.currentUser &&
+      state.canvas.users &&
       state.currentUser.uid in state.canvas.users
     ) {
       refs.notes.child(payload.note[".key"]).update(payload.changes);
@@ -400,6 +401,7 @@ const actions = {
             if (
               state.currentUser &&
               state.currentUser.uid &&
+              state.canvas.users &&
               state.currentUser.uid in state.canvas.users
             ) {
               commit(types.LAYOUT_UPDATE, { isEditable: true });
@@ -520,7 +522,11 @@ const actions = {
   },
   updateCurrentPresentationKey({ commit, state }, value) {
     commit(types.PRESENTATION_KEY, value);
-    if (state.currentUser && state.currentUser.uid in state.canvas.users) {
+    if (
+      state.currentUser &&
+      state.canvas.users &&
+      state.currentUser.uid in state.canvas.users
+    ) {
       refs.canvas.child("currentPresentationKey").set(value);
     }
   },
@@ -547,7 +553,9 @@ const actions = {
       presentation: "",
       showDrawSurface: false,
       isEditable:
-        state.currentUser && state.currentUser.uid in state.canvas.users
+        state.currentUser &&
+        state.canvas.users &&
+        state.currentUser.uid in state.canvas.users
     });
   },
   presentationNext({ state }) {
