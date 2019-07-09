@@ -17,7 +17,11 @@
             class="vpc-vp elevation-10"
             :class="{ 'vpc-both': cs && vp }"
           >
-            <v-toolbar dense :class="COLORS_MATERIAL_DARK[vp.colors[0]]" @click.native.prevent.stop>
+            <v-toolbar
+              dense
+              :class="COLORS_MATERIAL_DARK[vp.colors[0]]"
+              @click.native.prevent.stop
+            >
               <v-menu :nudge-width="100">
                 <template v-slot:activator="{ on }">
                   <v-toolbar-title v-on="on">
@@ -69,7 +73,11 @@
             class="vpc-cs elevation-10"
             :class="{ 'vpc-both': cs && vp }"
           >
-            <v-toolbar dense :class="COLORS_MATERIAL_DARK[cs.colors[0]]" @click.native.prevent.stop>
+            <v-toolbar
+              dense
+              :class="COLORS_MATERIAL_DARK[cs.colors[0]]"
+              @click.native.prevent.stop
+            >
               <v-menu :nudge-width="100">
                 <template v-slot:activator="{ on }">
                   <v-toolbar-title v-on="on">

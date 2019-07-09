@@ -479,9 +479,7 @@
           max-width="500px"
         >
           <template v-slot:activator="{ on }">
-            <v-toolbar-title :key="title" v-on="on">{{
-              title
-            }}</v-toolbar-title>
+            <v-toolbar-title v-on="on"> {{ title }}</v-toolbar-title>
           </template>
 
           <v-card>
