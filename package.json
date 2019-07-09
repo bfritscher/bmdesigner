@@ -10,6 +10,8 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@sentry/browser": "^5.5.0",
+    "@sentry/integrations": "^5.5.0",
     "color-hash": "^1.0.3",
     "color-thief": "^2.2.5",
     "core-js": "^2.6.5",
@@ -23,7 +25,6 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "mathjs": "^6.0.3",
-    "raven-js": "^3.27.2",
     "register-service-worker": "^1.6.2",
     "signature_pad": "^3.0.0-beta.3",
     "toposort": "^2.0.2",

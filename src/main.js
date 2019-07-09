@@ -4,8 +4,8 @@ import VueTimeago from "vue-timeago";
 import humanFormat from "human-format";
 import { auth, db } from "@/utils/firebase";
 import VueAnalytics from "vue-analytics";
-import Raven from "raven-js";
-import RavenVue from "raven-js/plugins/vue";
+import * as Sentry from "@sentry/browser";
+import * as Integrations from "@sentry/integrations";
 import { mapActions } from "vuex";
 
 import App from "./App";
@@ -27,20 +27,12 @@ Vue.use(VueAnalytics, {
 
 Vue.filter("humanformat", input => (isNaN(input) ? input : humanFormat(input)));
 
-Raven.config("https://a3e9d60494a249d4bba6e6244380e411@sentry.j42.org/15", {
-  environment: process.env.NODE_ENV,
-  release: process.env.COMMIT_HASH,
-  shouldSendCallback: data => {
-    if (process.env.NODE_ENV === "development") {
-      // eslint-disable-next-line
-      console.debug(data);
-      return false;
-    }
-    return true;
-  }
-})
-  .addPlugin(RavenVue, Vue)
-  .install();
+if (process.env.NODE_ENV === "production") {
+  Sentry.init({
+    dsn: "https://a3e9d60494a249d4bba6e6244380e411@sentry.j42.org/15",
+    integrations: [new Integrations.Vue({ Vue, attachProps: true })]
+  });
+}
 
 Vue.config.productionTip = false;
 
