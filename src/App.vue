@@ -679,7 +679,7 @@ export default {
         : { text: "Display as lists", icon: "list" };
     },
     accessTypeSwitch() {
-      return this.$store.state.canvas.info.public
+      return this.$store.state.canvas && this.$store.state.canvas.info.public
         ? { text: "Make private", icon: "public" }
         : { text: "Make public", icon: "lock" };
     },

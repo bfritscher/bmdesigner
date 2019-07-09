@@ -100,12 +100,12 @@ export default {
         },
         ondrop: event => {
           const draggableElement = event.relatedTarget;
+          draggableElement.style.left = 0;
+          draggableElement.style.top = 0;
           this.$refs.list.insertBefore(
             draggableElement,
             this.$refs.placeholder
           );
-          draggableElement.style.left = 0;
-          draggableElement.style.top = 0;
           this.$refs.placeholder.style.display = "none";
           draggableElement.classList.remove("can-drop");
           Vue.nextTick(() => {
@@ -121,7 +121,10 @@ export default {
   },
   computed: {
     notes() {
-      if (!this.$store.state.canvas.notesPresentationOrder) {
+      if (
+        !this.$store.state.canvas ||
+        !this.$store.state.canvas.notesPresentationOrder
+      ) {
         return [];
       }
       return this.$store.state.canvas.notesPresentationOrder

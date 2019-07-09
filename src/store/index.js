@@ -129,7 +129,7 @@ const gettersDefinition = {
     if (!Array.isArray(list)) {
       list = [list];
     }
-    if (state.canvas.notes) {
+    if (state.canvas && state.canvas.notes) {
       if (!state.canvas.notesOrder) {
         Vue.set(state.canvas, "notesOrder", []);
       }
@@ -168,10 +168,15 @@ const gettersDefinition = {
       ? state.user.projects[state.canvas[".key"]].settings
       : Object.assign({}, DEFAULT_USER_CANVAS_SETTINGS),
   userSettings: state => state.user.settings || DEFAULT_USER_SETTINGS,
-  calcIds: state =>
-    Object.values(state.canvas.notes)
-      .filter(n => n.calcId)
-      .map(n => n.calcId)
+  calcIds: state => {
+    if (state.canvas && state.canvas.notes) {
+      return Object.values(state.canvas.notes)
+        .filter(n => n.calcId)
+        .map(n => n.calcId);
+    } else {
+      return [];
+    }
+  }
 };
 
 const refs = {};
@@ -180,14 +185,18 @@ const refs = {};
 const actions = {
   NOTE_CREATE({ state, commit }, payload) {
     if (state.layout.isEditable) {
+      let notesPresentationOrder;
+      if (!state.canvas.notesPresentationOrder) {
+        notesPresentationOrder = Object.keys(state.canvas.notes || {});
+      } else {
+        notesPresentationOrder = state.canvas.notesPresentationOrder.slice(0);
+      }
+
       const note = new Note(payload);
       const key = refs.notes.push(note).key;
       const notesOrder = state.canvas.notesOrder.slice(0);
       notesOrder.push(key);
       refs.canvas.child("notesOrder").set(notesOrder);
-      const notesPresentationOrder = state.canvas.notesPresentationOrder.slice(
-        0
-      );
       notesPresentationOrder.push(key);
       refs.canvas.child("notesPresentationOrder").set(notesPresentationOrder);
       commit(types.LAYOUT_UPDATE, { focusedNote: note });
@@ -310,7 +319,9 @@ const actions = {
   unbindCanvas: firebaseAction(({ state, unbindFirebaseRef }) => {
     if (refs.canvas) {
       // fake immediat feedback
-      state.user.projects[state.canvas[".key"]].info = state.canvas.info;
+      if (state.canvas && state.canvas.info) {
+        state.user.projects[state.canvas[".key"]].info = state.canvas.info;
+      }
       refs.canvas
         .child("users")
         .child(state.currentUser.uid)
@@ -590,6 +601,7 @@ const actions = {
     }
   },
   zoomNoteKey({ commit, state }, key) {
+    if (!state.canvas.notes || !key) return false;
     const note = state.canvas.notes[key];
     if (!note) {
       return false;
@@ -660,7 +672,7 @@ const mutations = {
     Vue.set(payload.note.values, payload.key, payload.value);
   },
   [types.SOLVE_CALC](state) {
-    if (state.canvas.notes) {
+    if (state.canvas && state.canvas.notes) {
       Vue.set(state, "calcResults", solve(Object.values(state.canvas.notes)));
     }
   },
