@@ -165,7 +165,7 @@
       </image-zone>
       <vpc></vpc>
       <game-status-bar
-        v-if="canvas.info.isGame"
+        v-if="canvas.info && canvas.info.isGame"
         @won="showCongrats = true"
       ></game-status-bar>
       <pop-in-text v-if="showCongrats" v-model="showCongrats"></pop-in-text>

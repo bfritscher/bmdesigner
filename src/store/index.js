@@ -324,7 +324,7 @@ const actions = {
   unbindCanvas: firebaseAction(({ state, unbindFirebaseRef }) => {
     if (refs.canvas) {
       // fake immediat feedback
-      if (state.canvas && state.canvas.info) {
+      if (state.canvas && state.canvas.info && state.canvas[".key"] && state.user.projects[state.canvas[".key"]]) {
         state.user.projects[state.canvas[".key"]].info = state.canvas.info;
       }
       refs.canvas
@@ -671,6 +671,9 @@ const mutations = {
     delete state.canvas.notes[payload[".id"]];
   },
   [types.NOTE_MOVE_TOP](state, key) {
+    if (!state.canvas.notesOrder) {
+      return;
+    }
     const index = state.canvas.notesOrder.indexOf(key);
     if (index > -1) {
       state.canvas.notesOrder.splice(index, 1);

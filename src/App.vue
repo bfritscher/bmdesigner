@@ -100,7 +100,7 @@
             <v-list-tile-title>Ideas &amp; Feedback</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <div v-if="$route.name === 'bmc'">
+        <div v-if="$route.name === 'bmc' && $store.state.canvas">
           <v-divider class="my-2"></v-divider>
           <v-subheader>DISPLAY OPTIONS</v-subheader>
 
@@ -647,7 +647,7 @@ export default {
           ? this.$route.meta.title
           : "";
       if (this.isModelEdit) {
-        title += `${this.$store.state.canvas.info.name || "Loading"} | `;
+        title += `${this.$store.state.canvas && this.$store.state.canvas.info.name || "Loading"} | `;
         if (this.$store.state.layout.showVPC) {
           if (this.$store.state.layout.selectedVP) {
             title += "Value Proposition Zoom";
