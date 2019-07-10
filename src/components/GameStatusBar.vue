@@ -88,7 +88,10 @@ export default {
   },
   filters: {
     fixed(value, n) {
-      return value.toFixed(n || 0);
+      if (!isNaN(value)) {
+        return Number(value).toFixed(n || 0);
+      }
+      return value;
     }
   }
 };
