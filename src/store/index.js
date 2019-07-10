@@ -191,10 +191,14 @@ const actions = {
       } else {
         notesPresentationOrder = state.canvas.notesPresentationOrder.slice(0);
       }
-
+      let notesOrder;
+      if (!state.canvas.notesOrder) {
+        notesOrder = Object.keys(state.canvas.notes || {});
+      } else {
+        notesOrder = state.canvas.notesOrder.slice(0);
+      }
       const note = new Note(payload);
       const key = refs.notes.push(note).key;
-      const notesOrder = state.canvas.notesOrder.slice(0);
       notesOrder.push(key);
       refs.canvas.child("notesOrder").set(notesOrder);
       notesPresentationOrder.push(key);
