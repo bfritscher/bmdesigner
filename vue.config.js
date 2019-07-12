@@ -9,5 +9,10 @@ module.exports = {
       );
       return definitions;
     });
+  },
+  pwa: {
+    workboxOptions: {
+      skipWaiting: true
+    }
   }
 };
