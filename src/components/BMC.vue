@@ -197,7 +197,7 @@
             }}</v-icon>
           </v-btn>
         </div>
-        <span class="presentation-index"
+        <span v-if="canvas && canvas.notesPresentationOrder" class="presentation-index"
           >{{
             canvas.notesPresentationOrder.indexOf(
               canvas.currentPresentationKey
@@ -269,6 +269,9 @@ export default {
       canvas: state => state.canvas
     }),
     presentationProgress() {
+      if (!this.canvas || !this.canvas.notesPresentationOrder) {
+        return 0;
+      }
       return (
         ((this.canvas.notesPresentationOrder.indexOf(
           this.canvas.currentPresentationKey

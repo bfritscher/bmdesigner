@@ -123,7 +123,8 @@ export default {
     notes() {
       if (
         !this.$store.state.canvas ||
-        !this.$store.state.canvas.notesPresentationOrder
+        !this.$store.state.canvas.notesPresentationOrder ||
+        !this.$store.state.canvas.notes
       ) {
         return [];
       }
@@ -135,6 +136,9 @@ export default {
   methods: {
     ...mapActions(["layoutUpdate"]),
     boxShadow(note) {
+      if (!note || !note.colors) {
+        return "";
+      }
       return note.colors
         .reduce((shadows, colorCode, i) => {
           const size = (i + 1) * 5 + i * 2;

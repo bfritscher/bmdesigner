@@ -163,6 +163,8 @@ const gettersDefinition = {
   canvasSettings: state =>
     state.canvas &&
     state.user &&
+    state.user.projects &&
+    state.canvas[".key"] &&
     state.user.projects[state.canvas[".key"]] &&
     state.user.projects[state.canvas[".key"]].settings
       ? state.user.projects[state.canvas[".key"]].settings
@@ -327,39 +329,39 @@ const actions = {
       if (state.canvas && state.canvas.info && state.canvas[".key"] && state.user.projects[state.canvas[".key"]]) {
         state.user.projects[state.canvas[".key"]].info = state.canvas.info;
       }
+      if (state.currentUser) {
+        refs.canvas
+          .child("users")
+          .child(state.currentUser.uid)
+          .update({
+            online: false
+          });
+      }
       refs.canvas
-        .child("users")
-        .child(state.currentUser.uid)
-        .update({
-          online: false
-        })
+        .child("updateInfo")
+        .set(true)
         .then(() => {
-          refs.canvas
-            .child("updateInfo")
-            .set(true)
-            .then(() => {
-              unbindFirebaseRef("canvas");
-              refs.notes = null;
-              refs.canvas = null;
-              state.canvas = {
-                info: {
-                  // content copied to users list
-                  name: "",
-                  logoImage: "",
-                  logoColor: "",
-                  stickyCount: 0,
-                  usersCount: 0,
-                  public: false,
-                  createdAt: "",
-                  updatedAt: ""
-                },
-                notesOrder: [],
-                notesPresentationOrder: [],
-                notes: {},
-                users: {},
-                currentPresentationKey: ""
-              };
-            });
+          unbindFirebaseRef("canvas");
+          refs.notes = null;
+          refs.canvas = null;
+          state.canvas = {
+            info: {
+              // content copied to users list
+              name: "",
+              logoImage: "",
+              logoColor: "",
+              stickyCount: 0,
+              usersCount: 0,
+              public: false,
+              createdAt: "",
+              updatedAt: ""
+            },
+            notesOrder: [],
+            notesPresentationOrder: [],
+            notes: {},
+            users: {},
+            currentPresentationKey: ""
+          };
         });
     }
   }),
@@ -667,8 +669,10 @@ const mutations = {
     }
   },
   [types.NOTE_DELETE](state, payload) {
-    delete state.canvas.notes[payload.id];
-    delete state.canvas.notes[payload[".id"]];
+    if (state.canvas && state.canvas.notes) {
+      delete state.canvas.notes[payload.id];
+      delete state.canvas.notes[payload[".id"]];
+    }
   },
   [types.NOTE_MOVE_TOP](state, key) {
     if (!state.canvas.notesOrder) {

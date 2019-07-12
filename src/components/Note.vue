@@ -220,7 +220,7 @@ export default {
           const top = (parseFloat(this.y) / this.parent.offsetHeight) * 100;
 
           let type = "";
-          if (event.dropzone) {
+          if (event.dropzone && event.dropzone.target) {
             type = event.dropzone.target.getAttribute("id");
           } else {
             type = this.parent.getAttribute("data-none");
