@@ -30,14 +30,14 @@
                   </v-toolbar-title>
                 </template>
                 <v-list class="list">
-                  <v-list-tile
+                  <v-list-item
                     v-for="note in notesVP"
                     :key="note.id"
                     @click.prevent="LAYOUT_UPDATE({ selectedVP: note })"
                     :class="COLORS_MATERIAL_DARK[note.colors[0]]"
                   >
-                    <v-list-tile-title v-text="note.text"></v-list-tile-title>
-                  </v-list-tile>
+                    <v-list-item-title v-text="note.text"></v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
               <v-spacer></v-spacer>
@@ -86,14 +86,14 @@
                   </v-toolbar-title>
                 </template>
                 <v-list class="list">
-                  <v-list-tile
+                  <v-list-item
                     v-for="note in notesCS"
                     :key="note.id"
                     @click.prevent="LAYOUT_UPDATE({ selectedCS: note })"
                     :class="COLORS_MATERIAL_DARK[note.colors[0]]"
                   >
-                    <v-list-tile-title v-text="note.text"></v-list-tile-title>
-                  </v-list-tile>
+                    <v-list-item-title v-text="note.text"></v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
               <v-spacer></v-spacer>

@@ -76,7 +76,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
-              flat
+              text
               color="primary"
               :to="{ name: 'bmc', params: { id: key } }"
               >Open</v-btn

@@ -14,7 +14,7 @@
       @input="userSettingsUpdate({ drawer: $event })"
     >
       <v-toolbar
-        flat
+        text
         class="blue-grey darken-2"
         dark
         v-show="!userSettings.mini"
@@ -34,105 +34,105 @@
         </v-btn>
       </v-toolbar>
       <v-list dense>
-        <v-list-tile
+        <v-list-item
           v-show="userSettings.mini && !isMobile()"
           @click.stop="userSettingsUpdate({ mini: !userSettings.mini })"
         >
-          <v-list-tile-action>
+          <v-list-item-action>
             <v-icon light>chevron_right</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title></v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile exact :to="{ name: 'home' }" ripple>
-          <v-list-tile-action title="Home">
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item exact :to="{ name: 'home' }" ripple>
+          <v-list-item-action title="Home">
             <v-icon light>home</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Home</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
 
-        <v-list-tile
+        <v-list-item
           :disabled="!currentUser"
           :to="{ name: 'favorites' }"
           v-show="isModelList"
           ripple
         >
-          <v-list-tile-action title="Favorite">
+          <v-list-item-action title="Favorite">
             <v-icon light>favorite</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Favorite</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Favorite</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
 
-        <v-list-tile :to="{ name: 'inspire' }" v-show="isModelList" ripple>
-          <v-list-tile-action title="Inspire">
+        <v-list-item :to="{ name: 'inspire' }" v-show="isModelList" ripple>
+          <v-list-item-action title="Inspire">
             <v-icon light>lightbulb_outline</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Inspire</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile :to="{ name: 'learn' }" v-show="isModelList" ripple>
-          <v-list-tile-action title="Learn">
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Inspire</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item :to="{ name: 'learn' }" v-show="isModelList" ripple>
+          <v-list-item-action title="Learn">
             <v-icon light>school</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Learn</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile :to="{ name: 'play' }" v-show="isModelList" ripple>
-          <v-list-tile-action title="Play">
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Learn</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item :to="{ name: 'play' }" v-show="isModelList" ripple>
+          <v-list-item-action title="Play">
             <v-icon light>games</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Play</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile :to="{ name: 'about' }" ripple>
-          <v-list-tile-action title="Feedback">
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Play</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item :to="{ name: 'about' }" ripple>
+          <v-list-item-action title="Feedback">
             <v-icon light>feedback</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Ideas &amp; Feedback</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Ideas &amp; Feedback</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <div v-if="$route.name === 'bmc' && $store.state.canvas">
           <v-divider class="my-2"></v-divider>
           <v-subheader>DISPLAY OPTIONS</v-subheader>
 
-          <v-list-tile ripple @click="presentationStart">
-            <v-list-tile-action title="Start presentation">
+          <v-list-item ripple @click="presentationStart">
+            <v-list-item-action title="Start presentation">
               <v-icon>slideshow</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Start presentation</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Start presentation</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-          <v-list-tile ripple @click="changeColorMode">
-            <v-list-tile-action :title="colorModeSwitch.text">
+          <v-list-item ripple @click="changeColorMode">
+            <v-list-item-action :title="colorModeSwitch.text">
               <v-icon>{{ colorModeSwitch.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ colorModeSwitch.text }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ colorModeSwitch.text }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-          <v-list-tile v-if="canvasSettings.hideColors" disabled>
-            <v-list-tile-action title="Colors visibility">
+          <v-list-item v-if="canvasSettings.hideColors" disabled>
+            <v-list-item-action title="Colors visibility">
               <v-icon light>color_lens</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Colors visibility</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Colors visibility</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
               <v-icon light>keyboard_arrow_down</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
           <v-list-group
             class="menu-color-group"
             no-action
@@ -144,21 +144,21 @@
             "
           >
             <template v-slot:activator>
-              <v-list-tile ripple @click="showColors">
-                <v-list-tile-action title="Colors visibility">
+              <v-list-item ripple @click="showColors">
+                <v-list-item-action title="Colors visibility">
                   <v-icon light>color_lens</v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title>Colors visibility</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title>Colors visibility</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
             </template>
 
-            <v-list-tile v-if="currentCanvasUsedColors.size === 0">
-              <v-list-tile-content>No used colors</v-list-tile-content>
-            </v-list-tile>
+            <v-list-item v-if="currentCanvasUsedColors.size === 0">
+              <v-list-item-content>No used colors</v-list-item-content>
+            </v-list-item>
 
-            <v-list-tile
+            <v-list-item
               v-for="(colorCode, colorId) in COLORS_MATERIAL"
               :key="colorId"
               v-show="currentCanvasUsedColors.has(colorId)"
@@ -171,77 +171,77 @@
                 :value="colorsVisibility[colorId]"
                 @change="toggleColorVisibility($event, colorId)"
               >
-                <v-btn flat value="0">off</v-btn>
-                <v-btn flat value="0.25">1/4</v-btn>
-                <v-btn flat value="0.5">1/2</v-btn>
-                <v-btn flat value="0.75">3/4</v-btn>
-                <v-btn flat value="1">on</v-btn>
+                <v-btn text value="0">off</v-btn>
+                <v-btn text value="0.25">1/4</v-btn>
+                <v-btn text value="0.5">1/2</v-btn>
+                <v-btn text value="0.75">3/4</v-btn>
+                <v-btn text value="1">on</v-btn>
               </v-btn-toggle>
-            </v-list-tile>
+            </v-list-item>
           </v-list-group>
 
-          <v-list-tile ripple @click="changeLabelMode">
-            <v-list-tile-action :title="labelModeSwitch.text">
+          <v-list-item ripple @click="changeLabelMode">
+            <v-list-item-action :title="labelModeSwitch.text">
               <v-icon>{{ labelModeSwitch.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ labelModeSwitch.text }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ labelModeSwitch.text }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-          <v-list-tile ripple @click="changeListMode">
-            <v-list-tile-action :title="listModeSwitch.text">
+          <v-list-item ripple @click="changeListMode">
+            <v-list-item-action :title="listModeSwitch.text">
               <v-icon>{{ listModeSwitch.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ listModeSwitch.text }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ listModeSwitch.text }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
           <v-divider class="my-2"></v-divider>
 
           <v-subheader>PROJECT OPTIONS</v-subheader>
 
-          <v-list-tile ripple @click="printCanvas">
-            <v-list-tile-action title="Print canvas">
+          <v-list-item ripple @click="printCanvas">
+            <v-list-item-action title="Print canvas">
               <v-icon>print</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Print canvas</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Print canvas</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-          <v-list-tile ripple @click="duplicateCanvas">
-            <v-list-tile-action title="Duplicate canvas">
+          <v-list-item ripple @click="duplicateCanvas">
+            <v-list-item-action title="Duplicate canvas">
               <v-icon>content_copy</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Duplicate canvas</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Duplicate canvas</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <div v-if="$store.state.layout.isEditable">
-            <v-list-tile
+            <v-list-item
               ripple
               @click.stop="layoutUpdate({ showPresentationSorter: true })"
             >
-              <v-list-tile-action title="Presentation order">
+              <v-list-item-action title="Presentation order">
                 <v-icon>format_list_numbered</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>Presentation order</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Presentation order</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
 
-            <v-list-tile ripple @click="changeAccessType">
-              <v-list-tile-action :title="accessTypeSwitch.text">
+            <v-list-item ripple @click="changeAccessType">
+              <v-list-item-action :title="accessTypeSwitch.text">
                 <v-icon>{{ accessTypeSwitch.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{
-                  accessTypeSwitch.text
-                }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ accessTypeSwitch.text }}
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
 
             <v-dialog
               v-model="showDialogSettings"
@@ -250,23 +250,23 @@
               max-width="500px"
             >
               <template v-slot:activator="{ on }">
-                <v-list-tile class="mt-2" ripple v-on="on">
-                  <v-list-tile-action title="Settings">
+                <v-list-item class="mt-2" ripple v-on="on">
+                  <v-list-item-action title="Settings">
                     <v-icon>settings</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-title>Settings</v-list-tile-title>
-                </v-list-tile>
+                  </v-list-item-action>
+                  <v-list-item-title>Settings</v-list-item-title>
+                </v-list-item>
               </template>
               <v-card>
                 <v-card-text>
                   <h3 class="headline">Canvas settings</h3>
-                  <v-btn color="error" flat @click="deleteCanvas">Delete</v-btn>
+                  <v-btn color="error" text @click="deleteCanvas">Delete</v-btn>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn
                     class="blue--text darken-1"
-                    flat
+                    text
                     @click="showDialogSettings = false"
                     >Done</v-btn
                   >
@@ -279,7 +279,7 @@
             <v-subheader>COLLABORATORS</v-subheader>
 
             <v-list>
-              <v-list-tile
+              <v-list-item
                 v-for="(u, key) in $store.state.canvas.users"
                 :key="key"
                 avatar
@@ -289,20 +289,20 @@
                   <template v-slot:badge>
                     <span></span>
                   </template>
-                  <v-list-tile-avatar>
+                  <v-list-item-avatar>
                     <img v-if="u.avatar" :src="u.avatar" :alt="u.name" />
                     <avatar
                       v-if="u.name && !u.avatar"
                       :username="u.name"
                       :size="38"
                     ></avatar>
-                  </v-list-tile-avatar>
+                  </v-list-item-avatar>
                 </v-badge>
 
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="u.name"></v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
+                <v-list-item-content>
+                  <v-list-item-title v-text="u.name"></v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
                   <v-dialog
                     v-model="showConfirmRemoveUser"
                     persistent
@@ -325,32 +325,32 @@
                         <v-spacer></v-spacer>
                         <v-btn
                           class="black--text"
-                          flat
+                          text
                           @click="showConfirmRemoveUser = false"
                           >Cancel</v-btn
                         >
                         <v-btn
                           class="blue--text darken-1"
-                          flat
+                          text
                           @click="removeUser(key)"
                           >Remove</v-btn
                         >
                       </v-card-actions>
                     </v-card>
                   </v-dialog>
-                </v-list-tile-action>
-              </v-list-tile>
-              <v-list-tile
+                </v-list-item-action>
+              </v-list-item>
+              <v-list-item
                 v-for="(u, key) in $store.state.canvas.invites_sent"
                 :key="key"
               >
-                <v-list-tile-action class="invite">
+                <v-list-item-action class="invite">
                   <v-icon medium>mail_outline</v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="u"></v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title v-text="u"></v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
                   <v-dialog
                     v-model="showConfirmDeleteInvitation"
                     persistent
@@ -375,35 +375,35 @@
                         <v-spacer></v-spacer>
                         <v-btn
                           class="black--text"
-                          flat
+                          text
                           @click="showConfirmDeleteInvitation = false"
                           >Cancel</v-btn
                         >
                         <v-btn
                           class="blue--text darken-1"
-                          flat
+                          text
                           @click="removeInvitation(key)"
                           >Remove</v-btn
                         >
                       </v-card-actions>
                     </v-card>
                   </v-dialog>
-                </v-list-tile-action>
-              </v-list-tile>
+                </v-list-item-action>
+              </v-list-item>
 
-              <v-list-tile v-if="$store.state.canvas.invite_request">
-                <v-list-tile-action>
+              <v-list-item v-if="$store.state.canvas.invite_request">
+                <v-list-item-action>
                   <v-progress-circular
                     indeterminate
                     class="primary--text"
                   ></v-progress-circular>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title>{{
-                    $store.state.canvas.invite_request
-                  }}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    {{ $store.state.canvas.invite_request }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
             </v-list>
 
             <v-dialog
@@ -413,12 +413,12 @@
               max-width="500px"
             >
               <template v-slot:activator="{ on }">
-                <v-list-tile class="mt-2" ripple v-on="on">
-                  <v-list-tile-action title="Invite a person">
+                <v-list-item class="mt-2" ripple v-on="on">
+                  <v-list-item-action title="Invite a person">
                     <v-icon>add_circle_outline</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-title>Invite a person</v-list-tile-title>
-                </v-list-tile>
+                  </v-list-item-action>
+                  <v-list-item-title>Invite a person</v-list-item-title>
+                </v-list-item>
               </template>
               <v-card>
                 <v-card-text>
@@ -437,13 +437,13 @@
                   <v-spacer></v-spacer>
                   <v-btn
                     class="black--text"
-                    flat
+                    text
                     @click="showDialogInvite = false"
                     >Cancel</v-btn
                   >
                   <v-btn
                     class="blue--text darken-1"
-                    flat
+                    text
                     @click="sendInviteEmail"
                     >Send</v-btn
                   >
@@ -457,18 +457,18 @@
 
     <presentation-sorter></presentation-sorter>
 
-    <v-toolbar
+    <v-app-bar
       app
       fixed
       class="blue-grey darken-2"
       dark
       :clipped-left="userSettings.mini && !isMobile()"
     >
-      <v-toolbar-side-icon
+      <v-app-bar-nav-icon
         @click.stop.prevent="
           userSettingsUpdate({ drawer: !userSettings.drawer })
         "
-      ></v-toolbar-side-icon>
+      ></v-app-bar-nav-icon>
       <search></search>
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
@@ -479,7 +479,7 @@
           max-width="500px"
         >
           <template v-slot:activator="{ on }">
-            <v-toolbar-title v-on="on"> {{ title }}</v-toolbar-title>
+            <v-toolbar-title v-on="on">{{ title }}</v-toolbar-title>
           </template>
 
           <v-card>
@@ -496,10 +496,10 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn class="black--text" flat @click="showDialogTitle = false"
+              <v-btn class="black--text" text @click="showDialogTitle = false"
                 >Cancel</v-btn
               >
-              <v-btn class="blue--text darken-1" flat @click="saveNewTitle"
+              <v-btn class="blue--text darken-1" text @click="saveNewTitle"
                 >Save</v-btn
               >
             </v-card-actions>
@@ -510,54 +510,54 @@
       <span style="width: 200px"></span>
       <v-menu offset-y v-if="currentUser">
         <template v-slot:activator="{ on }">
-          <v-list-tile-avatar v-on="on">
+          <v-list-item-avatar v-on="on">
             <img v-if="currentUser.photoURL" :src="currentUser.photoURL" />
             <avatar
               v-if="currentUser.displayName && !currentUser.photoURL"
               :username="currentUser.displayName"
               :size="38"
             ></avatar>
-          </v-list-tile-avatar>
+          </v-list-item-avatar>
         </template>
         <v-list>
-          <v-list-tile avatar>
-            <v-list-tile-avatar>
+          <v-list-item avatar>
+            <v-list-item-avatar>
               <img v-if="currentUser.photoURL" :src="currentUser.photoURL" />
               <avatar
                 v-if="currentUser.displayName && !currentUser.photoURL"
                 :username="currentUser.displayName"
                 :size="38"
               ></avatar>
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title>{{
-                currentUser.displayName
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                currentUser.email
-              }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-list-tile @click="signOut">
-            <v-list-tile-action>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ currentUser.displayName }}
+              </v-list-item-title>
+              <v-list-item-sub-title>
+                {{ currentUser.email }}
+              </v-list-item-sub-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="signOut">
+            <v-list-item-action>
               <v-icon>exit_to_app</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Sign out</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-list-tile exact :to="{ name: 'about' }">
-            <v-list-tile-action>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Sign out</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item exact :to="{ name: 'about' }">
+            <v-list-item-action>
               <v-icon>feedback</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Send feedback</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Send feedback</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-menu>
       <v-btn v-else exact :to="{ name: 'login' }">Sign in</v-btn>
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
       <router-view></router-view>
     </v-content>
@@ -601,7 +601,7 @@
           <v-spacer></v-spacer>
           <v-btn
             class="blue--text darken-1"
-            flat
+            text
             @click="layoutUpdate({ showPrint: '' })"
             >Done</v-btn
           >
@@ -647,7 +647,9 @@ export default {
           ? this.$route.meta.title
           : "";
       if (this.isModelEdit) {
-        title += `${this.$store.state.canvas && this.$store.state.canvas.info.name || "Loading"} | `;
+        title += `${(this.$store.state.canvas &&
+          this.$store.state.canvas.info.name) ||
+          "Loading"} | `;
         if (this.$store.state.layout.showVPC) {
           if (this.$store.state.layout.selectedVP) {
             title += "Value Proposition Zoom";

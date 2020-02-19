@@ -8,7 +8,7 @@
         {{ gameStats.total }}
       </span>
       <span><b>Number of tries:</b> {{ gameStats.checks | fixed(0) }}</span>
-      <span><v-btn flat color="primary" @click="gameCheck">check</v-btn></span>
+      <span><v-btn text color="primary" @click="gameCheck">check</v-btn></span>
     </v-subheader>
   </div>
 </template>

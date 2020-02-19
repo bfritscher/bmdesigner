@@ -114,8 +114,8 @@
                       </v-btn>
                     </template>
                     <v-list>
-                      <v-list-tile>
-                        <v-list-tile-title>
+                      <v-list-item>
+                        <v-list-item-title>
                           <v-icon
                             :class="
                               `calcDisplayColor${whichCalcDisplay(calcVar)}`
@@ -127,26 +127,26 @@
                                 : "label_outline"
                             }}
                           </v-icon>
-                        </v-list-tile-title>
-                      </v-list-tile>
-                      <v-list-tile
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
                         v-show="note[`calcDisplay${c}`] !== calcVar"
                         v-for="c in ['B', 'R', 'G']"
                         :key="c"
                         @click.prevent="updateCalcDisplay(calcVar, c)"
                       >
-                        <v-list-tile-title>
+                        <v-list-item-title>
                           <v-icon :class="`calcDisplayColor${c}`">label</v-icon>
-                        </v-list-tile-title>
-                      </v-list-tile>
-                      <v-list-tile
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
                         v-if="whichCalcDisplay(calcVar)"
                         @click.prevent="updateCalcDisplay(calcVar, null)"
                       >
-                        <v-list-tile-title>
+                        <v-list-item-title>
                           <v-icon>label_outline</v-icon>
-                        </v-list-tile-title>
-                      </v-list-tile>
+                        </v-list-item-title>
+                      </v-list-item>
                     </v-list>
                   </v-menu>
                 </v-flex>
@@ -179,7 +179,7 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs3>
-                  <v-btn color="primary" block flat @click="addCalcVar"
+                  <v-btn color="primary" blocktext @click="addCalcVar"
                     >add</v-btn
                   >
                 </v-flex>
@@ -189,11 +189,11 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn error flat @click="deleteNote" v-if="isEditable">Delete</v-btn>
+          <v-btn errortext @click="deleteNote" v-if="isEditable">Delete</v-btn>
           <v-spacer></v-spacer>
           <v-btn
             class="blue--text darken-1"
-            flat
+            text
             @click="hideDialog"
             color="primary"
             >Close</v-btn

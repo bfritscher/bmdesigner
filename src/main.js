@@ -1,5 +1,5 @@
 import Vue from "vue";
-import "./plugins/vuetify";
+import vuetify from "./plugins/vuetify";
 import VueTimeago from "vue-timeago";
 import humanFormat from "human-format";
 import { auth, db } from "@/utils/firebase";
@@ -16,7 +16,7 @@ import "./registerServiceWorker";
 Vue.use(VueTimeago, {
   locale: "en-US",
   locales: {
-    en: require("date-fns/locale/en")
+    en: require("date-fns/locale/en-GB")
   }
 });
 
@@ -46,6 +46,7 @@ router.afterEach(to => {
 });
 
 new Vue({
+  vuetify,
   router,
   store,
   components: { App },

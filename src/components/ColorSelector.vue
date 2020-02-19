@@ -12,7 +12,7 @@
           { 'color-selector-bg': value === -1 },
           COLORS_MATERIAL_DARK[value]
         ]"
-        flat
+        text
         outline
         fab
         :light="value === -1"
@@ -34,7 +34,7 @@
     ></v-btn>
     <v-btn
       class="color-selector-bg"
-      flat
+      text
       outline
       fab
       small

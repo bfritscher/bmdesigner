@@ -51,7 +51,7 @@
             v-on="on"
             @mouseover="moveToTop"
             v-if="value.description"
-            flat
+            text
             icon
             color="primary"
             small
@@ -67,7 +67,7 @@
       <v-spacer v-if="!listMode"></v-spacer>
       <v-btn
         v-if="isEdit"
-        flat
+        text
         icon
         color="primary"
         small
@@ -79,7 +79,7 @@
       </v-btn>
       <v-btn
         v-if="value.type === 'vp' || value.type === 'cs'"
-        flat
+        text
         icon
         color="primary"
         small

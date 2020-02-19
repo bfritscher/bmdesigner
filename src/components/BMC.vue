@@ -192,19 +192,22 @@
             <v-icon>gesture</v-icon>
           </v-btn>
           <v-btn icon @click="toggleFullscreen">
-            <v-icon>{{
-              isFullscreen ? "fullscreen_exit" : "fullscreen"
-            }}</v-icon>
+            <v-icon>
+              {{ isFullscreen ? "fullscreen_exit" : "fullscreen" }}
+            </v-icon>
           </v-btn>
         </div>
-        <span v-if="canvas && canvas.notesPresentationOrder" class="presentation-index"
-          >{{
+        <span
+          v-if="canvas && canvas.notesPresentationOrder"
+          class="presentation-index"
+        >
+          {{
             canvas.notesPresentationOrder.indexOf(
               canvas.currentPresentationKey
             ) + 1
           }}
-          / {{ canvas.notesPresentationOrder.length }}</span
-        >
+          / {{ canvas.notesPresentationOrder.length }}
+        </span>
         <v-btn icon @click="presentationExit" class="presentation-exit">
           <v-icon>close</v-icon>
         </v-btn>

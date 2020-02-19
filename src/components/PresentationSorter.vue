@@ -59,9 +59,7 @@ export default {
           this.y = event.target.offsetTop;
           event.target.style.position = "absolute";
           this.$refs.placeholder.style.display = "flex";
-          this.$refs.placeholder.style.height = `${
-            event.target.offsetHeight
-          }px`;
+          this.$refs.placeholder.style.height = `${event.target.offsetHeight}px`;
         },
         onmove: event => {
           this.x += event.dx;

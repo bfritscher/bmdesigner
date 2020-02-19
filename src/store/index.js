@@ -326,7 +326,12 @@ const actions = {
   unbindCanvas: firebaseAction(({ state, unbindFirebaseRef }) => {
     if (refs.canvas) {
       // fake immediat feedback
-      if (state.canvas && state.canvas.info && state.canvas[".key"] && state.user.projects[state.canvas[".key"]]) {
+      if (
+        state.canvas &&
+        state.canvas.info &&
+        state.canvas[".key"] &&
+        state.user.projects[state.canvas[".key"]]
+      ) {
         state.user.projects[state.canvas[".key"]].info = state.canvas.info;
       }
       if (state.currentUser) {
