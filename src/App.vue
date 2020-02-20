@@ -102,7 +102,7 @@
         </v-list-item>
         <div v-if="$route.name === 'bmc' && $store.state.canvas">
           <v-divider class="my-2"></v-divider>
-          <v-subheader>DISPLAY OPTIONS</v-subheader>
+          <v-subheader v-show="!userSettings.mini">DISPLAY OPTIONS</v-subheader>
 
           <v-list-item ripple @click="presentationStart">
             <v-list-item-action title="Start presentation">
@@ -122,21 +122,11 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item v-if="canvasSettings.hideColors" disabled>
-            <v-list-item-action title="Colors visibility">
-              <v-icon light>color_lens</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Colors visibility</v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-icon light>keyboard_arrow_down</v-icon>
-            </v-list-item-action>
-          </v-list-item>
           <v-list-group
             class="menu-color-group"
             no-action
-            :value="canvasSettings.isColorsOpen"
+            :disabled="canvasSettings.hideColors"
+            :value="!canvasSettings.hideColors && canvasSettings.isColorsOpen"
             @input="
               canvasUserSettingsUpdate({
                 isColorsOpen: !canvasSettings.isColorsOpen
@@ -144,14 +134,12 @@
             "
           >
             <template v-slot:activator>
-              <v-list-item ripple @click="showColors">
-                <v-list-item-action title="Colors visibility">
-                  <v-icon light>color_lens</v-icon>
-                </v-list-item-action>
-                <v-list-item-content>
-                  <v-list-item-title>Colors visibility</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+              <v-list-item-action title="Colors visibility" @click="showColors">
+                <v-icon light>color_lens</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Colors visibility</v-list-item-title>
+              </v-list-item-content>
             </template>
 
             <v-list-item v-if="currentCanvasUsedColors.size === 0">
@@ -168,6 +156,8 @@
                 :style="{ 'background-color': colorCode }"
                 :class="colorCode"
                 mandatory
+                dense
+                tile
                 :value="colorsVisibility[colorId]"
                 @change="toggleColorVisibility($event, colorId)"
               >
@@ -200,7 +190,7 @@
 
           <v-divider class="my-2"></v-divider>
 
-          <v-subheader>PROJECT OPTIONS</v-subheader>
+          <v-subheader v-show="!userSettings.mini">PROJECT OPTIONS</v-subheader>
 
           <v-list-item ripple @click="printCanvas">
             <v-list-item-action title="Print canvas">
@@ -276,7 +266,7 @@
 
             <v-divider class="mt-2"></v-divider>
 
-            <v-subheader>COLLABORATORS</v-subheader>
+            <v-subheader v-show="!userSettings.mini">COLLABORATORS</v-subheader>
 
             <v-list>
               <v-list-item
@@ -284,19 +274,18 @@
                 :key="key"
                 ripple
               >
-                <v-badge overlap bottom :color="u.online ? 'green' : 'red'">
-                  <template v-slot:badge>
-                    <span></span>
-                  </template>
-                  <v-list-item-avatar>
-                    <img v-if="u.avatar" :src="u.avatar" :alt="u.name" />
-                    <avatar
-                      v-if="u.name && !u.avatar"
-                      :username="u.name"
-                      :size="38"
-                    ></avatar>
-                  </v-list-item-avatar>
-                </v-badge>
+
+<v-badge bottom overlap offset-y="24" offset-x="28" :color="u.online ? 'green' : 'red'">
+                <v-list-item-avatar>
+
+                  <v-img v-if="u.avatar" :src="u.avatar" :alt="u.name"></v-img>
+                  <avatar
+                    v-if="u.name && !u.avatar"
+                    :username="u.name"
+                    :size="38"
+                  ></avatar>
+                </v-list-item-avatar>
+                  </v-badge>
 
                 <v-list-item-content>
                   <v-list-item-title v-text="u.name"></v-list-item-title>
@@ -519,7 +508,7 @@
           </v-list-item-avatar>
         </template>
         <v-list>
-          <v-list-item avatar>
+          <v-list-item>
             <v-list-item-avatar>
               <img v-if="currentUser.photoURL" :src="currentUser.photoURL" />
               <avatar
@@ -816,18 +805,14 @@ body {
   opacity: 0;
 }
 
-.menu-color-group .v-list__group__items--no-action .v-list__tile {
-  padding-left: 22px;
+.v-application--is-ltr
+  .menu-color-group.v-list-group--no-action
+  > .v-list-group__items
+  > .v-list-item {
+  padding-left: 16px;
 }
 
-.v-badge .v-list__tile__avatar + .v-badge__badge {
-  left: 32px;
-  top: 26px;
-  height: 16px;
-  width: 16px;
-}
-
-.avatar:not(.v-list__tile__avatar) {
+.avatar:not(.v-list-item__avatar) {
   justify-content: center;
   min-width: 0;
 }
@@ -836,12 +821,20 @@ body {
   justify-content: center;
 }
 
+.color-btn {
+  max-width: none !important;
+}
+
 .color-btn .v-btn {
   color: black;
 }
 
 .color-btn.v-btn-toggle--selected {
   box-shadow: none;
+}
+
+.color-btn.v-btn-toggle--dense > .v-btn.v-btn {
+  min-width: auto;
 }
 
 .dialog__container {

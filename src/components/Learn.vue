@@ -1,7 +1,7 @@
 <template>
-  <v-container class="container fluid grid-list-lg">
+  <v-container class="container" fluid>
     <v-row wrap>
-      <v-col xs12 md6 xl4>
+      <v-col cols="12" md="6" xl="4">
         <v-card>
           <v-img>
             <div
@@ -26,7 +26,7 @@
         </v-card>
       </v-col>
 
-      <v-col xs12 md6 xl4>
+      <v-col cols="12" md="6" xl="4">
         <v-card>
           <v-img>
             <iframe
@@ -41,13 +41,13 @@
           <v-card-title primary-title>
             <h2 class="headline">From Idea to Business</h2>
             <p class="black--text">
-              6 video episodes by Strategyzer & The Kauffman Foundation
+              6 video episodes by Strategyzer &amp; The Kauffman Foundation
             </p>
           </v-card-title>
         </v-card>
       </v-col>
 
-      <v-col xs12 md6 xl4>
+      <v-col cols="12" md="6" xl="4">
         <v-card>
           <v-img>
             <iframe

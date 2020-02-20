@@ -11,10 +11,10 @@
     </v-btn>
     <v-row wrap>
       <v-col
-        xs12
-        sm6
-        md4
-        xl3
+        cols="12"
+        sm="6"
+        md="4"
+        xl="3"
         v-for="{ info, settings = {}, key } in projects"
         :key="key"
       >
@@ -62,7 +62,7 @@
             </div>
             <v-container fill-height fluid>
               <v-row fill-height align-end>
-                <v-col xs12 class="headline white--text">{{ info.name }}</v-col>
+                <v-col cols="12" class="headline white--text">{{ info.name }}</v-col>
               </v-row>
             </v-container>
           </v-img>

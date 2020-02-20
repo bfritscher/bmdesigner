@@ -9,7 +9,7 @@
     @drop.prevent.stop="handleChange"
     @click="handleClick"
   >
-    <v-alert error v-model="hasError">
+    <v-alert type="error" :value="hasError">
       {{ errorMsg }}
     </v-alert>
     <slot>

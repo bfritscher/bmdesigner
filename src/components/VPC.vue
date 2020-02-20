@@ -13,12 +13,15 @@
         <draw-surface v-if="$store.state.layout.showDrawSurface"></draw-surface>
         <transition name="vpc-vp-transition" appear>
           <v-card
+            tile
             v-if="vp"
             class="vpc-vp elevation-10"
             :class="{ 'vpc-both': cs && vp }"
           >
             <v-toolbar
               dense
+              flat
+              width="100%"
               :class="COLORS_MATERIAL_DARK[vp.colors[0]]"
               @click.native.prevent.stop
             >
@@ -69,11 +72,14 @@
 
         <transition name="vpc-cs-transition" appear>
           <v-card
+            tile
             v-if="cs"
             class="vpc-cs elevation-10"
             :class="{ 'vpc-both': cs && vp }"
           >
             <v-toolbar
+              flat
+              width="100%"
               dense
               :class="COLORS_MATERIAL_DARK[cs.colors[0]]"
               @click.native.prevent.stop

@@ -47,20 +47,21 @@
       <v-spacer v-if="listMode"></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn
-            v-on="on"
-            @mouseover="moveToTop"
-            v-if="value.description"
-            text
-            icon
-            color="primary"
-            small
-            class="description"
-            light
-            @click.prevent.stop="showNoteOptions()"
-          >
-            <v-icon>description</v-icon>
-          </v-btn>
+          <div v-on="on">
+            <v-btn
+              @mouseover="moveToTop"
+              v-if="value.description"
+              text
+              icon
+              color="primary"
+              small
+              class="description"
+              light
+              @click.prevent.stop="showNoteOptions()"
+            >
+              <v-icon>description</v-icon>
+            </v-btn>
+          </div>
         </template>
         <span>{{ value.description }}</span>
       </v-tooltip>
@@ -116,39 +117,42 @@
     <div class="calcvar-display">
       <v-tooltip bottom nudge-bottom="2">
         <template v-slot:activator="{ on }">
-          <div
-            class="calcvar-display-b"
-            v-on="on"
-            @click.prevent.stop="showNoteOptions(true)"
-            v-if="calcResults[value.calcId] && value.calcDisplayB"
-          >
-            {{ calcResults[value.calcId][value.calcDisplayB] | humanformat }}
+          <div v-on="on">
+            <div
+              class="calcvar-display-b"
+              @click.prevent.stop="showNoteOptions(true)"
+              v-if="calcResults[value.calcId] && value.calcDisplayB"
+            >
+              {{ calcResults[value.calcId][value.calcDisplayB] | humanformat }}
+            </div>
           </div>
         </template>
         <span>{{ value.calcDisplayB }}</span>
       </v-tooltip>
       <v-tooltip bottom nudge-bottom="2">
         <template v-slot:activator="{ on }">
-          <div
-            class="calcvar-display-r"
-            v-on="on"
-            @click.prevent.stop="showNoteOptions(true)"
-            v-if="calcResults[value.calcId] && value.calcDisplayR"
-          >
-            {{ calcResults[value.calcId][value.calcDisplayR] | humanformat }}
+          <div v-on="on">
+            <div
+              class="calcvar-display-r"
+              @click.prevent.stop="showNoteOptions(true)"
+              v-if="calcResults[value.calcId] && value.calcDisplayR"
+            >
+              {{ calcResults[value.calcId][value.calcDisplayR] | humanformat }}
+            </div>
           </div>
         </template>
         <span>{{ value.calcDisplayR }}</span>
       </v-tooltip>
       <v-tooltip bottom nudge-bottom="2">
         <template v-slot:activator="{ on }">
-          <div
-            class="calcvar-display-g"
-            v-on="on"
-            @click.prevent.stop="showNoteOptions(true)"
-            v-if="calcResults[value.calcId] && value.calcDisplayG"
-          >
-            {{ calcResults[value.calcId][value.calcDisplayG] | humanformat }}
+          <div v-on="on">
+            <div
+              class="calcvar-display-g"
+              @click.prevent.stop="showNoteOptions(true)"
+              v-if="calcResults[value.calcId] && value.calcDisplayG"
+            >
+              {{ calcResults[value.calcId][value.calcDisplayG] | humanformat }}
+            </div>
           </div>
         </template>
         <span>{{ value.calcDisplayG }}</span>
@@ -504,9 +508,7 @@ export default {
         showNoteOptions: true,
         focusedNote: this.value
       };
-      if (typeof showNoteOptionsCalc !== "undefined") {
-        payload.showNoteOptionsCalc = showNoteOptionsCalc;
-      }
+      payload.showNoteOptionsCalc = Boolean(showNoteOptionsCalc);
       this.$store.commit(types.LAYOUT_UPDATE, payload);
     },
     handleKeyDown(e) {
@@ -929,7 +931,7 @@ export default {
   display: flex;
 }
 
-.note .calcvar-display div {
+.note .calcvar-display > div > div {
   box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px;
   border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
   padding: 4px;

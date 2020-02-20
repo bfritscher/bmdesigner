@@ -2,8 +2,8 @@
   <div style="position:relative;width:100%">
     <div style="position: absolute; top:0; left:0; right:0; bottom:0;">
       <v-row>
-        <v-col xs12 md6 offset-md3>
-          <v-alert info :value="true" class="elevation-1 mt-4">
+        <v-col cols="12" md="6" offset-md="3">
+          <v-alert type="error">
             Embed blocked by ad-block:
             <v-btn
               href="//feedback.userreport.com/1ee24ff8-1aef-4308-bd32-dee0f3da0f96/"

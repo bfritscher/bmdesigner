@@ -1,6 +1,6 @@
 <template>
   <div class="zone dropzone">
-    <div class="zone-label">
+    <div class="zone-label d-flex">
       <div>{{ label }}</div>
       <v-spacer></v-spacer>
       <slot name="icon"></slot>

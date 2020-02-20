@@ -49,7 +49,8 @@
             transition="slide-y-transition"
             class="ma-0"
             v-if="isLoading"
-            :indeterminate="true"
+            indeterminate
+            style="z-index:1"
           ></v-progress-linear>
 
           <zone

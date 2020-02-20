@@ -13,7 +13,7 @@
         <v-divider></v-divider>
         <v-card-text style="max-height: calc(80vh - 104px);">
           <v-row wrap v-if="isEditable">
-            <v-col xs12 md6>
+            <v-col cols="12" md="6">
               <image-zone
                 v-ripple
                 class="image-zone"
@@ -23,7 +23,7 @@
                 @update:image="updateNote('image', $event)"
               ></image-zone>
             </v-col>
-            <v-col xs12 md6>
+            <v-col cols="12" md="6">
               <v-checkbox
                 color="primary"
                 label="Show as sticky note"
@@ -56,69 +56,39 @@
             @input="updateNote('description', $event)"
           ></v-textarea>
           <v-divider></v-divider>
-          <v-row row align-center @click="toggleShowCalc">
-            <v-col class="subheading">
-              Calculations
-              <span class="red--text" style="vertical-align: super;">beta</span>
-            </v-col>
-            <v-col>
-              <v-spacer></v-spacer>
-              <v-btn icon>
-                <v-icon
-                  class="icon-toggle"
-                  :class="{ rotate: showNoteOptionsCalc }"
-                  >keyboard_arrow_up</v-icon
-                >
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-slide-y-transition>
-            <div v-if="showNoteOptionsCalc" key="calc">
-              <v-alert error :value="Boolean(results.err)">{{
-                results.err
-              }}</v-alert>
-              <v-row align-center>
-                <v-col xs1>
-                  <v-icon>vpn_key</v-icon>
-                </v-col>
-                <v-col xs12>
-                  <v-text-field
-                    :disabled="!isEditable"
-                    label="id"
-                    :value="note.calcId"
-                    @input="updateNote('calcId', $event)"
-                    hint="Name used as reference in calculations for this item."
-                    required
-                    :rules="[rules.variable, rules.unique]"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
+          <v-expansion-panels v-model="showNoteOptionsCalc" flat>
+            <v-expansion-panel>
+              <v-expansion-panel-header>Calculations</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-alert type="error" :value="Boolean(results.err)">{{
+                  results.err
+                }}</v-alert>
+                <v-row align-center>
+                  <v-col cols="1">
+                    <v-icon>vpn_key</v-icon>
+                  </v-col>
+                  <v-col cols="11">
+                    <v-text-field
+                      :disabled="!isEditable"
+                      label="id"
+                      :value="note.calcId"
+                      @input="updateNote('calcId', $event)"
+                      hint="Name used as reference in calculations for this item."
+                      required
+                      :rules="[rules.variable, rules.unique]"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row
-                align-center
-                v-for="(val, calcVar) in note.values"
-                :key="calcVar"
-              >
-                <v-col xs1>
-                  <v-menu bottom right>
-                    <template v-slot:activator="{ on }">
-                      <v-btn icon v-on="on">
-                        <v-icon
-                          :class="
-                            `calcDisplayColor${whichCalcDisplay(calcVar)}`
-                          "
-                        >
-                          {{
-                            whichCalcDisplay(calcVar)
-                              ? "label"
-                              : "label_outline"
-                          }}
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item>
-                        <v-list-item-title>
+                <v-row
+                  align-center
+                  v-for="(val, calcVar) in note.values"
+                  :key="calcVar"
+                >
+                  <v-col cols="1">
+                    <v-menu bottom right>
+                      <template v-slot:activator="{ on }">
+                        <v-btn icon v-on="on">
                           <v-icon
                             :class="
                               `calcDisplayColor${whichCalcDisplay(calcVar)}`
@@ -130,69 +100,88 @@
                                 : "label_outline"
                             }}
                           </v-icon>
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        v-show="note[`calcDisplay${c}`] !== calcVar"
-                        v-for="c in ['B', 'R', 'G']"
-                        :key="c"
-                        @click.prevent="updateCalcDisplay(calcVar, c)"
-                      >
-                        <v-list-item-title>
-                          <v-icon :class="`calcDisplayColor${c}`">label</v-icon>
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        v-if="whichCalcDisplay(calcVar)"
-                        @click.prevent="updateCalcDisplay(calcVar, null)"
-                      >
-                        <v-list-item-title>
-                          <v-icon>label_outline</v-icon>
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-col>
-                <v-col xs11>
-                  <v-text-field
-                    :disabled="!isEditable"
-                    hint="Any calculation example cs1.size * tickets.price"
-                    :label="calcVar"
-                    :value="val"
-                    @input="updateCalcVal(calcVar, $event)"
-                    :error-messages="getError(calcVar)"
-                    :suffix="`= ${getResult(note.calcId, calcVar)}`"
-                    :append-icon="isEditable ? 'delete_forever' : false"
-                    @click:append="() => removeCalcVar(calcVar)"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row align-center v-if="isEditable">
-                <v-col xs1>
-                  <v-icon>bookmark</v-icon>
-                </v-col>
-                <v-col xs8>
-                  <v-text-field
-                    label="New variable"
-                    value="hello"
-                    @keypress.enter="addCalcVar"
-                    v-model="newVariable"
-                    hint="Add a new variable name only use a-z, a-Z, 0-9, _"
-                    :rules="[rules.variable]"
-                  ></v-text-field>
-                </v-col>
-                <v-col xs3>
-                  <v-btn color="primary" blocktext @click="addCalcVar"
-                    >add</v-btn
-                  >
-                </v-col>
-              </v-row>
-            </div>
-          </v-slide-y-transition>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-title>
+                            <v-icon
+                              :class="
+                                `calcDisplayColor${whichCalcDisplay(calcVar)}`
+                              "
+                            >
+                              {{
+                                whichCalcDisplay(calcVar)
+                                  ? "label"
+                                  : "label_outline"
+                              }}
+                            </v-icon>
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-show="note[`calcDisplay${c}`] !== calcVar"
+                          v-for="c in ['B', 'R', 'G']"
+                          :key="c"
+                          @click.prevent="updateCalcDisplay(calcVar, c)"
+                        >
+                          <v-list-item-title>
+                            <v-icon :class="`calcDisplayColor${c}`"
+                              >label</v-icon
+                            >
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="whichCalcDisplay(calcVar)"
+                          @click.prevent="updateCalcDisplay(calcVar, null)"
+                        >
+                          <v-list-item-title>
+                            <v-icon>label_outline</v-icon>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="11">
+                    <v-text-field
+                      :disabled="!isEditable"
+                      hint="Any calculation example cs1.size * tickets.price"
+                      :label="calcVar"
+                      :value="val"
+                      @input="updateCalcVal(calcVar, $event)"
+                      :error-messages="getError(calcVar)"
+                      :suffix="`= ${getResult(note.calcId, calcVar)}`"
+                      :append-icon="isEditable ? 'delete_forever' : false"
+                      @click:append="() => removeCalcVar(calcVar)"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row align-center v-if="isEditable">
+                  <v-col cols="1">
+                    <v-icon>bookmark</v-icon>
+                  </v-col>
+                  <v-col cols="8">
+                    <v-text-field
+                      label="New variable"
+                      value="hello"
+                      @keypress.enter="addCalcVar"
+                      v-model="newVariable"
+                      hint="Add a new variable name only use a-z, a-Z, 0-9, _"
+                      :rules="[rules.variable]"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="3">
+                    <v-btn color="primary" text block @click="addCalcVar"
+                      >add</v-btn
+                    >
+                  </v-col>
+                </v-row>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="error" @click="deleteNote" v-if="isEditable"
+          <v-btn color="error" text @click="deleteNote" v-if="isEditable"
             >Delete</v-btn
           >
           <v-spacer></v-spacer>
@@ -243,9 +232,18 @@ export default {
   computed: {
     ...mapState({
       showNoteOptions: state => state.layout.showNoteOptions,
-      showNoteOptionsCalc: state => state.layout.showNoteOptionsCalc,
       results: state => state.calcResults || {}
     }),
+    showNoteOptionsCalc: {
+      get() {
+        return this.$store.state.layout.showNoteOptionsCalc ? 0 : undefined;
+      },
+      set(value) {
+        this.$store.commit(types.LAYOUT_UPDATE, {
+          showNoteOptionsCalc: value === 0
+        });
+      }
+    },
     note() {
       const note = this.$store.state.layout.focusedNote;
       // auto generate id if not defined at first use
@@ -268,11 +266,6 @@ export default {
     }
   },
   methods: {
-    toggleShowCalc() {
-      this.$store.commit(types.LAYOUT_UPDATE, {
-        showNoteOptionsCalc: !this.showNoteOptionsCalc
-      });
-    },
     whichCalcDisplay(calcVar) {
       return ["B", "R", "G"].find(
         c => this.note[`calcDisplay${c}`] === calcVar
@@ -362,6 +355,11 @@ export default {
 </script>
 
 <style>
+.note-options .v-expansion-panel-header,
+.note-options .v-expansion-panel-content__wrap {
+  padding: 0;
+}
+
 .note-options .image-zone {
   height: 100px;
   margin: 0 0 18px 0;
