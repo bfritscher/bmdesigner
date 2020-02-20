@@ -1,7 +1,7 @@
 <template>
   <v-container class="container fluid grid-list-lg">
-    <v-layout row wrap>
-      <v-flex xs12 md6 xl4>
+    <v-row wrap>
+      <v-col xs12 md6 xl4>
         <v-card>
           <v-img>
             <div
@@ -24,9 +24,9 @@
             </div>
           </v-card-title>
         </v-card>
-      </v-flex>
+      </v-col>
 
-      <v-flex xs12 md6 xl4>
+      <v-col xs12 md6 xl4>
         <v-card>
           <v-img>
             <iframe
@@ -45,9 +45,9 @@
             </p>
           </v-card-title>
         </v-card>
-      </v-flex>
+      </v-col>
 
-      <v-flex xs12 md6 xl4>
+      <v-col xs12 md6 xl4>
         <v-card>
           <v-img>
             <iframe
@@ -64,8 +64,8 @@
             <h2 class="headline">Value Proposition Canvas Explained</h2>
           </v-card-title>
         </v-card>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

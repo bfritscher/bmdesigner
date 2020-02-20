@@ -1,10 +1,10 @@
 <template>
   <div class="zone dropzone">
-    <v-layout class="zone-label">
+    <div class="zone-label">
       <div>{{ label }}</div>
-      <v-flex></v-flex>
+      <v-spacer></v-spacer>
       <slot name="icon"></slot>
-    </v-layout>
+    </div>
   </div>
 </template>
 

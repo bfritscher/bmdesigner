@@ -12,8 +12,8 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text style="max-height: calc(80vh - 104px);">
-          <v-layout row wrap v-if="isEditable">
-            <v-flex xs12 md6>
+          <v-row wrap v-if="isEditable">
+            <v-col xs12 md6>
               <image-zone
                 v-ripple
                 class="image-zone"
@@ -22,8 +22,8 @@
                 :image="note.image"
                 @update:image="updateNote('image', $event)"
               ></image-zone>
-            </v-flex>
-            <v-flex xs12 md6>
+            </v-col>
+            <v-col xs12 md6>
               <v-checkbox
                 color="primary"
                 label="Show as sticky note"
@@ -43,12 +43,12 @@
                   note.image ? updateNote('showLabel', !note.showLabel) : ''
                 "
               ></v-checkbox>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <v-divider v-if="isEditable"></v-divider>
           <v-textarea
-            outline
+            outlined
             :class="`color-${note.colors[0]}`"
             name="description"
             label="Description"
@@ -56,28 +56,32 @@
             @input="updateNote('description', $event)"
           ></v-textarea>
           <v-divider></v-divider>
-          <v-layout row align-center @click="toggleShowCalc">
-            <v-flex class="subheading">
+          <v-row row align-center @click="toggleShowCalc">
+            <v-col class="subheading">
               Calculations
               <span class="red--text" style="vertical-align: super;">beta</span>
-            </v-flex>
-            <v-spacer></v-spacer>
-            <v-btn icon>
-              <v-icon
-                class="icon-toggle"
-                :class="{ rotate: showNoteOptionsCalc }"
-                >keyboard_arrow_up</v-icon
-              >
-            </v-btn>
-          </v-layout>
+            </v-col>
+            <v-col>
+              <v-spacer></v-spacer>
+              <v-btn icon>
+                <v-icon
+                  class="icon-toggle"
+                  :class="{ rotate: showNoteOptionsCalc }"
+                  >keyboard_arrow_up</v-icon
+                >
+              </v-btn>
+            </v-col>
+          </v-row>
           <v-slide-y-transition>
             <div v-if="showNoteOptionsCalc" key="calc">
-              <v-alert error :value="results.err">{{ results.err }}</v-alert>
-              <v-layout row align-center>
-                <v-flex xs1>
+              <v-alert error :value="Boolean(results.err)">{{
+                results.err
+              }}</v-alert>
+              <v-row align-center>
+                <v-col xs1>
                   <v-icon>vpn_key</v-icon>
-                </v-flex>
-                <v-flex xs12>
+                </v-col>
+                <v-col xs12>
                   <v-text-field
                     :disabled="!isEditable"
                     label="id"
@@ -87,16 +91,15 @@
                     required
                     :rules="[rules.variable, rules.unique]"
                   ></v-text-field>
-                </v-flex>
-              </v-layout>
+                </v-col>
+              </v-row>
 
-              <v-layout
-                row
+              <v-row
                 align-center
                 v-for="(val, calcVar) in note.values"
                 :key="calcVar"
               >
-                <v-flex xs1>
+                <v-col xs1>
                   <v-menu bottom right>
                     <template v-slot:activator="{ on }">
                       <v-btn icon v-on="on">
@@ -149,8 +152,8 @@
                       </v-list-item>
                     </v-list>
                   </v-menu>
-                </v-flex>
-                <v-flex xs11>
+                </v-col>
+                <v-col xs11>
                   <v-text-field
                     :disabled="!isEditable"
                     hint="Any calculation example cs1.size * tickets.price"
@@ -162,13 +165,13 @@
                     :append-icon="isEditable ? 'delete_forever' : false"
                     @click:append="() => removeCalcVar(calcVar)"
                   ></v-text-field>
-                </v-flex>
-              </v-layout>
-              <v-layout row align-center v-if="isEditable">
-                <v-flex xs1>
+                </v-col>
+              </v-row>
+              <v-row align-center v-if="isEditable">
+                <v-col xs1>
                   <v-icon>bookmark</v-icon>
-                </v-flex>
-                <v-flex xs8>
+                </v-col>
+                <v-col xs8>
                   <v-text-field
                     label="New variable"
                     value="hello"
@@ -177,19 +180,21 @@
                     hint="Add a new variable name only use a-z, a-Z, 0-9, _"
                     :rules="[rules.variable]"
                   ></v-text-field>
-                </v-flex>
-                <v-flex xs3>
+                </v-col>
+                <v-col xs3>
                   <v-btn color="primary" blocktext @click="addCalcVar"
                     >add</v-btn
                   >
-                </v-flex>
-              </v-layout>
+                </v-col>
+              </v-row>
             </div>
           </v-slide-y-transition>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn errortext @click="deleteNote" v-if="isEditable">Delete</v-btn>
+          <v-btn color="error" @click="deleteNote" v-if="isEditable"
+            >Delete</v-btn
+          >
           <v-spacer></v-spacer>
           <v-btn
             class="blue--text darken-1"

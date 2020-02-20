@@ -13,14 +13,16 @@
           COLORS_MATERIAL_DARK[value]
         ]"
         text
-        outline
+        outlined
         fab
         :light="value === -1"
         v-model="isOpen"
         :small="small"
       >
-        <v-icon>{{ value > -1 ? (small ? "" : "color_lens") : "add" }}</v-icon>
-        <v-icon>close</v-icon>
+        <v-icon v-if="!isOpen">{{
+          value > -1 ? (small ? "" : "color_lens") : "add"
+        }}</v-icon>
+        <v-icon v-if="isOpen">close</v-icon>
       </v-btn>
     </template>
     <v-btn
@@ -35,7 +37,7 @@
     <v-btn
       class="color-selector-bg"
       text
-      outline
+      outlined
       fab
       small
       light

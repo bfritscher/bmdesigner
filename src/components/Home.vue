@@ -1,16 +1,16 @@
 <template>
   <v-container fluid grid-list-lg>
-    <v-layout row wrap>
-      <v-btn
-        v-if="$store.state.currentUser"
-        color="primary"
-        fab
-        class="floating-action"
-        @click="createNewCanvas"
-      >
-        <v-icon>add</v-icon>
-      </v-btn>
-      <v-flex
+    <v-btn
+      v-if="$store.state.currentUser"
+      color="primary"
+      fab
+      class="floating-action"
+      @click="createNewCanvas"
+    >
+      <v-icon>add</v-icon>
+    </v-btn>
+    <v-row wrap>
+      <v-col
         xs12
         sm6
         md4
@@ -61,11 +61,9 @@
               <v-icon dark v-if="!info.public" title="private">lock</v-icon>
             </div>
             <v-container fill-height fluid>
-              <v-layout fill-height align-end>
-                <v-flex xs12 class="headline white--text">{{
-                  info.name
-                }}</v-flex>
-              </v-layout>
+              <v-row fill-height align-end>
+                <v-col xs12 class="headline white--text">{{ info.name }}</v-col>
+              </v-row>
             </v-container>
           </v-img>
           <v-card-actions class="white">
@@ -83,8 +81,8 @@
             >
           </v-card-actions>
         </v-card>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

@@ -1,12 +1,12 @@
 <template>
-  <v-layout row>
-    <v-flex md6 offset-md3 mt-3>
+  <v-row>
+    <v-col md6 offset-md3 mt-3>
       <v-card>
         <v-alert info :value="hasInviteToken && !$store.state.currentUser">
           Login or create an account to which you want to add the shared
           Business Model Canvas.
         </v-alert>
-        <v-alert success :value="hasInviteToken && $store.state.currentUser">
+        <v-alert success :value="hasInviteToken && !!$store.state.currentUser">
           Please wait you will be redirected to your new canvas.
         </v-alert>
         <div
@@ -14,8 +14,8 @@
           v-show="!$store.state.currentUser"
         ></div>
       </v-card>
-    </v-flex>
-  </v-layout>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -29,7 +29,7 @@ export default {
     };
   },
   mounted() {
-    this.hasInviteToken = localStorage.getItem("inviteToken");
+    this.hasInviteToken = !!localStorage.getItem("inviteToken");
     startLoginUI();
   }
 };

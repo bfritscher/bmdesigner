@@ -258,8 +258,8 @@
                 </v-list-item>
               </template>
               <v-card>
+                <v-card-title class="headline">Canvas settings</v-card-title>
                 <v-card-text>
-                  <h3 class="headline">Canvas settings</h3>
                   <v-btn color="error" text @click="deleteCanvas">Delete</v-btn>
                 </v-card-text>
                 <v-card-actions>
@@ -282,7 +282,6 @@
               <v-list-item
                 v-for="(u, key) in $store.state.canvas.users"
                 :key="key"
-                avatar
                 ripple
               >
                 <v-badge overlap bottom :color="u.online ? 'green' : 'red'">
@@ -421,8 +420,10 @@
                 </v-list-item>
               </template>
               <v-card>
+                <v-card-title class="headline"
+                  >Send invitation to?</v-card-title
+                >
                 <v-card-text>
-                  <h3 class="headline">Send invitation to?</h3>
                   <v-text-field
                     label="Email"
                     required
@@ -469,7 +470,6 @@
           userSettingsUpdate({ drawer: !userSettings.drawer })
         "
       ></v-app-bar-nav-icon>
-      <search></search>
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
         <v-dialog
@@ -483,8 +483,8 @@
           </template>
 
           <v-card>
+            <v-card-title class="headline">Name of project?</v-card-title>
             <v-card-text>
-              <h3 class="headline">Name of project?</h3>
               <v-text-field
                 required
                 light
@@ -507,7 +507,6 @@
         </v-dialog>
       </transition>
       <v-spacer></v-spacer>
-      <span style="width: 200px"></span>
       <v-menu offset-y v-if="currentUser">
         <template v-slot:activator="{ on }">
           <v-list-item-avatar v-on="on">
@@ -533,9 +532,9 @@
               <v-list-item-title>
                 {{ currentUser.displayName }}
               </v-list-item-title>
-              <v-list-item-sub-title>
+              <v-list-item-subtitle>
                 {{ currentUser.email }}
-              </v-list-item-sub-title>
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item @click="signOut">
@@ -618,7 +617,6 @@ import Avatar from "vue-avatar";
 import { db } from "@/utils/firebase";
 import NoteOptions from "@/components/NoteOptions";
 import PresentationSorter from "@/components/PresentationSorter";
-import Search from "@/components/Search";
 
 export default {
   name: "app",
@@ -781,7 +779,6 @@ export default {
   components: {
     NoteOptions,
     Avatar,
-    Search,
     PresentationSorter
   }
 };
