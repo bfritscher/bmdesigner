@@ -11,6 +11,12 @@ module.exports = {
     });
   },
   pwa: {
+    name: "BM|Designer",
+    themeColor: "#455a64",
+    msTileColor: "#fafafa",
+    manifestOptions: {
+      background_color: "#ffffff"
+    },
     workboxOptions: {
       skipWaiting: true
     }
