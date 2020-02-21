@@ -29,10 +29,9 @@
   </v-navigation-drawer>
 </template>
 <script>
-import Vue from "vue";
 import { mapActions } from "vuex";
 import draggable from "vuedraggable";
-import { COLORS_MATERIAL, totalOffset, ICONS, TYPE_NAMES } from "@/utils";
+import { COLORS_MATERIAL, ICONS, TYPE_NAMES } from "@/utils";
 
 export default {
   data() {

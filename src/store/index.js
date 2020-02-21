@@ -591,7 +591,7 @@ const actions = {
       store.dispatch("zoomNoteKey", key);
     }
   },
-  presentationPrevious({ state, commit }) {
+  presentationPrevious({ state }) {
     const currentIndex = state.canvas.notesPresentationOrder.indexOf(
       state.canvas.currentPresentationKey
     );

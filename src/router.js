@@ -1,5 +1,5 @@
 import Vue from "vue";
-import Router from "vue-router";
+import VueRouter from "vue-router";
 import Home from "@/components/Home";
 import Learn from "@/components/Learn";
 import Play from "@/components/Play";
@@ -7,10 +7,11 @@ import About from "@/components/About";
 import Login from "@/components/Login";
 import BMC from "@/components/BMC";
 
-Vue.use(Router);
+Vue.use(VueRouter);
 
-export default new Router({
+export default new VueRouter({
   mode: "history",
+  base: process.env.BASE_URL,
   routes: [
     {
       path: "/",
