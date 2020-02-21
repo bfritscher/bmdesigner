@@ -7,7 +7,6 @@
       mini-variant-width="64"
       :mobile-break-point="1440"
       class="drawer"
-      fixed
       :clipped="userSettings.mini && !isMobile()"
       :mini-variant="userSettings.mini && !isMobile()"
       :value="userSettings.drawer"
@@ -274,18 +273,26 @@
                 :key="key"
                 ripple
               >
-
-<v-badge bottom overlap offset-y="24" offset-x="28" :color="u.online ? 'green' : 'red'">
-                <v-list-item-avatar>
-
-                  <v-img v-if="u.avatar" :src="u.avatar" :alt="u.name"></v-img>
-                  <avatar
-                    v-if="u.name && !u.avatar"
-                    :username="u.name"
-                    :size="38"
-                  ></avatar>
-                </v-list-item-avatar>
-                  </v-badge>
+                <v-badge
+                  bottom
+                  overlap
+                  offset-y="24"
+                  offset-x="28"
+                  :color="u.online ? 'green' : 'red'"
+                >
+                  <v-list-item-avatar>
+                    <v-img
+                      v-if="u.avatar"
+                      :src="u.avatar"
+                      :alt="u.name"
+                    ></v-img>
+                    <avatar
+                      v-if="u.name && !u.avatar"
+                      :username="u.name"
+                      :size="38"
+                    ></avatar>
+                  </v-list-item-avatar>
+                </v-badge>
 
                 <v-list-item-content>
                   <v-list-item-title v-text="u.name"></v-list-item-title>

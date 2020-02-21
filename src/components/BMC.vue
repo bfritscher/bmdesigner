@@ -497,7 +497,7 @@ export default {
 
 .bmc.presentation {
   position: fixed;
-  top: 0 !important;
+  top: 60px !important;
   left: 0 !important;
   right: 0;
   bottom: 0;

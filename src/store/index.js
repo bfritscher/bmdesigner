@@ -159,7 +159,9 @@ const gettersDefinition = {
   notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
   notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
   noteById: state => id =>
-    Object.values(state.canvas.notes || {}).find(n => n.id === id),
+    Object.values(state.canvas.notes || {}).find(
+      n => n.hasOwnProperty("id") && n.id === id
+    ),
   canvasSettings: state =>
     state.canvas &&
     state.user &&
@@ -557,6 +559,7 @@ const actions = {
       isEditable: false,
       showVPC: false
     });
+    store.dispatch("userSettingsUpdate", { drawer: false });
     store.dispatch("updateCurrentPresentationKey", "");
   },
   presentationExit({ commit, state }) {
@@ -608,15 +611,7 @@ const actions = {
         changes: { hidden: true }
       });
       store.dispatch("updateCurrentPresentationKey", key);
-      store.dispatch("zoomNoteKey", key).then(zoomed => {
-        if (!zoomed) {
-          commit(types.LAYOUT_UPDATE, {
-            showVPC: false,
-            selectedVP: null,
-            selectedCS: null
-          });
-        }
-      });
+      store.dispatch("zoomNoteKey", key);
     }
   },
   zoomNoteKey({ commit, state }, key) {
@@ -634,6 +629,13 @@ const actions = {
         commit(types.LAYOUT_UPDATE, { selectedCS: parentNote, showVPC: true });
       }
       return true;
+    }
+    if (state.layout.showVPC) {
+      commit(types.LAYOUT_UPDATE, {
+        showVPC: false,
+        selectedVP: null,
+        selectedCS: null
+      });
     }
     return false;
   }
