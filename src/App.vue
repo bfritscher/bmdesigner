@@ -99,7 +99,7 @@
             <v-list-item-title>Ideas &amp; Feedback</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <div v-if="$route.name === 'bmc' && $store.state.canvas">
+        <div v-if="isModelEdit && $store.state.canvas">
           <v-divider class="my-2"></v-divider>
           <v-subheader v-show="!userSettings.mini">DISPLAY OPTIONS</v-subheader>
 
@@ -696,7 +696,7 @@ export default {
       ].includes(this.$route.name);
     },
     isModelEdit() {
-      return ["bmc"].includes(this.$route.name);
+      return ["bmc", "canvas"].includes(this.$route.name);
     },
     colorsVisibility() {
       return this.canvasSettings.colorsVisibility.map(opacity =>

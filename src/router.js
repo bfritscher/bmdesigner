@@ -6,6 +6,7 @@ import Play from "@/components/Play";
 import About from "@/components/About";
 import Login from "@/components/Login";
 import BMC from "@/components/BMC";
+import CustomCanvas from "@/components/CustomCanvas";
 
 Vue.use(VueRouter);
 
@@ -59,6 +60,12 @@ export default new VueRouter({
       path: "/bmc/:id/:zoom1?/:zoom2?",
       name: "bmc",
       component: BMC,
+      meta: { title: "" }
+    },
+    {
+      path: "/canvas/:id",
+      name: "canvas",
+      component: CustomCanvas,
       meta: { title: "" }
     },
     {
