@@ -36,7 +36,7 @@
         <div
           ref="paper"
           class="paper elevation-10"
-          :class="{ game: canvas.info.isGame }"
+          :class="{ game: canvas && canvas.info && canvas.info.isGame }"
           data-none="bmc_tmp"
         >
           <draw-surface
