@@ -62,7 +62,7 @@
 
 <script>
 import Vue from "vue";
-import ColorThief from "color-thief";
+import ColorThief from "colorthief";
 import { totalOffset } from "@/utils";
 
 export default {
