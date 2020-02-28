@@ -1,6 +1,15 @@
 <template>
   <v-layout fluid fill-height>
-    <div class="background">
+    <div
+      class="background"
+      :class="{ presentation: showAsPresentation, print: showAsPrint }"
+    >
+      <v-progress-linear
+        v-if="showAsPresentation && !showAsPrint"
+        v-model="presentationProgress"
+        height="4"
+        class="ma-0"
+      ></v-progress-linear>
       <image-zone
         :allow-click="false"
         @image-drop="addNote"
@@ -8,6 +17,16 @@
         @click.native.prevent.stop="addNote($event)"
       >
         <div ref="paper" class="paper elevation-10" data-none="bmc_tmp">
+          <draw-surface
+            v-if="$store.state.layout.showDrawSurface"
+          ></draw-surface>
+          <v-progress-linear
+            transition="slide-y-transition"
+            class="ma-0"
+            v-if="isLoading"
+            indeterminate
+            style="z-index:1"
+          ></v-progress-linear>
           <zone
             dropzone-accept=".note"
             id="c"
@@ -32,30 +51,103 @@
           </div>
         </div>
       </image-zone>
+      <presentation-controls
+        v-if="showAsPresentation && !showAsPrint"
+      ></presentation-controls>
     </div>
   </v-layout>
 </template>
 
 <script>
+import debounce from "lodash.debounce";
 import Note from "@/components/Note";
 import Zone from "@/components/Zone";
 import ImageZone from "@/components/ImageZone";
+import PresentationControls from "@/components/PresentationControls";
+import DrawSurface from "@/components/DrawSurface";
 import { db } from "@/utils/firebase";
 import { totalOffset } from "@/utils";
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapState, mapActions } from "vuex";
+
+let resizeHandler;
 
 export default {
   name: "customCanvas",
   data() {
     return {
-      isLoading: false
+      isLoading: false,
+      showAsPresentation: false,
+      showAsPrint: false
     };
   },
   mounted() {
+    if (resizeHandler) {
+      window.removeEventListener("resize", resizeHandler);
+    }
+    resizeHandler = debounce(this.handleWindowResize, 300);
+    window.addEventListener("resize", resizeHandler);
     this.fetchData();
   },
+  beforeDestroy() {
+    if (resizeHandler) {
+      window.removeEventListener("resize", resizeHandler);
+    }
+    this.$store.dispatch("unbindCanvas");
+  },
   computed: {
-    ...mapGetters(["notesBMC"])
+    ...mapGetters(["notesBMC", "canvasSettings"]),
+    ...mapState({
+      canvas: state => state.canvas
+    }),
+    presentationProgress() {
+      if (!this.canvas || !this.canvas.notesPresentationOrder) {
+        return 0;
+      }
+      return (
+        ((this.canvas.notesPresentationOrder.indexOf(
+          this.canvas.currentPresentationKey
+        ) +
+          1) *
+          100) /
+        this.canvas.notesPresentationOrder.length
+      );
+    },
+    listMode() {
+      return this.canvasSettings.listMode;
+    }
+  },
+  watch: {
+    listMode() {
+      // triggers heigh calculations
+      window.dispatchEvent(new Event("resize"));
+    },
+    // call again the method if the route changes
+    $route: "fetchData",
+    "$store.state.layout.presentation": function animatePresentation(val) {
+      const crowdShortcut = document.getElementById("crowd-shortcut");
+      if (val) {
+        const offset = totalOffset(this.$el);
+        this.$el.style.top = `${offset.top}px`;
+        this.$el.style.left = `${offset.left}px`;
+        this.$el.style.position = "absolute";
+        if (crowdShortcut) {
+          crowdShortcut.style.display = "none";
+        }
+        setTimeout(() => {
+          this.showAsPresentation = true;
+        }, 0);
+      } else {
+        this.showAsPresentation = false;
+        setTimeout(() => {
+          this.$el.style.top = "";
+          this.$el.style.left = "";
+          this.$el.style.position = "relative";
+          if (crowdShortcut) {
+            crowdShortcut.style.display = "block";
+          }
+        }, 500);
+      }
+    }
   },
   methods: {
     ...mapActions(["setCanvasRef"]),
@@ -64,16 +156,22 @@ export default {
       this.setCanvasRef(db.child("projects").child(this.$route.params.id)).then(
         () => {
           this.isLoading = false;
+          this.handleWindowResize();
         }
       );
-      /*
-      if (resizeHandler) {
-        window.removeEventListener("resize", resizeHandler);
+    },
+    handleWindowResize() {
+      if (!this.$refs.paper) {
+        return;
       }
-      resizeHandler = debounce(this.handleWindowResize, 300);
-      window.addEventListener("resize", resizeHandler);
-      this.handleWindowResize();
-      */
+      this.$el.style.setProperty(
+        "--zoneLabelFontSize",
+        `${this.$refs.paper.offsetHeight * 0.02}px`
+      );
+      this.$el.style.setProperty(
+        "--zoneLabelIconFontSize",
+        `${this.$refs.paper.offsetHeight * 0.03}px`
+      );
     },
     addNote(e) {
       const offset = totalOffset(this.$refs.paper);
@@ -90,7 +188,7 @@ export default {
         listLeft: x / (this.$refs.paper.offsetWidth / 100),
         listTop: y / (this.$refs.paper.offsetHeight / 100),
         type: "bmc_tmp",
-        colors: this.$store.getters.canvasSettings.lastUsedColors,
+        colors: this.canvasSettings.lastUsedColors,
         image: e.image
       };
 
@@ -108,7 +206,9 @@ export default {
   components: {
     ImageZone,
     Note,
-    Zone
+    Zone,
+    PresentationControls,
+    DrawSurface
   }
 };
 </script>
@@ -120,6 +220,16 @@ export default {
   transition: all 0.5s ease;
   right: 0;
   bottom: 0;
+}
+
+.background.presentation {
+  position: fixed;
+  top: 60px !important;
+  left: 0 !important;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  background-color: #424242;
 }
 
 .canvas {
