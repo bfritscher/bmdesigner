@@ -154,14 +154,25 @@ const gettersDefinition = {
     }
     return [];
   },
+  getChildren: state => parentNote => {
+    return Object.values(state.canvas.notes).filter(
+      note => note.parent === parentNote.id
+    );
+  },
   notesBMC: (state, getters) => getters.getNotesByTypes(BMC_TYPES),
   notesVPC: (state, getters) => getters.getNotesByTypes(VPC_TYPES),
   notesVPCvp: (state, getters) => getters.getNotesByTypes(VPC_VP_TYPES),
   notesVPCcs: (state, getters) => getters.getNotesByTypes(VPC_CS_TYPES),
-  noteById: state => id =>
-    Object.values(state.canvas.notes || {}).find(
-      n => n.hasOwnProperty("id") && n.id === id
-    ),
+  noteById: state => id => {
+    const findKey = Object.keys(state.canvas.notes || {}).find(
+      key =>
+        state.canvas.notes[key].hasOwnProperty("id") &&
+        state.canvas.notes[key].id === id
+    );
+    const note = state.canvas.notes[findKey];
+    note[".key"] = findKey;
+    return note;
+  },
   canvasSettings: state =>
     state.canvas &&
     state.user &&
@@ -208,6 +219,9 @@ const actions = {
       notesPresentationOrder.push(key);
       refs.canvas.child("notesPresentationOrder").set(notesPresentationOrder);
       commit(types.LAYOUT_UPDATE, { focusedNote: note });
+      if (note.parent) {
+        store.dispatch("recomputeChildren", note.parent);
+      }
     }
     // commit(types.NOTE_CREATE, payload);
     // TODO: allow create but then we have to cache note updates until really created
@@ -251,6 +265,9 @@ const actions = {
     );
     refs.canvas.child("notesPresentationOrder").set(notesPresentationOrder);
     commit(types.NOTE_DELETE, payload);
+    if (payload.parent) {
+      store.dispatch("recomputeChildren", payload.parent);
+    }
   },
   NOTE_MOVE_TOP({ commit }, key) {
     commit(types.NOTE_MOVE_TOP, key);
@@ -265,6 +282,11 @@ const actions = {
         .set(payload.value);
     }
   },
+  recomputeChildren(obj, parentId) {
+    const parentNote = store.getters.noteById(parentId);
+    const children = store.getters.getChildren(parentNote).map(note => note.id);
+    store.dispatch("NOTE_UPDATE", { note: parentNote, changes: { children } });
+  },
   canvasInfoUpdate({ commit }, payload) {
     refs.canvas.child("info").update(payload);
     commit(types.CANVAS_UPDATE, payload);
@@ -273,11 +295,7 @@ const actions = {
     commit(types.CANVAS_USER_SETTINGS_UPDATE, payload);
     if (refs.user) {
       const key = payload.canvasKey || state.canvas[".key"];
-      refs.user
-        .child("projects")
-        .child(key)
-        .child("settings")
-        .update(payload);
+      refs.user.child("projects").child(key).child("settings").update(payload);
     }
   },
   layoutUpdate({ commit }, payload) {
@@ -290,16 +308,10 @@ const actions = {
     }
   },
   removeUser(context, key) {
-    refs.canvas
-      .child("users")
-      .child(key)
-      .remove();
+    refs.canvas.child("users").child(key).remove();
   },
   removeInvitation(context, key) {
-    refs.canvas
-      .child("invites_sent")
-      .child(key)
-      .remove();
+    refs.canvas.child("invites_sent").child(key).remove();
   },
   deleteCanvas({ state }) {
     Object.keys(state.canvas.users).forEach(key => {
@@ -337,12 +349,9 @@ const actions = {
         state.user.projects[state.canvas[".key"]].info = state.canvas.info;
       }
       if (state.currentUser) {
-        refs.canvas
-          .child("users")
-          .child(state.currentUser.uid)
-          .update({
-            online: false
-          });
+        refs.canvas.child("users").child(state.currentUser.uid).update({
+          online: false
+        });
       }
       refs.canvas
         .child("updateInfo")
@@ -419,14 +428,11 @@ const actions = {
             ) {
               commit(types.LAYOUT_UPDATE, { isEditable: true });
               // update userpic and name for this canvas
-              refs.canvas
-                .child("users")
-                .child(state.currentUser.uid)
-                .update({
-                  name: state.currentUser.displayName,
-                  avatar: state.currentUser.photoURL,
-                  online: true
-                });
+              refs.canvas.child("users").child(state.currentUser.uid).update({
+                name: state.currentUser.displayName,
+                avatar: state.currentUser.photoURL,
+                online: true
+              });
 
               refs.canvas
                 .child("users")

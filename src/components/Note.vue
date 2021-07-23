@@ -89,6 +89,7 @@
         @click="zoom()"
       >
         <v-icon>zoom_in</v-icon>
+        {{ nbChilds }}
       </v-btn>
     </div>
     <!-- needed for textarea sizing bug -->
@@ -354,6 +355,9 @@ export default {
     ...mapState({
       calcResults: "calcResults"
     }),
+    nbChilds() {
+      return (this.value.children && this.value.children.length) || "";
+    },
     colorsVisibility() {
       return this.canvasSettings.colorsVisibility;
     },

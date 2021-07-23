@@ -24,6 +24,7 @@ export default class Note {
     this.showLabel = "showLabel" in args ? args.showLabel : true;
     this.showAsSticky = "showAsSticky" in args ? args.showAsSticky : true;
     this.hidden = "hidden" in args ? args.hidden : false;
+    this.children = args.children || [];
   }
 
   static changeColor(colorsSource, index, color) {
