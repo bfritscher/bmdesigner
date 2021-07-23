@@ -42,7 +42,7 @@
           <draw-surface
             v-if="
               $store.state.layout.showDrawSurface &&
-                !$store.state.layout.showVPC
+              !$store.state.layout.showVPC
             "
           ></draw-surface>
           <v-progress-linear
@@ -50,7 +50,7 @@
             class="ma-0"
             v-if="isLoading"
             indeterminate
-            style="z-index:1"
+            style="z-index: 1"
           ></v-progress-linear>
 
           <zone
@@ -65,7 +65,7 @@
             dropzone-accept=".note-bmc"
             id="pn"
             label="Partner Network"
-            style="left: 0; top:0; width: 20%; height: 75%"
+            style="left: 0; top: 0; width: 20%; height: 75%"
           >
             <v-icon light slot="icon">{{ ICONS["pn"] }}</v-icon>
           </zone>
@@ -73,7 +73,7 @@
             dropzone-accept=".note-bmc"
             id="ka"
             label="Key Activities"
-            style="left: 20%; top:0; width: 20%; height: 37.5%"
+            style="left: 20%; top: 0; width: 20%; height: 37.5%"
           >
             <v-icon light slot="icon">{{ ICONS["ka"] }}</v-icon>
           </zone>
@@ -81,7 +81,7 @@
             dropzone-accept=".note-bmc"
             id="kr"
             label="Key Resources"
-            style="left: 20%; top:37.5%; width: 20%; height: 37.5%"
+            style="left: 20%; top: 37.5%; width: 20%; height: 37.5%"
           >
             <v-icon light slot="icon">{{ ICONS["kr"] }}</v-icon>
           </zone>
@@ -94,7 +94,7 @@
               'elevation-10': selectedCS && !selectedVP
             }"
             label="Value Proposition"
-            style="left: 40%; top:0; width: 20%; height: 75%"
+            style="left: 40%; top: 0; width: 20%; height: 75%"
           >
             <v-icon light slot="icon">{{ ICONS["vp"] }}</v-icon>
           </zone>
@@ -102,7 +102,7 @@
             dropzone-accept=".note-bmc"
             id="cr"
             label="Customer Relationships"
-            style="left: 60%; top:0; width: 20%; height: 37.5%"
+            style="left: 60%; top: 0; width: 20%; height: 37.5%"
           >
             <v-icon light slot="icon">{{ ICONS["cr"] }}</v-icon>
           </zone>
@@ -110,7 +110,7 @@
             dropzone-accept=".note-bmc"
             id="dc"
             label="Distribution Channels"
-            style="left: 60%; top:37.5%; width: 20%; height: 37.5%"
+            style="left: 60%; top: 37.5%; width: 20%; height: 37.5%"
           >
             <v-icon light slot="icon">{{ ICONS["dc"] }}</v-icon>
           </zone>
@@ -123,7 +123,7 @@
               'elevation-10': !selectedCS && selectedVP
             }"
             label="Customer Segments"
-            style="left: 80%; top:0; width: 20%; height: 75%"
+            style="left: 80%; top: 0; width: 20%; height: 75%"
           >
             <v-icon light slot="icon">{{ ICONS["cs"] }}</v-icon>
           </zone>

@@ -1,6 +1,6 @@
 <template>
-  <div style="position:relative;width:100%">
-    <div style="position: absolute; top:0; left:0; right:0; bottom:0;">
+  <div style="position: relative; width: 100%">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0">
       <v-row>
         <v-col cols="12" md="6" offset-md="3">
           <v-alert type="error">

@@ -4,8 +4,8 @@ import VueTimeago from "vue-timeago";
 import humanFormat from "human-format";
 import { auth, db } from "@/utils/firebase";
 import VueAnalytics from "vue-analytics";
-import * as Sentry from "@sentry/browser";
-import * as Integrations from "@sentry/integrations";
+import * as Sentry from "@sentry/vue";
+import { Integrations } from "@sentry/tracing";
 import { mapActions } from "vuex";
 
 import App from "./App";
@@ -29,9 +29,16 @@ Vue.filter("humanformat", input => (isNaN(input) ? input : humanFormat(input)));
 
 if (process.env.NODE_ENV === "production") {
   Sentry.init({
+    Vue,
     dsn: "https://a3e9d60494a249d4bba6e6244380e411@sentry.j42.org/15",
     release: process.env.COMMIT_HASH,
-    integrations: [new Integrations.Vue({ Vue, attachProps: true })]
+    integrations: [
+      new Integrations.BrowserTracing({
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+        tracingOrigins: ["localhost", "bmdesigner.com", /^\//]
+      })
+    ],
+    tracesSampleRate: 1.0
   });
 }
 

@@ -198,7 +198,8 @@ export default {
     };
   },
   mounted() {
-    this.debouncedCalculateFontSizeAndHeight = this.createDebouncedCalculateFontSizeAndHeight();
+    this.debouncedCalculateFontSizeAndHeight =
+      this.createDebouncedCalculateFontSizeAndHeight();
     window.addEventListener("resize", this.debouncedCalculateFontSizeAndHeight);
     interact(this.$el)
       .draggable({
@@ -409,8 +410,10 @@ export default {
     },
     transform() {
       if (this.dragging) {
-        return `rotateZ(${this.angle -
-          (this.dx > 0 ? Math.min(this.dx, 8) : Math.max(this.dx, -8))}deg)`;
+        return `rotateZ(${
+          this.angle -
+          (this.dx > 0 ? Math.min(this.dx, 8) : Math.max(this.dx, -8))
+        }deg)`;
       }
       return `rotateZ(${this.angle}deg)`;
     },

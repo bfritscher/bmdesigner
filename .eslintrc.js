@@ -10,7 +10,9 @@ module.exports = {
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-    "no-prototype-builtins": "off"
+    "no-prototype-builtins": "off",
+    "comma-dangle": ["warn", "never"],
+    "arrow-parens": ["warn", "as-needed"]
   },
   overrides: [
     {

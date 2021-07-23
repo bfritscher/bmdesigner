@@ -16,8 +16,8 @@
       <div
         class="image-display"
         :style="{
-          'background-color': this.showCanvas ? previewColor : color,
-          'background-image': this.showCanvas ? 'none' : `url(${image})`
+          'background-color': showCanvas ? previewColor : color,
+          'background-image': showCanvas ? 'none' : `url(${image})`
         }"
       >
         <div v-show="!image && allowClick">
@@ -42,7 +42,7 @@
       <v-icon>delete_forever</v-icon>
     </v-btn>
     <input
-      style="display:none"
+      style="display: none"
       type="file"
       @click.stop
       @change="handleChange"

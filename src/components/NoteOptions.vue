@@ -11,7 +11,7 @@
           <span class="headline">{{ note.text }}</span>
         </v-card-title>
         <v-divider></v-divider>
-        <v-card-text style="max-height: calc(80vh - 104px);">
+        <v-card-text style="max-height: calc(80vh - 104px)">
           <v-row wrap v-if="isEditable">
             <v-col cols="12" md="6">
               <image-zone
@@ -90,9 +90,9 @@
                       <template v-slot:activator="{ on }">
                         <v-btn icon v-on="on">
                           <v-icon
-                            :class="
-                              `calcDisplayColor${whichCalcDisplay(calcVar)}`
-                            "
+                            :class="`calcDisplayColor${whichCalcDisplay(
+                              calcVar
+                            )}`"
                           >
                             {{
                               whichCalcDisplay(calcVar)
@@ -106,9 +106,9 @@
                         <v-list-item>
                           <v-list-item-title>
                             <v-icon
-                              :class="
-                                `calcDisplayColor${whichCalcDisplay(calcVar)}`
-                              "
+                              :class="`calcDisplayColor${whichCalcDisplay(
+                                calcVar
+                              )}`"
                             >
                               {{
                                 whichCalcDisplay(calcVar)

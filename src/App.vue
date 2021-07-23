@@ -5,7 +5,7 @@
       ref="drawer"
       width="240"
       mini-variant-width="64"
-      :mobile-break-point="1440"
+      :mobile-breakpoint="1440"
       class="drawer"
       :clipped="userSettings.mini && !isMobile()"
       :mini-variant="userSettings.mini && !isMobile()"
@@ -235,7 +235,7 @@
             <v-dialog
               v-model="showDialogSettings"
               persistent
-              style="display:block"
+              style="display: block"
               max-width="500px"
             >
               <template v-slot:activator="{ on }">
@@ -404,7 +404,7 @@
             <v-dialog
               v-model="showDialogInvite"
               persistent
-              style="display:block"
+              style="display: block"
               max-width="500px"
             >
               <template v-slot:activator="{ on }">
@@ -553,9 +553,9 @@
       </v-menu>
       <v-btn v-else exact :to="{ name: 'login' }">Sign in</v-btn>
     </v-app-bar>
-    <v-content>
+    <v-main>
       <router-view></router-view>
-    </v-content>
+    </v-main>
     <note-options></note-options>
     <v-dialog
       :value="$store.state.layout.showLoading"
@@ -566,7 +566,7 @@
         <v-card-title class="headline">Working</v-card-title>
         <v-card-text>
           <p>{{ $store.state.layout.showLoading }}</p>
-          <p style="text-align:center;">
+          <p style="text-align: center">
             <v-progress-circular
               indeterminate
               v-bind:size="100"
@@ -641,9 +641,10 @@ export default {
           ? this.$route.meta.title
           : "";
       if (this.isModelEdit) {
-        title += `${(this.$store.state.canvas &&
-          this.$store.state.canvas.info.name) ||
-          "Loading"} | `;
+        title += `${
+          (this.$store.state.canvas && this.$store.state.canvas.info.name) ||
+          "Loading"
+        } | `;
         if (this.$store.state.layout.showVPC) {
           if (this.$store.state.layout.selectedVP) {
             title += "Value Proposition Zoom";

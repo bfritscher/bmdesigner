@@ -38,9 +38,7 @@
             "
           >
             <div class="left-icons" v-if="info.updatedAt">
-              <v-icon dark>
-                event_note
-              </v-icon>
+              <v-icon dark> event_note </v-icon>
               <timeago :datetime="info.updatedAt"></timeago>
             </div>
             <div class="right-icons">
@@ -62,7 +60,9 @@
             </div>
             <v-container fill-height fluid>
               <v-row fill-height align-end>
-                <v-col cols="12" class="headline white--text">{{ info.name }}</v-col>
+                <v-col cols="12" class="headline white--text">{{
+                  info.name
+                }}</v-col>
               </v-row>
             </v-container>
           </v-img>

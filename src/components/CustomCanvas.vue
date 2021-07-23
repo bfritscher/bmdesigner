@@ -25,19 +25,40 @@
             class="ma-0"
             v-if="isLoading"
             indeterminate
-            style="z-index:1"
+            style="z-index: 1"
           ></v-progress-linear>
           <zone
             dropzone-accept=".note"
             id="c"
-            style="left: 25%; top: 25%; width: 50%; height: 50%; border-radius:50%"
+            style="
+              left: 25%;
+              top: 25%;
+              width: 50%;
+              height: 50%;
+              border-radius: 50%;
+            "
           >
           </zone>
           <zone
             dropzone-accept=".note"
             id="vp"
             label="TEST ZONE"
-            style="left: 0; top: 0; width: 50%; height: 50%; clip-path: polygon(9% 11%, 51% 23%, 60% 0%, 100% 50%, 60% 100%, 37% 80%, 0% 80%);background-color: red"
+            style="
+              left: 0;
+              top: 0;
+              width: 50%;
+              height: 50%;
+              clip-path: polygon(
+                9% 11%,
+                51% 23%,
+                60% 0%,
+                100% 50%,
+                60% 100%,
+                37% 80%,
+                0% 80%
+              );
+              background-color: red;
+            "
           >
           </zone>
           <div>

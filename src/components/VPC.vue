@@ -55,7 +55,13 @@
               dropzone-accept=".note-vpc"
               id="features"
               label="Products & Services"
-              style="left: 0; top: 0; width: 50%; height: 100%; background-color: white;"
+              style="
+                left: 0;
+                top: 0;
+                width: 50%;
+                height: 100%;
+                background-color: white;
+              "
             >
               <v-icon light slot="icon">{{ ICONS["features"] }}</v-icon>
             </zone>
@@ -63,7 +69,13 @@
               dropzone-accept=".note-vpc"
               id="solution"
               label="Solutions"
-              style="left: 50%; top: 0; width: 50%; height: 100%; background-color: white;"
+              style="
+                left: 50%;
+                top: 0;
+                width: 50%;
+                height: 100%;
+                background-color: white;
+              "
             >
               <v-icon light slot="icon">{{ ICONS["solution"] }}</v-icon>
             </zone>
@@ -114,7 +126,13 @@
               dropzone-accept=".note-vpc"
               id="pain_gain"
               label="Gains & Pains"
-              style="left: 0; top: 0; width: 50%; height: 100%;  background-color: white;"
+              style="
+                left: 0;
+                top: 0;
+                width: 50%;
+                height: 100%;
+                background-color: white;
+              "
             >
               <v-icon light slot="icon">{{ ICONS["pain_gain"] }}</v-icon>
             </zone>
@@ -122,7 +140,13 @@
               dropzone-accept=".note-vpc"
               id="job"
               label="Job to be done"
-              style="left: 50%; top: 0; width: 50%; height: 100%;  background-color: white;"
+              style="
+                left: 50%;
+                top: 0;
+                width: 50%;
+                height: 100%;
+                background-color: white;
+              "
             >
               <v-icon light slot="icon">{{ ICONS["job"] }}</v-icon>
             </zone>

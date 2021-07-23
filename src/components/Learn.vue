@@ -7,7 +7,7 @@
             <div
               ref="issue"
               data-configid="1330026/38929634"
-              style="width:100%;height:460px;"
+              style="width: 100%; height: 460px"
               class="issuuembed"
             ></div>
           </v-img>
