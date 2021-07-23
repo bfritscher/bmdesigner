@@ -123,14 +123,10 @@ export default {
 }
 
 .color-selector .direction-top {
-  position: absolute;
-  left: 0;
-  bottom: -96px;
+  margin-bottom: -680px !important;
 }
 
 .color-selector .direction-bottom {
-  position: absolute;
-  left: 0;
-  top: -96px;
+  margin-top: -680px !important;
 }
 </style>
