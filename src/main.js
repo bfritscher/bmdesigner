@@ -7,11 +7,15 @@ import VueAnalytics from "vue-analytics";
 import * as Sentry from "@sentry/vue";
 import { Integrations } from "@sentry/tracing";
 import { mapActions } from "vuex";
+import InstantSearch from "vue-instantsearch";
+//import "instantsearch.css/themes/satellite-min.css";
 
 import App from "./App";
 import router from "./router";
 import store from "./store";
 import "./registerServiceWorker";
+
+Vue.use(InstantSearch);
 
 Vue.use(VueTimeago, {
   locale: "en-US",

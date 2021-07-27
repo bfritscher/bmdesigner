@@ -15,6 +15,7 @@
           userSettingsUpdate({ drawer: !userSettings.drawer })
         "
       ></v-app-bar-nav-icon>
+      <search></search>
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
         <v-dialog
@@ -162,6 +163,7 @@ import Avatar from "vue-avatar";
 import NoteOptions from "@/components/NoteOptions";
 import PresentationSorter from "@/components/PresentationSorter";
 import NavBar from "@/components/NavBar";
+import Search from '@/components/Search';
 
 export default {
   name: "app",
@@ -227,7 +229,8 @@ export default {
     NoteOptions,
     Avatar,
     PresentationSorter,
-    NavBar
+    NavBar,
+    Search
   }
 };
 </script>
