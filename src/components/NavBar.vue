@@ -436,6 +436,7 @@
 import { mapGetters, mapState, mapActions } from "vuex";
 import { COLORS_MATERIAL } from "@/utils";
 import { db } from "@/utils/firebase";
+import Avatar from "vue-avatar";
 
 export default {
   name: "NavBar",
@@ -559,6 +560,9 @@ export default {
     isMobile() {
       return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
     }
+  },
+  components: {
+    Avatar
   }
 };
 </script>
