@@ -37,3 +37,5 @@ npm run test:unit
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+firebase emulators:start --import=./emulator-data --export-on-exit

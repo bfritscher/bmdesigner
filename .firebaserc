@@ -1,5 +1,6 @@
 {
   "projects": {
-    "bmdesigner": "bmdesigner-50d6c"
+    "bmdesigner": "bmdesigner-50d6c",
+    "default": "bmdesigner-50d6c"
   }
 }

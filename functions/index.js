@@ -1,11 +1,32 @@
 "use strict";
 
+const Typesense = require("typesense");
+
+const useEmulator = true;
+
+if (useEmulator) {
+  process.env["FIREBASE_DATABASE_EMULATOR_HOST"] = "localhost:9000";
+}
+
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
 
 const DB_ROOT = "app";
+
+const typesenseClient = new Typesense.Client({
+  nodes: [
+    {
+      host: functions.config().typesense.host,
+      port: functions.config().typesense.port,
+      protocol: functions.config().typesense.protocol
+    }
+  ],
+  apiKey: functions.config().typesense.key,
+  connectionTimeoutSeconds: 2
+  // retryIntervalSeconds: 120,
+});
 
 /* EMAIL SENDING */
 
@@ -46,12 +67,9 @@ exports.createProject = functions.database
       notes: []
     };
     project.users[uid] = {
-      name: context.auth.token.name
+      name: context.auth.token.name || context.auth.token.email || "anonymous"
     };
-    const node = admin
-      .database()
-      .ref(`/${DB_ROOT}/projects`)
-      .push(project);
+    const node = admin.database().ref(`/${DB_ROOT}/projects`).push(project);
     return admin
       .database()
       .ref(`/${DB_ROOT}/users/${uid}/projects/${node.key}`)
@@ -74,34 +92,42 @@ exports.updateInfo = functions.database
       return "no value";
     }
     const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${pid}`);
-    projectRef.once("value", snapshot => {
+    return projectRef.once("value", snapshot => {
       const project = snapshot.val();
       project.info.usersCount = Object.keys(project.users || {}).length;
       project.info.stickyCount = Object.keys(project.notes || {}).length;
       project.info.updatedAt = new Date().toISOString();
 
       // update search index
-      // TODO: handle note delete
-      // TODO FIX quota
-      /*
-    indexNotes.addObjects(Object.keys(project.notes || {}).map((key) => {
-      const note = project.notes[key];
-      return {
-        objectID: `${pid}.${key}`,
-        type: note.type,
-        text: note.text,
-        description: note.description,
-        colors: note.colors,
-        values: Object.keys(note.values || {}),
-        projectTitle: project.info.name,
-        canvasKey: pid,
-        users: Object.keys(project.users || {}),
-        public: project.info.public,
-        updatedAt: project.info.updatedAt,
-      };
-    }));
-    */
+      // TODO: do it live foreach note?
+      const documents = Object.keys(project.notes || {}).map(key => {
+        const note = project.notes[key];
+        return {
+          objectID: `${pid}.${key}`,
+          type: note.type,
+          text: note.text,
+          description: note.description,
+          colors: note.colors.map(color => String(color)),
+          values: Object.keys(note.values || {}),
+          projectTitle: project.info.name,
+          canvasKey: pid,
+          users: Object.keys(project.users || {}),
+          public: project.info.public,
+          updatedAt: project.info.updatedAt // TODO index as timestamp?
+        };
+      });
+      const collectionName = functions.config().typesense.collection;
 
+      typesenseClient
+        .collections(collectionName)
+        .documents()
+        .delete({ filter_by: `canvasKey:=${pid}` })
+        .then(() => {
+          typesenseClient
+            .collections(collectionName)
+            .documents()
+            .import(documents, { action: "upsert" });
+        });
       return Promise.all([
         admin
           .database()
@@ -122,10 +148,7 @@ exports.onRemoveUserFromProject = functions.database
   .onDelete((snap, context) => {
     const uid = context.params.uid;
     const pid = context.params.pid;
-    admin
-      .database()
-      .ref(`/${DB_ROOT}/users/${uid}/projects/${pid}`)
-      .remove();
+    admin.database().ref(`/${DB_ROOT}/users/${uid}/projects/${pid}`).remove();
     const projectRef = admin.database().ref(`/${DB_ROOT}/projects/${pid}`);
     return projectRef.once("value", snapshot => {
       const project = snapshot.val();
@@ -156,12 +179,28 @@ exports.inviteToken = functions.database
     const msg = {
       from: `"${context.auth.token.name}" <${context.auth.token.email}>`,
       to: email,
-      subject: `${
-        context.auth.token.name
-      } invited you to his Business Model Canvas`,
+      subject: `${context.auth.token.name} invited you to his Business Model Canvas`,
       text: `Connect to https://bmdesigner.com/login/${pid}:${token} , to see the shared project.\n\nRegards,\nBM|Designer.com`
     };
     return sgMail.send(msg);
+  });
+
+// create search key filtered by user's permissions
+exports.addSearchKey = functions.database
+  .ref(`/${DB_ROOT}/users/{uid}/settings/search_key`)
+  .onWrite(event => {
+    // TODO only if keyword
+    const uid = event.params.uid;
+    const securedApiKey = typesenseClient.keys().generateScopedSearchKey(
+      functions.config().typesense.search_key, // Make sure to use a search key,
+      {
+        filter_by: `users:${uid} OR public:true`
+      }
+    );
+    admin
+      .database()
+      .ref(`/${DB_ROOT}/users/${uid}/settings/search_key`)
+      .set(securedApiKey);
   });
 
 /* register with token */
@@ -232,7 +271,7 @@ function makeFirebaseCompatible(value) {
   return value;
 }
 
-const uuidv4 = require("uuid/v4");
+const { v4: uuidv4 } = require("uuid");
 
 function Note(args) {
   const note = {
