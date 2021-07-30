@@ -1,128 +1,162 @@
 <template>
-  <div v-if="userSettings.search_key && searchClient" class="search-frame">
+  <div
+    v-if="
+      $store.state.layout.searchEnabled &&
+      userSettings.search_key &&
+      userSettings.search_key !== 'INIT' &&
+      searchClient
+    "
+  >
     <ais-instant-search
       :search-client="searchClient"
       index-name="bmdesigner_notes_prod"
     >
-      <div
-        class="
-          input-group
-          input-group--dirty
-          input-group--tab-focused
-          input-group--hide-details
-          input-group--placeholder
-          input-group--text-field
-          input-group--single-line
-        "
+      <v-dialog
+        v-model="showDialog"
+        scrollable
+        origin="top right"
+        max-width="800px"
+        content-class="search-dialog"
       >
-        <div class="input-group__input">
-          <ais-search-box
-            @click.native.prevent.stop="showIfResults"
-            class="search-box"
-            placeholder="Search your projects"
-          ></ais-search-box>
-        </div>
-        <div class="input-group__details">
-          <div class="input-group__messages"></div>
-        </div>
-      </div>
-      <div class="search-result-frame elevation-4" v-if="showResults">
-        <div class="filters">
-          <h6 class="subheading">Types</h6>
-          <ais-refinement-list
-            class="type-facet"
-            attribute="type"
-            :sort-by="['count:desc', 'name:asc', 'isRefined:desc']"
-            :transform-items="
-              items =>
-                items.map(item => ({ ...item, label: TYPE_NAMES[item.value] }))
-            "
-          >
-            <template v-slot:item="{ item, refine }">
-              <div @click="refine(item.value)">
-                <v-badge :content="item.count">
-                  {{ TYPE_NAMES[item.value] }}
-                </v-badge>
-              </div>
-            </template>
-          </ais-refinement-list>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon>search</v-icon>
+          </v-btn>
+        </template>
 
-          <h6 class="subheading">Colors</h6>
-          <ais-refinement-list
-            attribute="colors"
-            class="color-facet"
-            :sort-by="['name:asc', 'count:desc', 'isRefined:desc']"
-          >
-            <template v-slot:item="{ item, refine }">
-              <v-btn
-                class="color"
-                small
-                fab
-                :text="item.isRefined"
-                @click="refine(item.value)"
-                :class="[
-                  COLORS_MATERIAL_DARK[item.value],
-                  item.isRefined ? 'active' : ''
-                ]"
+        <v-card>
+          <v-card-title class="d-flex flex-column align-start">
+            <h3 class="h3">Search</h3>
+            <ais-search-box>
+              <template v-slot="{ currentRefinement, isSearchStalled, refine }">
+                <v-text-field
+                  full-width
+                  clearable
+                  placeholder="Project or Notes"
+                  :value="currentRefinement"
+                  @input="refine($event || '')"
+                ></v-text-field>
+                <span :hidden="!isSearchStalled">Loading...</span>
+              </template>
+            </ais-search-box>
+            <div class="filters">
+              <h6 class="subheading">Types</h6>
+              <ais-refinement-list
+                class="type-facet body-1"
+                attribute="type"
+                :sort-by="['count:desc', 'name:asc', 'isRefined:desc']"
+                :transform-items="
+                  items =>
+                    items.map(item => ({
+                      ...item,
+                      label: TYPE_NAMES[item.value]
+                    }))
+                "
               >
-                {{ item.count }}
-                <v-icon v-if="item.isRefined">check_circle</v-icon>
-              </v-btn>
-            </template>
-          </ais-refinement-list>
-        </div>
-        <v-list three-line style="overflow: auto" light>
-          <ais-hits>
-            <template v-slot:item="{ item }">
-              <v-divider></v-divider>
-              <v-list-item
-                class="search-result"
-                :to="{
-                  name: 'bmc',
-                  params: {
-                    id: item.canvasKey,
-                    zoom1: item.objectID.split('.')[1]
-                  }
-                }"
-                exact
-                @click.native="showResults = false"
-              >
-                <v-list-item-content>
-                  <v-list-item-title>
-                    <ais-highlight :hit="item" attribute="text"></ais-highlight>
-                  </v-list-item-title>
-                  <v-list-item-subtitle
-                    class="grey--text text--darken-4 description"
+                <template v-slot:item="{ item, refine }">
+                  <v-chip
+                    @click="refine(item.value)"
+                    :outlined="!item.isRefined"
                   >
-                    <ais-highlight
-                      :hit="item"
-                      attribute="description"
-                    ></ais-highlight>
-                  </v-list-item-subtitle>
-                  <v-list-item-subtitle>
-                    <ais-highlight
-                      :hit="item"
-                      attribute="projectTitle"
-                    ></ais-highlight>
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <v-list-item-action-text>
-                    <div class="type">{{ TYPE_NAMES[item.type] }}</div>
-                    <div class="colors">
-                      <span
-                        v-for="colorId in item.colors"
-                        :class="COLORS_MATERIAL_DARK[colorId]"
-                        :key="colorId"
-                      ></span>
-                    </div>
-                  </v-list-item-action-text>
-                </v-list-item-action>
-              </v-list-item>
-            </template>
-          </ais-hits>
-        </v-list>
-      </div>
+                    <v-badge inline :content="item.count">
+                      {{ TYPE_NAMES[item.value] }}
+                    </v-badge>
+                  </v-chip>
+                </template>
+              </ais-refinement-list>
+
+              <h6 class="subheading">Colors</h6>
+              <ais-refinement-list
+                attribute="colors"
+                class="color-facet body-1"
+                operator="and"
+                :sort-by="['name:asc', 'count:desc', 'isRefined:desc']"
+              >
+                <template v-slot:item="{ item, refine }">
+                  <v-btn
+                    class="color"
+                    small
+                    fab
+                    :text="item.isRefined"
+                    @click="refine(item.value)"
+                    :class="[
+                      COLORS_MATERIAL_DARK[item.value],
+                      item.isRefined ? 'active' : ''
+                    ]"
+                  >
+                    {{ item.count }}
+                    <v-icon v-if="item.isRefined">check_circle</v-icon>
+                  </v-btn>
+                </template>
+              </ais-refinement-list>
+            </div>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-list two-line light class="search-result">
+              <ais-hits>
+                <template v-slot:item="{ item }">
+                  <v-list-item
+                    class="search-result"
+                    :to="{
+                      name: 'bmc',
+                      params: {
+                        id: item.canvasKey,
+                        zoom1: item.objectID.split('.')[1]
+                      }
+                    }"
+                    exact
+                    @click="showDialog = false"
+                  >
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        <ais-highlight
+                          :hit="item"
+                          attribute="text"
+                        ></ais-highlight
+                        >&nbsp;
+                      </v-list-item-title>
+                      <v-list-item-subtitle
+                        class="grey--text text--darken-4 description"
+                      >
+                        <ais-highlight
+                          :hit="item"
+                          attribute="description"
+                        ></ais-highlight>
+                      </v-list-item-subtitle>
+                      <v-list-item-subtitle>
+                        <ais-highlight
+                          :hit="item"
+                          attribute="projectTitle"
+                        ></ais-highlight>
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                    <v-list-item-action>
+                      <v-list-item-action-text>
+                        <div class="type">{{ TYPE_NAMES[item.type] }}</div>
+                        <div class="colors">
+                          <span
+                            v-for="colorId in item.colors"
+                            :class="COLORS_MATERIAL_DARK[colorId]"
+                            :key="colorId"
+                          ></span>
+                        </div>
+                      </v-list-item-action-text>
+                    </v-list-item-action>
+                  </v-list-item>
+                  <v-divider></v-divider>
+                </template>
+              </ais-hits>
+            </v-list>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="showDialog = false"
+              >Close</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </ais-instant-search>
   </div>
 </template>
@@ -132,13 +166,6 @@ import { mapGetters } from "vuex";
 import { COLORS_MATERIAL_DARK, TYPE_NAMES } from "@/utils";
 import TypesenseInstantSearchAdapter from "typesense-instantsearch-adapter";
 
-//TODO: Use custom user filtered search key
-//TODO: Server save to typesense
-//TODO: generate key for user
-//TODO: reindex all data
-//TODO: CSS
-//TODO: FIX dismiss dialog
-
 export default {
   data() {
     return {
@@ -147,7 +174,7 @@ export default {
       TYPE_NAMES,
       localSearchStore: null,
       usedApiKey: "",
-      showResults: false
+      showDialog: false
     };
   },
   computed: {
@@ -173,11 +200,6 @@ export default {
       });
       return typesenseInstantsearchAdapter.searchClient;
     }
-  },
-  methods: {
-    showIfResults() {
-      this.showResults = true;
-    }
   }
 };
 </script>
@@ -195,47 +217,33 @@ export default {
   list-style-type: none;
 }
 
-.ais-InstantSearch {
-  color: black;
+.ais-SearchBox {
+  width: 100%;
 }
-
-/*  color: #26a69a; */
 
 .ais-Highlight-highlighted {
   background-color: #fff9c4;
 }
 
-.search-result-frame {
-  position: absolute;
-  min-width: 80%;
-  background-color: #fff;
-  max-height: calc(100vh - 128px);
-  max-width: 1024px;
-  display: flex;
-  flex-direction: column;
+.ais-Hits-list {
+  padding: 0 !important;
 }
 
-@media (min-width: 1024px) {
-  .search-result-frame {
-    min-width: 0;
-  }
+.search-dialog .v-card .v-card__text {
+  padding: 0;
 }
 
-.search-result-frame .filters {
-  padding: 10px;
+.search-result .colors {
+  text-align: right;
 }
 
-.application--light
-  .search-frame
-  .input-group:not(.input-group--error)
-  .input-group__details:before {
-  background-color: rgba(255, 255, 255, 0.42);
+.search-result .colors > span {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: inline-block;
 }
-
-.application--light
-  .search-frame
-  .input-group:not(.input-group--error):not(.input-group--focused):not(.input-group--disabled):not(.input-group--overflow):not(.input-group--segmented):not(.input-group--editable):hover
-  .input-group__details:before {
-  background-color: rgba(255, 255, 255, 0.87);
+.search-dialog {
+  align-self: flex-start;
 }
 </style>

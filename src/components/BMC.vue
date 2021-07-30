@@ -136,6 +136,7 @@
             <v-icon light slot="icon">{{ ICONS["r"] }}</v-icon>
           </zone>
           <div
+            v-if="canvas"
             class="logo"
             light
             :style="{ 'background-color': canvas.info.logoColor }"
@@ -166,7 +167,7 @@
       </image-zone>
       <vpc></vpc>
       <game-status-bar
-        v-if="canvas.info && canvas.info.isGame"
+        v-if="canvas && canvas.info && canvas.info.isGame"
         @won="showCongrats = true"
       ></game-status-bar>
       <pop-in-text v-if="showCongrats" v-model="showCongrats"></pop-in-text>

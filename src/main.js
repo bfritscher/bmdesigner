@@ -8,7 +8,6 @@ import * as Sentry from "@sentry/vue";
 import { Integrations } from "@sentry/tracing";
 import { mapActions } from "vuex";
 import InstantSearch from "vue-instantsearch";
-//import "instantsearch.css/themes/satellite-min.css";
 
 import App from "./App";
 import router from "./router";

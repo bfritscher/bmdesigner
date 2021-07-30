@@ -4,7 +4,7 @@ import { vuexfireMutations, firebaseAction } from "vuexfire";
 import Note from "@/models/Note";
 import solve from "@/utils/calc";
 import router from "@/router";
-import { auth } from "@/utils/firebase";
+import { auth, remoteConfig } from "@/utils/firebase";
 import * as types from "./mutation-types";
 
 Vue.use(Vuex);
@@ -87,7 +87,8 @@ const initialState = {
     showDrawSurface: false,
     presentation: "",
     showPresentationSorter: false,
-    showPrint: false
+    showPrint: false,
+    searchEnabled: false
   }
 };
 
@@ -170,7 +171,9 @@ const gettersDefinition = {
         state.canvas.notes[key].id === id
     );
     const note = state.canvas.notes[findKey];
-    note[".key"] = findKey;
+    if (note) {
+      note[".key"] = findKey;
+    }
     return note;
   },
   canvasSettings: state =>
@@ -326,7 +329,10 @@ const actions = {
   signOut() {
     auth.signOut();
     localStorage.removeItem(LOCALSTORAGE_USER_HOME);
-    router.push({ name: "home" });
+    if (router.currentRoute.name !== "home") {
+      router.replace({ name: "home" });
+    }
+    router.go();
   },
   setUserRef: firebaseAction(({ state, bindFirebaseRef }, { ref }) => {
     // this will unbind any previously bound ref
@@ -334,6 +340,9 @@ const actions = {
     return bindFirebaseRef("user", ref).then(() => {
       if (!state.user.settings) {
         refs.user.child("settings").set(DEFAULT_USER_SETTINGS);
+      }
+      if (!state.user.settings.search_key) {
+        refs.user.child("settings/search_key").set("INIT");
       }
     });
   }),
@@ -759,6 +768,12 @@ const store = new Vuex.Store({
   getters: gettersDefinition,
   mutations,
   strict: false
+});
+
+remoteConfig.fetchAndActivate().then(() => {
+  store.dispatch("layoutUpdate", {
+    searchEnabled: remoteConfig.getBoolean("search_enabled")
+  });
 });
 
 store.watch(

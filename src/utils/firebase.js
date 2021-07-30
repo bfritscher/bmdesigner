@@ -2,6 +2,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
 import "firebase/storage";
+import "firebase/remote-config";
 import * as firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
 
@@ -14,7 +15,8 @@ const config = {
   databaseURL: "https://bmdesigner-50d6c.firebaseio.com",
   projectId: "bmdesigner-50d6c",
   storageBucket: "bmdesigner-50d6c.appspot.com",
-  messagingSenderId: "89111401593"
+  messagingSenderId: "89111401593",
+  appId: "1:89111401593:web:60effe3a6e5907e5b870a8"
 };
 
 const uiConfig = {
@@ -46,9 +48,19 @@ const uiConfig = {
 };
 
 const firebaseApp = firebase.initializeApp(config);
-export const db = firebaseApp.database().ref(DB_ROOT);
-export const auth = firebaseApp.auth();
+const dbSource = firebaseApp.database();
+// dbSource.useEmulator("localhost", 9000);
+export const db = dbSource.ref(DB_ROOT);
+const authSource = firebaseApp.auth();
+// authSource.useEmulator("http://localhost:9099");
+export const auth = authSource;
 export const storage = firebaseApp.storage();
+export const remoteConfig = firebase.remoteConfig();
+remoteConfig.defaultConfig = {
+  search_enabled: false
+};
+// remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+
 // Initialize the FirebaseUI Widget using Firebase.
 export const ui = new firebaseui.auth.AuthUI(firebase.auth());
 

@@ -15,7 +15,6 @@
           userSettingsUpdate({ drawer: !userSettings.drawer })
         "
       ></v-app-bar-nav-icon>
-      <search></search>
       <v-spacer></v-spacer>
       <transition name="title-fade-transition" mode="out-in">
         <v-dialog
@@ -32,6 +31,7 @@
             <v-card-title class="headline">Name of project?</v-card-title>
             <v-card-text>
               <v-text-field
+                v-if="$store.state.canvas"
                 required
                 light
                 :value="$store.state.canvas.info.name"
@@ -53,6 +53,7 @@
         </v-dialog>
       </transition>
       <v-spacer></v-spacer>
+      <search></search>
       <v-menu offset-y v-if="currentUser">
         <template v-slot:activator="{ on }">
           <v-list-item-avatar v-on="on">
@@ -163,7 +164,7 @@ import Avatar from "vue-avatar";
 import NoteOptions from "@/components/NoteOptions";
 import PresentationSorter from "@/components/PresentationSorter";
 import NavBar from "@/components/NavBar";
-import Search from '@/components/Search';
+import Search from "@/components/Search";
 
 export default {
   name: "app",

@@ -2,11 +2,12 @@
 
 const Typesense = require("typesense");
 
+/*
 const useEmulator = true;
-
 if (useEmulator) {
   process.env["FIREBASE_DATABASE_EMULATOR_HOST"] = "localhost:9000";
 }
+*/
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
@@ -83,6 +84,40 @@ exports.createProject = functions.database
       });
   });
 
+function indexProject(pid, project) {
+  const documents = Object.keys(project.notes || {}).map(key => {
+    const note = project.notes[key];
+    return {
+      id: `${pid}.${key}`,
+      type: note.type,
+      text: note.text,
+      description: note.description,
+      colors: note.colors.map(color => String(color)),
+      values: Object.keys(note.values || {}),
+      projectTitle: project.info.name,
+      canvasKey: pid,
+      users: Object.keys(project.users || {}),
+      public: project.info.public,
+      updatedAt: project.info.updatedAt // TODO index as timestamp?
+    };
+  });
+  const collectionName = functions.config().typesense.collection;
+
+  return typesenseClient
+    .collections(collectionName)
+    .documents()
+    .delete({ filter_by: `canvasKey:=${pid}` })
+    .then(() => {
+      return typesenseClient
+        .collections(collectionName)
+        .documents()
+        .import(documents, { action: "upsert" })
+        .then(() => {
+          return documents.length;
+        });
+    });
+}
+
 // TRIGER to update copy projects canvas.info to users projects...
 exports.updateInfo = functions.database
   .ref(`/${DB_ROOT}/projects/{pid}/updateInfo`)
@@ -100,34 +135,8 @@ exports.updateInfo = functions.database
 
       // update search index
       // TODO: do it live foreach note?
-      const documents = Object.keys(project.notes || {}).map(key => {
-        const note = project.notes[key];
-        return {
-          objectID: `${pid}.${key}`,
-          type: note.type,
-          text: note.text,
-          description: note.description,
-          colors: note.colors.map(color => String(color)),
-          values: Object.keys(note.values || {}),
-          projectTitle: project.info.name,
-          canvasKey: pid,
-          users: Object.keys(project.users || {}),
-          public: project.info.public,
-          updatedAt: project.info.updatedAt // TODO index as timestamp?
-        };
-      });
-      const collectionName = functions.config().typesense.collection;
+      indexProject(pid, project);
 
-      typesenseClient
-        .collections(collectionName)
-        .documents()
-        .delete({ filter_by: `canvasKey:=${pid}` })
-        .then(() => {
-          typesenseClient
-            .collections(collectionName)
-            .documents()
-            .import(documents, { action: "upsert" });
-        });
       return Promise.all([
         admin
           .database()
@@ -153,9 +162,13 @@ exports.onRemoveUserFromProject = functions.database
     return projectRef.once("value", snapshot => {
       const project = snapshot.val();
       const usersCount = Object.keys(project.users || {}).length;
-      // TODO: update index;
       if (usersCount === 0) {
         projectRef.remove();
+        const collectionName = functions.config().typesense.collection;
+        return typesenseClient
+          .collections(collectionName)
+          .documents()
+          .delete({ filter_by: `canvasKey:=${pid}` });
       }
     });
   });
@@ -188,19 +201,18 @@ exports.inviteToken = functions.database
 // create search key filtered by user's permissions
 exports.addSearchKey = functions.database
   .ref(`/${DB_ROOT}/users/{uid}/settings/search_key`)
-  .onWrite(event => {
+  .onCreate((snapshot, context) => {
     // TODO only if keyword
-    const uid = event.params.uid;
+    const uid = context.params.uid;
+    const filter = {
+      filter_by: `users:=[\`${uid}\`]`,
+      expires_at: 64723363199
+    };
     const securedApiKey = typesenseClient.keys().generateScopedSearchKey(
       functions.config().typesense.search_key, // Make sure to use a search key,
-      {
-        filter_by: `users:${uid} OR public:true`
-      }
+      filter
     );
-    admin
-      .database()
-      .ref(`/${DB_ROOT}/users/${uid}/settings/search_key`)
-      .set(securedApiKey);
+    return snapshot.ref.set(securedApiKey);
   });
 
 /* register with token */
@@ -337,3 +349,27 @@ function importJSONProject(req, res) {
 exports.importJSONProject = functions.https.onRequest((req, res) =>
   cors()(req, res, () => importJSONProject(req, res))
 );
+
+exports.indexDB = functions
+  .runWith({
+    timeoutSeconds: 540
+    // memory: "512MB"
+  })
+  .https.onRequest((req, res) => {
+    admin
+      .database()
+      .ref(`/${DB_ROOT}/projects`)
+      .once("value", async snapshot => {
+        const projects = snapshot.val();
+        let projectCount = 0;
+        let notesCount = 0;
+        for (const pid in projects) {
+          notesCount += await indexProject(pid, projects[pid]);
+          projectCount++;
+        }
+        res.send({
+          projectCount,
+          notesCount
+        });
+      });
+  });
