@@ -558,7 +558,7 @@ export default {
       this.showDialogInvite = false;
     },
     isMobile() {
-      return this.$refs.drawer ? this.$refs.drawer.isMobile : false;
+      return this.$vuetify.breakpoint.mobile;
     }
   },
   components: {
