@@ -139,13 +139,13 @@
             v-if="canvas"
             class="logo"
             light
-            :style="{ 'background-color': canvas.info.logoColor }"
+            :style="{ 'background-color': canvas.info?.logoColor }"
           >
             <image-zone
               :allow-click="$store.state.layout.isEditable"
-              :image="canvas.info.logoImage"
+              :image="canvas.info?.logoImage"
               @update:image="canvasInfoUpdate({ logoImage: $event })"
-              :color="canvas.info.logoColor"
+              :color="canvas?.logoColor"
               @update:color="canvasInfoUpdate({ logoColor: $event })"
             ></image-zone>
           </div>
@@ -404,7 +404,7 @@ export default {
         // TODO: source ref if serverside check
       });
       const canvas = Object.assign({}, this.canvas);
-      canvas.info = Object.assign({}, this.canvas.info);
+      canvas.info = Object.assign({}, this.canvas?.info);
       canvas.info.name += " GAME";
       canvas.info.isGame = true;
       canvas.source = "bmdesigner";
@@ -419,7 +419,7 @@ export default {
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
       }
-      downloadObjectAsJson(canvas, canvas.info.name);
+      downloadObjectAsJson(canvas, canvas.info?.name);
     }
   },
   components: {
