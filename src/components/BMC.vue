@@ -136,16 +136,16 @@
             <v-icon light slot="icon">{{ ICONS["r"] }}</v-icon>
           </zone>
           <div
-            v-if="canvas"
+            v-if="canvas && canvas.info"
             class="logo"
             light
-            :style="{ 'background-color': canvas.info?.logoColor }"
+            :style="{ 'background-color': canvas.info.logoColor }"
           >
             <image-zone
               :allow-click="$store.state.layout.isEditable"
-              :image="canvas.info?.logoImage"
+              :image="canvas.info.logoImage"
               @update:image="canvasInfoUpdate({ logoImage: $event })"
-              :color="canvas?.logoColor"
+              :color="canvas.logoColor"
               @update:color="canvasInfoUpdate({ logoColor: $event })"
             ></image-zone>
           </div>
