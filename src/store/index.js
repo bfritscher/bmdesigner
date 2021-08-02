@@ -365,7 +365,8 @@ const actions = {
       refs.canvas
         .child("updateInfo")
         .set(true)
-        .then(() => {
+        .catch(() => {})
+        .finally(() => {
           unbindFirebaseRef("canvas");
           refs.notes = null;
           refs.canvas = null;
